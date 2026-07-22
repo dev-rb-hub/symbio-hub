@@ -3,7 +3,7 @@
 [![License](https://shields.io)](LICENSE)
 [![GitHub Workflow Status](https://shields.io)](https://github.com)
 
-Symbio Hub is a cross-platform, containerised open-source platform connecting regional NSW SMEs with vetted technical talent. Powered by a decoupled .NET Core backend and a React frontend, the entire ecosystem runs seamlessly across Linux, macOS, and Windows via Docker virtualization.
+Symbio Hub is a cross-platform, containerised open-source platform connecting regional SMEs with vetted technical talent. Powered by a decoupled .NET Core backend and a React frontend, the entire ecosystem runs seamlessly across Linux, macOS, and Windows via Docker virtualization.
 
 ---
 
