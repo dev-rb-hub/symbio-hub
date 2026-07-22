@@ -1,0 +1,18 @@
+root = true
+
+[*]
+indent_style = space
+indent_size = 4
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.{js,ts,tsx,json,yml}]
+indent_size = 2
+
+[*.cs]
+# C# Coding Conventions
+dotnet_diagnostic.IDE0055.severity = warning
+csharp_style_expression_bodied_methods = true:when_expression_is_convenient
+csharp_style_namespace_declarations = file_scoped:warning
