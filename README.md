@@ -3,7 +3,7 @@
 [![License](https://shields.io)](LICENSE)
 [![GitHub Workflow Status](https://shields.io)](https://github.com)
 
-Symbio Hub is a cross-platform, containerised open-source platform connecting regional SMEs with vetted technical talent. Powered by a decoupled .NET Core backend and a React frontend, the entire ecosystem is built to run seamlessly across Linux, macOS, and Windows via Docker virtualization.
+Symbio Hub is a cross-platform, containerised open-source platform connecting regional NSW SMEs with vetted technical talent. Powered by a decoupled .NET Core backend and a React frontend, the entire ecosystem runs seamlessly across Linux, macOS, and Windows via Docker virtualization.
 
 ---
 
@@ -42,9 +42,13 @@ dev-rb-hub/symbio-hub/
 ├── .devcontainer/       # Unified VS Code Developer Container configuration
 ├── .github/workflows/   # CI/CD validation and automated cloud deployment pipelines
 ├── backend/             # Containerised .NET Core Microservices / APIs
+│   ├── Symbio.API/      # Primary Web API delivery layer
 │   └── Dockerfile       # Multi-stage production build script
 ├── frontend/            # Decoupled Single Page Application (SPA) Workspace
+│   └── Symbio.Frontend/ # React Web UI (Vite / TypeScript)
 ├── infrastructure/      # Infrastructure as Code (Azure Bicep / Container configurations)
+├── .editorconfig        # Global team linting and styling layout engine
+├── docker-compose.yml   # Multi-service runtime local orchestration matrix
 ├── CONTRIBUTING.md      # Local engineering guidelines & git practices
 ├── LICENSE              # Apache License 2.0
 └── README.md            # Primary repository landing page
@@ -52,15 +56,33 @@ dev-rb-hub/symbio-hub/
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Getting Started & Orchestration Engines
 
-### 💻 Dev Container Workflow (Recommended)
-1. Ensure **Docker Desktop** and VS Code's **Dev Containers extension** are installed.
-2. Clone the repository and open it in VS Code.
-3. Click **"Reopen in Container"** when prompted. Your development environment will configure automatically.
+### 🐳 Option A: Docker Compose Workflow (Recommended)
+This workflow launches both the .NET backend API and the React Vite frontend concurrently in independent Linux containers. **Hot-reloading is configured out-of-the-box**: changes made on your host machine will immediately reflect inside the active runtime containers.
 
-### 🛠️ Bare-Metal Manual Workflow
-1. **Backend:** Navigate to `/backend`, configure your local secrets, and execute `dotnet run`.
+Ensure **Docker Desktop** is running, open a Windows PowerShell window in the project root, and execute:
+
+```powershell
+# 1. Build infrastructure images and run the environment in detached mode
+docker compose up --build -d
+
+# 2. View and stream active container compilation or runtime console logs
+docker compose logs -f
+
+# 3. Halt the ecosystem containers and safely teardown communication sockets
+docker compose down
+```
+* Access the Frontend SPA at: `http://localhost:5173`
+* Access the Backend Swagger API documentation at: `http://localhost:5001/swagger`
+
+### 💻 Option B: Dev Container Workflow
+1. Ensure **Docker Desktop** and VS Code's **Dev Containers extension** are active.
+2. Clone the repository and open the workspace in VS Code.
+3. Select **"Reopen in Container"** when prompted. Runtimes install automatically inside your sandbox.
+
+### 🛠️ Option C: Bare-Metal Manual Workflow
+1. **Backend:** Navigate to `/backend`, configure local appsecrets, and execute `dotnet run --project Symbio.API`.
 2. **Frontend:** Navigate to `/frontend/Symbio.Frontend`, execute `npm install`, and run `npm run dev`.
 
 ---
