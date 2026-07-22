@@ -5,18 +5,18 @@
 
 # Global Catch-All Rule
 # Ensures any general modifications require core maintainer visibility.
-*                       @dev.rb
+*                       @dev-rb-hub
 
 # Financial Ecosystem Validation Boundary
 # Covers the Core Interfaces, Domain Logic, and Pinch SDK wrappers.
-/backend/Symbio.Core/** @dev.rb
+/backend/Symbio.Core/** @dev-rb-hub
 
 # Core API Gateway and REST Endpoints
-/backend/Symbio.API/**  @dev.rb
+/backend/Symbio.API/**  @dev-rb-hub
 
 # Cloud Infrastructure Automation Blueprints
 # Mandates DevOps review for Azure Resource Manager changes.
-/infrastructure/bicep/** @dev.rb
+/infrastructure/bicep/** @dev-rb-hub
 
 # Core CI/CD Engine Automations
-/.github/workflows/**   @dev.rb
+/.github/workflows/**   @dev-rb-hub
