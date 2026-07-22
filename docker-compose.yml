@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # 1. Containerised .NET Backend REST API Layer
+  symbio-backend:
+    image: symbio-hub-backend:dev
+    container_name: symbio_backend_dev
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: build # Intercepts the multi-stage build early to retain compilation toolsets
+    ports:
+      - "5001:8080" # Maps local port 5001 to container HTTP port 8080
+      - "5002:8081" # Maps local port 5002 to container HTTPS port 8081
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080;https://+:8081
+    volumes:
+      - ./backend:/src # Mounts local source folder into the compilation directory
+      - ~/.aspnet/https:/root/.aspnet/https:ro # Shares your local dev SSL certificates
+    networks:
+      - symbio-network
+
+  # 2. Containerised React Frontend Single Page App Layer
+  symbio-frontend:
+    image: symbio-hub-frontend:dev
+    container_name: symbio_frontend_dev
+    build:
+      context: ./frontend/Symbio.Frontend
+      dockerfile: ../../.devcontainer/Dockerfile # Borrows the Node-ready Dev Container base
+    ports:
+      - "5173:5173" # Maps local development port 5173 directly to Vite
+    environment:
+      - CHOKIDAR_USEPOLLING=true # Forces accurate file change tracking inside virtualized Linux volumes
+    volumes:
+      - ./frontend/Symbio.Frontend:/app
+      - /app/node_modules # Anonymous volume to lock down node modules separation from host system
+    working_dir: /app
+    command: npm run dev -- --host 0.0.0.0 # Binds Vite server to all interfaces for cross-container access
+    depends_on:
+      - symbio-backend
+    networks:
+      - symbio-network
+
+networks:
+  symbio-network:
+    driver: bridge
