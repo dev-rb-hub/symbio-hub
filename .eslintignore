@@ -1,0 +1,6 @@
+dist/
+node_modules/
+build/
+.devcontainer/
+*.config.js
+*.config.ts
