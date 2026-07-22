@@ -1,147 +1,76 @@
 # Symbio Hub
 
-[![License: Apache 2.0](https://shields.io)](LICENSE)
+[![License](https://shields.io)](LICENSE)
 [![GitHub Workflow Status](https://shields.io)](https://github.com)
 
-Symbio Hub is an open-source digital bridge designed to connect independent technology professionals with Small and Medium Enterprises (SMEs) across regional New South Wales. Powered by a decoupled .NET backend and a React frontend, Symbio Hub enables regional businesses to source vetted local talent, adopt AI automation, and execute milestones securely using Australian-native payment rails.
+Symbio Hub is a cross-platform, containerised open-source platform connecting regional SMEs with vetted technical talent. Powered by a decoupled .NET Core backend and a React frontend, the entire ecosystem is built to run seamlessly across Linux, macOS, and Windows via Docker virtualization.
 
 ---
 
 ## 🎯 Problem & Market Solution
 
-### The Challenge in Regional NSW
-SMEs across regional New South Wales face an operational crisis: keeping pace with rapid digital transformation (such as AI workflow automation) is limited by a lack of access to vetted, reliable local technical talent. Businesses are frequently forced to choose between expensive metropolitan agencies or high-risk offshore outsourcing.
+* **The Challenge:** Regional SMEs lack access to trusted local digital expertise, leaving them dependent on expensive metropolitan agencies or high-risk offshore outsourcing.
+* **The Solution:** A secure, localized marketplace featuring:
+    * **Verified Trust Profiles:** KYC-enabled expert registration profiles.
+    * **Risk-Free Escrow:** Milestone-based payments powered by [Pinch Payments](https://getpinch.com.au).
+    * **AI Modernization:** Tailored deployment tracks for local AI and automation workflows.
 
-### The Symbio Hub Solution
-Symbio Hub eliminates regional outsourcing risk by providing a secure, localized marketplace framework:
-* **Verified Trust Profiles:** Integrated identity verification (KYC) mechanisms ensure SMEs deal exclusively with legitimate local operators.
-* **Risk-Free Milestone Escrow:** Powered by Pinch Payments, project funds are safely committed upfront and only released to providers upon successful, verified milestone execution.
-* **Tangible AI Modernization:** Built to streamline short-cycle projects—such as integrating secure AI customer assistants or predictive inventory trackers—saving businesses critical manual administration hours.
+---
+
+## 🏗️ Cross-Platform Architecture & Virtualization
+
+To eliminate "it works on my machine" bottlenecks and support open-source developers on any operating system, Symbio Hub enforces containerisation at every stage:
+
+* **Production Containerisation:** The .NET backend is containerised via a multi-stage Linux Alpine Dockerfile, allowing deployment to cloud environments like Azure Container Apps (ACA), AWS ECS, or native Kubernetes.
+* **Standardised Development (Dev Containers):** Developers can launch a fully isolated workspace using VS Code Dev Containers. This automatically bundles the .NET SDK, Node.js runtime, and all required extensions inside an isolated sandbox.
 
 ---
 
 ## 🛠️ Technology Stack
 
-### Frontend
-* **Core:** React 18+ with TypeScript
-* **Build Tool:** Vite
-* **Hosting:** Azure Static Web Apps (Free Tier)
-* **CI/CD:** GitHub Actions (Automated build and sync)
-
-### Backend
-* **Core:** .NET 8.0 / 9.0 Web API (C#)
-* **Database:** Azure Cosmos DB (NoSQL API)
-* **Payment Engine:** Pinch Payments SDK (PayFac Architecture)
-* **Hosting:** Azure App Service / Azure Functions
-* **Secrets Management:** Azure Key Vault
+* **Backend API:** .NET 8.0 / 9.0 Web API, Docker (Linux Alpine Runtime)
+* **Database Layer:** Azure Cosmos DB (NoSQL API)
+* **Frontend SPA:** React 18+ (TypeScript), Vite
+* **DevOps & Hosting:** GitHub Actions, Dev Containers, Azure Container Apps / Static Web Apps
 
 ---
 
 ## 📁 Repository Structure
 
-The project enforces strict separation of concerns using a decoupled monorepo structure:
-
 ```text
 dev-rb-hub/symbio-hub/
-├── .github/
-│   └── workflows/
-│       ├── frontend-deploy.yml    # Auto-deploys React to Azure Static Web Apps
-│       └── backend-deploy.yml     # Auto-deploys .NET to Azure App Service
-├── backend/                       # Isolated .NET Core Microservices / APIs
-│   ├── Symbio.API/                # REST Controllers, Program.cs, Swagger (OpenAPI)
-│   ├── Symbio.Core/               # Domain Models, Interfaces, Pinch Payment logic
-│   └── Symbio.Infrastructure/     # Cosmos DB Data Access, Third-Party Clients
-├── frontend/                      # Decoupled SPA UI Workspace
-│   └── Symbio.Frontend/           # React Web Application (Vite / TypeScript)
-├── infrastructure/                # Platform Infrastructure as Code (IaC)
-│   └── bicep/                     # Azure Resource Manager templates
-├── LICENSE                        # Apache License 2.0
-└── README.md                      # Developer onboarding & local setup guide
+├── .devcontainer/       # Unified VS Code Developer Container configuration
+├── .github/workflows/   # CI/CD validation and automated cloud deployment pipelines
+├── backend/             # Containerised .NET Core Microservices / APIs
+│   └── Dockerfile       # Multi-stage production build script
+├── frontend/            # Decoupled Single Page Application (SPA) Workspace
+├── infrastructure/      # Infrastructure as Code (Azure Bicep / Container configurations)
+├── CONTRIBUTING.md      # Local engineering guidelines & git practices
+├── LICENSE              # Apache License 2.0
+└── README.md            # Primary repository landing page
 ```
 
 ---
 
-## 💳 Pinch Payment Architecture Matrix
+## 🚀 Getting Started
 
-Symbio Hub embeds **Pinch Payments** to run natively on local Australian financial rails (Credit Cards and BECS Direct Debit). This architecture replaces high-cost global processors with targeted B2B automation tools.
+### 💻 Dev Container Workflow (Recommended)
+1. Ensure **Docker Desktop** and VS Code's **Dev Containers extension** are installed.
+2. Clone the repository and open it in VS Code.
+3. Click **"Reopen in Container"** when prompted. Your development environment will configure automatically.
 
-| Feature Focus | Specific Pinch API / Product | Value to Symbio Hub |
-|---|---|---|
-| **Escrow & Splits** | Glassbox Merchant Hub & Webhooks | Isolates contract funds securely and auto-deducts the 10% platform fee. |
-| **B2B Trust** | BECS Direct Debit Payments | Allows regional SMEs to fund large $5,000+ tech contracts securely via local bank routing. |
-| **Project Milestones** | Customer Pre-Approvals Tool | Authorizes automated billing the moment code passes deployment testing. |
-
-### Managed Merchant Onboarding
-When a local technical expert registers, they are provisioned as an independent "Managed Merchant" (sub-account) via the backend API. 
-1. **Validate:** The platform checks the expert's Australian Business Number (ABN).
-2. **Provision:** The backend calls Pinch via the .NET SDK to create an isolated sub-account with 24-hour activation.
-3. **Verify:** The API returns a secure, hosted Pinch setup URL where the expert completes identity verification (KYC) and links their bank account.
+### 🛠️ Bare-Metal Manual Workflow
+1. **Backend:** Navigate to `/backend`, configure your local secrets, and execute `dotnet run`.
+2. **Frontend:** Navigate to `/frontend/Symbio.Frontend`, execute `npm install`, and run `npm run dev`.
 
 ---
 
-## 🚀 Getting Started (Local Development)
+## 🤝 Contributing
 
-### Prerequisites
-* [Node.js (v18 or higher)](https://nodejs.org)
-* [.NET 8.0 / 9.0 SDK](https://microsoft.com)
-* IDE of choice (VS Code, Visual Studio 2022, or JetBrains Rider)
-* Optional: [Azure Cosmos DB Emulator](https://microsoft.com)
-
-### Backend Setup
-1. **Navigate** to the backend directory:
-   ```bash
-   cd backend
-   ```
-2. **Restore** NuGet dependencies:
-   ```bash
-   dotnet restore
-   ```
-3. **Configure** local settings. Create an `appsettings.Development.json` file inside `Symbio.API/`:
-   ```json
-   {
-     "CosmosDb": {
-       "ConnectionString": "AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
-       "DatabaseName": "SymbioHubDev"
-     },
-     "PinchPayments": {
-       "ApiKey": "YOUR_SANDBOX_KEY",
-       "IsSandbox": true
-     }
-   }
-   ```
-   *Note: If no local emulator is active, the app falls back to a mocked service layer for open-source contributors.*
-4. **Run** the API:
-   ```bash
-   dotnet run --project Symbio.API
-   ```
-
-### Frontend Setup
-1. **Navigate** to the frontend directory:
-   ```bash
-   cd frontend/Symbio.Frontend
-   ```
-2. **Install** node modules:
-   ```bash
-   npm install
-   ```
-3. **Configure** environments. Create a `.env.local` file:
-   ```env
-   VITE_API_BASE_URL=http://localhost:5001
-   ```
-4. **Launch** Vite development server:
-   ```bash
-   npm run dev
-   ```
-
----
-
-## 🤖 Automated Security & Governance
-This repository uses automated governance guards to maintain code safety before merging:
-* **Dependabot Scanning:** Configured weekly to parse `npm` and `nuget` ecosystems for outdated or vulnerable packages.
-* **Secret Interception:** Automated branch policies reject commits containing exposed API tokens or plain-text connection strings.
+Review our [Contribution Guidelines](CONTRIBUTING.md) to understand branching conventions, pull request validations, and mock data parameters.
 
 ---
 
 ## 📄 License
 
-Distributed under the Apache License 2.0. See `LICENSE` for more details.
+This project is licensed under the **Apache License 2.0**. See the [LICENSE](LICENSE) file for comprehensive details.
