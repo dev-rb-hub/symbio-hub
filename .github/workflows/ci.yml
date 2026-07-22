@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  validate-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate repository structure
+        run: |
+          echo "Repository root contents:"
+          ls -la
+          echo "\nBackend folders:"
+          find backend -maxdepth 2 -type d | sort
+          echo "\nFrontend folders:"
+          find frontend -maxdepth 2 -type d | sort
+
+  dotnet-structure-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check for .NET projects
+        run: |
+          if find backend -name '*.csproj' -o -name '*.sln' | grep -q .; then
+            echo "Found .NET solution/project files"
+            find backend -name '*.csproj' -o -name '*.sln' | sort
+          else
+            echo "No .NET solution or project files found yet"
+          fi
+
+      - name: Check for frontend package manifests
+        run: |
+          if find frontend -name 'package.json' | grep -q .; then
+            echo "Found frontend package manifests"
+            find frontend -name 'package.json' | sort
+          else
+            echo "No frontend package manifests found yet"
+          fi
