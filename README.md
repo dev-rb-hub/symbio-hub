@@ -1,7 +1,7 @@
 # Symbio Hub
 
-[![License](https://shields.io)](https://opensource.org)
-[![Frontend CI/CD](https://github.com)](https://github.com)
+[![License: Apache 2.0](https://shields.io)](LICENSE)
+[![GitHub Workflow Status](https://shields.io)](https://github.com)
 
 Symbio Hub is an open-source digital bridge designed to connect independent technology professionals with Small and Medium Enterprises (SMEs) across regional New South Wales. Powered by a decoupled .NET backend and a React frontend, Symbio Hub enables regional businesses to source vetted local talent, adopt AI automation, and execute milestones securely using Australian-native payment rails.
 
