@@ -1,0 +1,12 @@
+# Global catch-all (requires general core team review)
+*                      @dev-rb-hub/core-maintainers
+
+# Financial Ecosystem Infrastructure (Pinch SDK / API Integration)
+/backend/Symbio.Core/  @dev-rb-hub/finance-leads @dev-rb-hub/backend-architects
+/backend/Symbio.API/   @dev-rb-hub/backend-architects
+
+# Cloud Platform Infrastructure as Code
+/infrastructure/bicep/ @dev-rb-hub/devops-leads
+
+# CI/CD Workflow Automations
+/.github/workflows/    @dev-rb-hub/devops-leads
