@@ -31,6 +31,8 @@ namespace Symbio.Infrastructure
 
             var filtered = profiles
                 .Where(profile => profile.IsDiscoverable)
+                .Where(profile => string.Equals(profile.Role, "Expert", StringComparison.OrdinalIgnoreCase))
+                .Where(profile => profile.IsVerified)
                 .Where(profile => MatchesText(profile, query))
                 .Where(profile => MatchesSkill(profile, skill))
                 .Where(profile => MatchesLocation(profile, location))

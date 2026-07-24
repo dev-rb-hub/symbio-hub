@@ -79,7 +79,11 @@ namespace Symbio.API.Controllers
             user.OnboardedAt = DateTime.UtcNow;
 
             await _dbContext.SaveChangesAsync();
-            await _talentDiscoveryRepository.UpsertTalentProfileAsync(MapToTalentProfile(user));
+
+            if (string.Equals(user.Role, "Expert", StringComparison.OrdinalIgnoreCase))
+            {
+                await _talentDiscoveryRepository.UpsertTalentProfileAsync(MapToTalentProfile(user));
+            }
 
             return Ok(new { message = "Profile updated" });
         }

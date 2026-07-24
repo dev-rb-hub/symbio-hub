@@ -10,6 +10,9 @@ CREATE TABLE IF NOT EXISTS Jobs (
     PostedAt TEXT NOT NULL
 );
 
+-- Cosmos-backed collections are provisioned separately and are not represented here.
+-- See infrastructure/bicep/main.bicep for Projects and TalentProfiles containers.
+
 CREATE TABLE IF NOT EXISTS Users (
     Id INTEGER PRIMARY KEY AUTOINCREMENT,
     Email TEXT NOT NULL UNIQUE,
@@ -29,19 +32,6 @@ VALUES
 ('Regional Retail Website Refresh', 'Build a mobile-first homepage and checkout experience for a small NSW retail brand.', 'Harper', 'Bright', 9500.00, 'contact@harperbright.com', 1, '2026-07-19T00:00:00Z'),
 ('Local Healthcare Data Dashboard', 'Create a lightweight reporting dashboard for a regional practice using anonymised patient metrics.', 'Jade', 'Taylor', 14500.00, 'jade.taylor@coastalhealth.au', 1, '2026-07-12T00:00:00Z'),
 ('Food Delivery Loyalty Campaign', 'Design and build a customer loyalty landing page with signup flow and campaign analytics.', 'Miles', 'Kerr', 7200.00, 'miles@harvestdeli.au', 1, '2026-07-22T00:00:00Z');
-
-CREATE TABLE IF NOT EXISTS Projects (
-    Id TEXT PRIMARY KEY,
-    Title TEXT NOT NULL,
-    Description TEXT NOT NULL,
-    Category TEXT NOT NULL,
-    Location TEXT NOT NULL,
-    Budget REAL NOT NULL,
-    ClientEmail TEXT NOT NULL,
-    MilestonesJson TEXT NOT NULL,
-    IsPublished INTEGER NOT NULL DEFAULT 1,
-    PostedAt TEXT NOT NULL
-);
 
 INSERT INTO Users (Email, PasswordHash, Role, CreatedAt, IsActive, CompanyName, BusinessIdentifier, ProfileSummary, OnboardingCompleted, OnboardedAt)
 VALUES
