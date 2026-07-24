@@ -19,5 +19,8 @@ namespace Symbio.API.Data
         public DbSet<PaymentPreApprovalRecord> PaymentPreApprovals { get; set; } = null!;
         public DbSet<DirectDebitPullRequestRecord> DirectDebitPullRequests { get; set; } = null!;
         public DbSet<AccountingInvoiceRecord> AccountingInvoices { get; set; } = null!;
+        public DbSet<RetainerContractRecord> RetainerContracts { get; set; } = null!;
+        public DbSet<RetainerUsageRecord> RetainerUsages { get; set; } = null!;
+        public DbSet<RetainerChargeRecord> RetainerCharges { get; set; } = null!;
     }
 }

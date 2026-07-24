@@ -204,6 +204,50 @@ CREATE TABLE IF NOT EXISTS AccountingInvoices (
     CreatedAtUtc TEXT NOT NULL,
     UpdatedAtUtc TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS RetainerContracts (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ProjectId TEXT NOT NULL,
+    MilestoneId TEXT NOT NULL,
+    ClientEmail TEXT NOT NULL,
+    ExpertEmail TEXT NOT NULL,
+    ProviderPlanId TEXT NOT NULL,
+    ProviderSubscriptionId TEXT NOT NULL,
+    BaseMonthlyAmount REAL NOT NULL,
+    Currency TEXT NOT NULL,
+    IncludedSupportHours REAL NOT NULL,
+    IncludedCloudUnits REAL NOT NULL,
+    OverageRatePerHour REAL NOT NULL,
+    OverageRatePerCloudUnit REAL NOT NULL,
+    Status TEXT NOT NULL,
+    NextBillingAtUtc TEXT NOT NULL,
+    CreatedAtUtc TEXT NOT NULL,
+    UpdatedAtUtc TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS RetainerUsages (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    RetainerContractId INTEGER NOT NULL,
+    SupportHours REAL NOT NULL,
+    CloudUnits REAL NOT NULL,
+    PeriodStartUtc TEXT NOT NULL,
+    PeriodEndUtc TEXT NOT NULL,
+    ProcessedForBilling INTEGER NOT NULL DEFAULT 0,
+    CreatedAtUtc TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS RetainerCharges (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    RetainerContractId INTEGER NOT NULL,
+    ProviderSubscriptionId TEXT NOT NULL,
+    BaseAmount REAL NOT NULL,
+    MeteredAmount REAL NOT NULL,
+    TotalAmount REAL NOT NULL,
+    Currency TEXT NOT NULL,
+    Status TEXT NOT NULL,
+    ProviderReference TEXT,
+    ChargedAtUtc TEXT NOT NULL
+);
 ");
             }
 

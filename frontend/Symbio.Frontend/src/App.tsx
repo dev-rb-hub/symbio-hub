@@ -14,6 +14,7 @@ import { ProjectWizardPage } from './pages/ProjectWizardPage';
 import { MarketplacePage } from './pages/MarketplacePage';
 import { TalentDiscoveryPage } from './pages/TalentDiscoveryPage';
 import { EscrowOnboardingPage } from './pages/EscrowOnboardingPage';
+import { RecurringBillingControlCenterPage } from './pages/RecurringBillingControlCenterPage';
 import { PublicRouteGuard } from './components/routing/PublicRouteGuard';
 import { ProtectedRoute } from './components/routing/ProtectedRoute';
 import { RoleGuard } from './components/routing/RoleGuard';
@@ -28,6 +29,7 @@ const App: React.FC = () => (
       <Route path="/marketplace" element={<MarketplacePage />} />
       <Route path="/talent/discovery" element={<ProtectedRoute allowedRoles={['SME']}><TalentDiscoveryPage /></ProtectedRoute>} />
       <Route path="/project/new" element={<ProtectedRoute allowedRoles={['SME']}><ProjectWizardPage /></ProtectedRoute>} />
+      <Route path="/billing/control-center" element={<ProtectedRoute allowedRoles={['SME']}><RecurringBillingControlCenterPage /></ProtectedRoute>} />
       <Route path="/escrow/onboarding" element={<ProtectedRoute allowedRoles={['Expert']}><EscrowOnboardingPage /></ProtectedRoute>} />
       <Route path="/login" element={<PublicRouteGuard><LoginPage /></PublicRouteGuard>} />
       <Route path="/onboarding" element={<ProtectedRoute allowedRoles={['SME', 'Expert']}><TrustOnboardingPage /></ProtectedRoute>} />

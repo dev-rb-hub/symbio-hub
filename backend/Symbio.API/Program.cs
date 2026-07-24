@@ -21,10 +21,13 @@ builder.Services.AddScoped<Symbio.Core.Repositories.IPinchOnboardingGateway, Sym
 builder.Services.AddScoped<Symbio.Core.Repositories.IIdentityVerificationService, Symbio.Infrastructure.IdentityVerificationService>();
 builder.Services.AddHttpClient<Symbio.Core.Repositories.IPinchMerchantService, Symbio.Infrastructure.PinchMerchantService>();
 builder.Services.AddHttpClient<Symbio.Core.Repositories.IPinchDebitService, Symbio.Infrastructure.PinchDebitService>();
+builder.Services.AddHttpClient<Symbio.Core.Repositories.IRecurringBillingService, Symbio.Infrastructure.PinchRecurringBillingService>();
 builder.Services.AddScoped<Symbio.Core.Repositories.IAccountingInvoicingService, Symbio.Infrastructure.PinchInvoicingService>();
 builder.Services.AddSingleton<Symbio.Core.Services.IPaymentSplitCalculator, Symbio.Core.Services.PaymentSplitCalculator>();
+builder.Services.AddSingleton<Symbio.Core.Services.IUsageMeteringEngine, Symbio.Core.Services.UsageMeteringEngine>();
 builder.Services.AddScoped<PinchSignatureValidationFilter>();
 builder.Services.AddHostedService<MilestoneDebitWorker>();
+builder.Services.AddHostedService<RetainerBillingWorker>();
 builder.Services.AddSecurityServices(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddSignalR();

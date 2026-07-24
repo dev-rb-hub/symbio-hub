@@ -14,6 +14,8 @@ public class PinchApiSettings
     public string ManagedMerchantsPath { get; set; } = "/test/merchants/managed";
     public string PreApprovalsPath { get; set; } = "/test/pre-approvals";
     public string DirectDebitsPath { get; set; } = "/test/payments";
+    public string PlansPath { get; set; } = "/test/plans";
+    public string SubscriptionsPath { get; set; } = "/test/subscriptions";
     public string WebhookSignatureHeader { get; set; } = "pinch-signature";
     public string WebhookSignatureVersion { get; set; } = "v2";
     public int WebhookToleranceSeconds { get; set; } = 300;
@@ -38,6 +40,8 @@ public class PinchApiSettings
             ManagedMerchantsPath = configuration["Pinch:ManagedMerchantsPath"] ?? "/test/merchants/managed",
             PreApprovalsPath = configuration["Pinch:PreApprovalsPath"] ?? "/test/pre-approvals",
             DirectDebitsPath = configuration["Pinch:DirectDebitsPath"] ?? "/test/payments",
+            PlansPath = configuration["Pinch:PlansPath"] ?? "/test/plans",
+            SubscriptionsPath = configuration["Pinch:SubscriptionsPath"] ?? "/test/subscriptions",
             WebhookSignatureHeader = configuration["Pinch:WebhookSignatureHeader"] ?? "pinch-signature",
             WebhookSignatureVersion = configuration["Pinch:WebhookSignatureVersion"] ?? "v2",
             WebhookToleranceSeconds = tolerance

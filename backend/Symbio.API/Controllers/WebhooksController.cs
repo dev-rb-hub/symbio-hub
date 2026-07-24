@@ -37,6 +37,11 @@ namespace Symbio.API.Controllers
             string? MilestoneId,
             string? InvoiceNumber);
 
+        public sealed record RetainerSubscriptionStatusWebhookRequest(
+            string ProviderSubscriptionId,
+            string Status,
+            DateTime? NextBillingAtUtc);
+
         [HttpPost("pinch-settlements")]
         [ServiceFilter(typeof(PinchSignatureValidationFilter))]
         public async Task<IActionResult> HandlePinchSettlements([FromBody] PinchWebhookEnvelope webhookEvent)
@@ -149,6 +154,52 @@ namespace Symbio.API.Controllers
                 invoice.Status,
                 paymentState = paymentState?.State ?? "Unknown",
                 invoice.UpdatedAtUtc
+            });
+        }
+
+        [HttpPost("pinch-subscriptions")]
+        public async Task<IActionResult> HandleRetainerSubscriptionStatus([FromBody] RetainerSubscriptionStatusWebhookRequest request)
+        {
+            if (request == null || string.IsNullOrWhiteSpace(request.ProviderSubscriptionId) || string.IsNullOrWhiteSpace(request.Status))
+            {
+                return BadRequest(new { message = "ProviderSubscriptionId and Status are required." });
+            }
+
+            var retainer = await _dbContext.RetainerContracts
+                .FirstOrDefaultAsync(item => item.ProviderSubscriptionId == request.ProviderSubscriptionId);
+
+            if (retainer == null)
+            {
+                return NotFound(new { message = "Retainer contract not found." });
+            }
+
+            retainer.Status = request.Status.Trim();
+            if (request.NextBillingAtUtc.HasValue)
+            {
+                retainer.NextBillingAtUtc = request.NextBillingAtUtc.Value;
+            }
+            retainer.UpdatedAtUtc = DateTime.UtcNow;
+
+            await _dbContext.SaveChangesAsync();
+
+            await _accountingHubContext.Clients.Group(AccountingHub.GetGroupName(retainer.ClientEmail)).SendAsync("RetainerStatusChanged", new
+            {
+                retainer.Id,
+                retainer.ProjectId,
+                retainer.MilestoneId,
+                retainer.ProviderSubscriptionId,
+                retainer.Status,
+                retainer.NextBillingAtUtc,
+                retainer.UpdatedAtUtc
+            });
+
+            return Ok(new
+            {
+                retainer.Id,
+                retainer.ProviderSubscriptionId,
+                retainer.Status,
+                retainer.NextBillingAtUtc,
+                retainer.UpdatedAtUtc
             });
         }
     }
