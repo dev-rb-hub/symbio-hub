@@ -60,38 +60,19 @@ dev-rb-hub/symbio-hub/
 
 ## 🚀 Getting Started & Orchestration Engines
 
-### 🐳 Option A: Docker Compose Workflow (Recommended)
-This workflow launches both the .NET backend API and the React Vite frontend concurrently in independent Linux containers. **Hot-reloading is configured out-of-the-box**: changes made on your host machine will immediately reflect inside the active runtime containers.
+Detailed setup and runtime instructions now live in docs:
 
-Ensure **Docker Desktop** is running, open a Windows PowerShell window in the project root, and execute:
+- [Getting Started](docs/getting-started.md)
+- [API Reference](docs/api-reference.md)
+
+Quick start:
 
 ```powershell
-# 1. Build infrastructure images and run the environment in detached mode
 docker compose up --build -d
-
-# 2. View and stream active container compilation or runtime console logs
-docker compose logs -f
-
-# 3. Halt the ecosystem containers and safely teardown communication sockets
-docker compose down
 ```
-* Access the Frontend SPA at: `http://localhost:5173`
-* Access the Backend Swagger API documentation at: `http://localhost:5001/swagger`
-* Access the Expert Workbench SignalR hub at: `http://localhost:5001/hubs/workbench`
 
-### 💻 Option B: Dev Container Workflow
-1. Ensure **Docker Desktop** and VS Code's **Dev Containers extension** are active.
-2. Clone the repository and open the workspace in VS Code.
-3. Select **"Reopen in Container"** when prompted. Runtimes install automatically inside your sandbox.
-
-### 🛠️ Option C: Bare-Metal Manual Workflow
-1. **Backend:** Navigate to `/backend`, configure local appsecrets, and execute `dotnet run --project Symbio.API`.
-2. **Frontend:** Navigate to `/frontend/Symbio.Frontend`, execute `npm install`, and run `npm run dev`.
-
-### 🔌 Expert Workbench Runtime Notes
-* The expert delivery workbench uses authenticated SignalR for live status updates.
-* Ensure the backend API and hub are both reachable on `http://localhost:5001` when testing Epic 6 flows.
-* Expert users are redirected to `/expert/workbench` after authentication and can post milestone logs through the API + hub path.
+- Frontend SPA: `http://localhost:5173`
+- Backend Swagger: `http://localhost:5001/swagger`
 
 ---
 
