@@ -136,11 +136,13 @@ Symbio Hub uses a role-isolated, state-aware delivery matrix. The development li
 
 ### 📋 Comprehensive Functional Roadmap Tracking
 
+> ✅ Epic 1 complete: public guest experience, structural marketing, and read-only job feed are implemented.
+
 | Epic ID | Epic Category | Targeted User Roles | Core State Focus | Operational Engine | Target Project Module | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **01** | **Public Experience** | Guest / Anonymous | Logged-Out | Non-Payment | `Symbio.Frontend` / Public Pages | #1 |
-| **02** | **Session & Security** | All Roles | State Handshake | Non-Payment | `Symbio.Frontend` / Router Guards | #2 |
-| **03** | **Trust Onboarding** | SME & Expert | Logged-In | Non-Payment | `Symbio.Infrastructure` / Auth0 & ABR | #3 |
+| **01** | **Public Experience** | Guest / Anonymous | Logged-Out | Non-Payment | `Symbio.Frontend` / Public Pages | ✅ Done |
+| **02** | **Session & Security** | All Roles | State Handshake | Non-Payment | `Symbio.Frontend` / Router Guards | ✅ Done |
+| **03** | **Trust Onboarding** | SME & Expert | Logged-In | Non-Payment | `Symbio.Infrastructure` / Auth0 & ABR | 🚧 In Progress |
 | **04** | **Demand Marketplace** | SME | Logged-In | Non-Payment | `Symbio.API` / Cosmos DB Jobs | #4 |
 | **05** | **Talent Discovery** | SME | Logged-In | Non-Payment | `Symbio.Infrastructure` / Cosmos NoSQL | #5 |
 | **06** | **Delivery Workbench** | Expert | Logged-In | Non-Payment | `Symbio.Frontend` / SignalR Logs | #6 |
