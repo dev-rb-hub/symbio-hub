@@ -159,6 +159,35 @@ CREATE TABLE IF NOT EXISTS ProjectPaymentStateRecords (
     LastProviderReference TEXT,
     UpdatedAtUtc TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS PaymentPreApprovals (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ProjectId TEXT NOT NULL,
+    MilestoneId TEXT NOT NULL,
+    ClientEmail TEXT NOT NULL,
+    Amount REAL NOT NULL,
+    Currency TEXT NOT NULL,
+    BsbMasked TEXT NOT NULL,
+    AccountNumberMasked TEXT NOT NULL,
+    Status TEXT NOT NULL,
+    ProviderPreApprovalId TEXT NOT NULL,
+    CreatedAtUtc TEXT NOT NULL,
+    ApprovedAtUtc TEXT
+);
+
+CREATE TABLE IF NOT EXISTS DirectDebitPullRequests (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ProjectId TEXT NOT NULL,
+    MilestoneId TEXT NOT NULL,
+    PreApprovalProviderId TEXT NOT NULL,
+    Amount REAL NOT NULL,
+    Currency TEXT NOT NULL,
+    Status TEXT NOT NULL,
+    ProviderDebitId TEXT,
+    LastError TEXT,
+    RequestedAtUtc TEXT NOT NULL,
+    ProcessedAtUtc TEXT
+);
 ");
             }
 

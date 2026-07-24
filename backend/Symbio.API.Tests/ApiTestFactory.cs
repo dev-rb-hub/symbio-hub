@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Symbio.API.Data;
 using Symbio.API.Models;
 using Symbio.Core.Models;
@@ -20,6 +21,8 @@ public class ApiTestFactory : WebApplicationFactory<Program>
 
         builder.ConfigureServices(services =>
         {
+            services.RemoveAll<IHostedService>();
+
             services.RemoveAll<DbContextOptions<SymbioDbContext>>();
             services.AddDbContext<SymbioDbContext>(options =>
             {

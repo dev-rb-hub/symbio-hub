@@ -12,6 +12,8 @@ public class PinchApiSettings
     public bool ValidateWebhookSignature { get; set; }
     public string TokensPath { get; set; } = "/connect/token";
     public string ManagedMerchantsPath { get; set; } = "/test/merchants/managed";
+    public string PreApprovalsPath { get; set; } = "/test/pre-approvals";
+    public string DirectDebitsPath { get; set; } = "/test/payments";
     public string WebhookSignatureHeader { get; set; } = "pinch-signature";
     public string WebhookSignatureVersion { get; set; } = "v2";
     public int WebhookToleranceSeconds { get; set; } = 300;
@@ -34,6 +36,8 @@ public class PinchApiSettings
             ValidateWebhookSignature = bool.TryParse(configuration["Pinch:ValidateWebhookSignature"], out var validate) && validate,
             TokensPath = configuration["Pinch:TokensPath"] ?? "/connect/token",
             ManagedMerchantsPath = configuration["Pinch:ManagedMerchantsPath"] ?? "/test/merchants/managed",
+            PreApprovalsPath = configuration["Pinch:PreApprovalsPath"] ?? "/test/pre-approvals",
+            DirectDebitsPath = configuration["Pinch:DirectDebitsPath"] ?? "/test/payments",
             WebhookSignatureHeader = configuration["Pinch:WebhookSignatureHeader"] ?? "pinch-signature",
             WebhookSignatureVersion = configuration["Pinch:WebhookSignatureVersion"] ?? "v2",
             WebhookToleranceSeconds = tolerance

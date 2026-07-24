@@ -75,6 +75,35 @@ CREATE TABLE IF NOT EXISTS ProjectPaymentStateRecords (
     UpdatedAtUtc TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS PaymentPreApprovals (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ProjectId TEXT NOT NULL,
+    MilestoneId TEXT NOT NULL,
+    ClientEmail TEXT NOT NULL,
+    Amount REAL NOT NULL,
+    Currency TEXT NOT NULL,
+    BsbMasked TEXT NOT NULL,
+    AccountNumberMasked TEXT NOT NULL,
+    Status TEXT NOT NULL,
+    ProviderPreApprovalId TEXT NOT NULL,
+    CreatedAtUtc TEXT NOT NULL,
+    ApprovedAtUtc TEXT
+);
+
+CREATE TABLE IF NOT EXISTS DirectDebitPullRequests (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ProjectId TEXT NOT NULL,
+    MilestoneId TEXT NOT NULL,
+    PreApprovalProviderId TEXT NOT NULL,
+    Amount REAL NOT NULL,
+    Currency TEXT NOT NULL,
+    Status TEXT NOT NULL,
+    ProviderDebitId TEXT,
+    LastError TEXT,
+    RequestedAtUtc TEXT NOT NULL,
+    ProcessedAtUtc TEXT
+);
+
 INSERT INTO Jobs (Title, Description, ClientName, ClientSurname, Budget, ContactEmail, IsPublished, PostedAt)
 VALUES
 ('Regional Retail Website Refresh', 'Build a mobile-first homepage and checkout experience for a small NSW retail brand.', 'Harper', 'Bright', 9500.00, 'contact@harperbright.com', 1, '2026-07-19T00:00:00Z'),

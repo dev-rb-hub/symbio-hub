@@ -2,10 +2,16 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { apiRequest } from '../lib/apiClient';
+import { PaymentCollectionModal } from '../components/payments/PaymentCollectionModal';
 
 interface Milestone {
   title: string;
   description: string;
+}
+
+interface CreatedProject {
+  id: string;
+  budget: number;
 }
 
 export const ProjectWizardPage: React.FC = () => {
@@ -23,6 +29,9 @@ export const ProjectWizardPage: React.FC = () => {
   ]);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPreApprovalSubmitting, setIsPreApprovalSubmitting] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [pendingProject, setPendingProject] = useState<CreatedProject | null>(null);
 
   const updateMilestone = (index: number, field: 'title' | 'description', value: string) => {
     const next = [...milestones];
@@ -48,7 +57,7 @@ export const ProjectWizardPage: React.FC = () => {
 
     try
     {
-      await apiRequest('/api/project', {
+      const createdProject = await apiRequest<CreatedProject>('/api/project', {
         method: 'POST',
         token: session.token,
         body: {
@@ -62,6 +71,13 @@ export const ProjectWizardPage: React.FC = () => {
           isPublished: true
         }
       });
+
+      if (budget >= 5000) {
+        setPendingProject(createdProject);
+        setShowPaymentModal(true);
+        setIsSubmitting(false);
+        return;
+      }
     }
     catch
     {
@@ -72,6 +88,43 @@ export const ProjectWizardPage: React.FC = () => {
 
     setIsSubmitting(false);
 
+    navigate('/marketplace');
+  };
+
+  const handleCapturePreApproval = async (payload: { accountName: string; bsb: string; accountNumber: string }) => {
+    if (!session || !pendingProject) {
+      return;
+    }
+
+    setIsPreApprovalSubmitting(true);
+    setError(null);
+
+    try
+    {
+      await apiRequest('/api/payments/pre-approvals', {
+        method: 'POST',
+        token: session.token,
+        body: {
+          projectId: pendingProject.id,
+          milestoneId: milestones[0]?.title || 'Kickoff',
+          accountName: payload.accountName,
+          bsb: payload.bsb,
+          accountNumber: payload.accountNumber,
+          amount: pendingProject.budget,
+          currency: 'AUD'
+        }
+      });
+    }
+    catch
+    {
+      setIsPreApprovalSubmitting(false);
+      setError('Project published, but pre-approval failed. Re-open this project and capture bank pre-approval before kickoff.');
+      return;
+    }
+
+    setIsPreApprovalSubmitting(false);
+    setShowPaymentModal(false);
+    setPendingProject(null);
     navigate('/marketplace');
   };
 
@@ -137,6 +190,21 @@ export const ProjectWizardPage: React.FC = () => {
           {isSubmitting ? 'Publishing project...' : 'Publish project'}
         </button>
       </form>
+
+      <PaymentCollectionModal
+        isOpen={showPaymentModal && pendingProject !== null}
+        amount={pendingProject?.budget ?? budget}
+        milestoneId={milestones[0]?.title || 'Kickoff'}
+        isSubmitting={isPreApprovalSubmitting}
+        onCancel={() => {
+          setShowPaymentModal(false);
+          setPendingProject(null);
+          navigate('/marketplace');
+        }}
+        onSubmit={payload => {
+          void handleCapturePreApproval(payload);
+        }}
+      />
     </main>
   );
 };
