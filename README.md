@@ -75,6 +75,7 @@ docker compose down
 ```
 * Access the Frontend SPA at: `http://localhost:5173`
 * Access the Backend Swagger API documentation at: `http://localhost:5001/swagger`
+* Access the Expert Workbench SignalR hub at: `http://localhost:5001/hubs/workbench`
 
 ### 💻 Option B: Dev Container Workflow
 1. Ensure **Docker Desktop** and VS Code's **Dev Containers extension** are active.
@@ -84,6 +85,11 @@ docker compose down
 ### 🛠️ Option C: Bare-Metal Manual Workflow
 1. **Backend:** Navigate to `/backend`, configure local appsecrets, and execute `dotnet run --project Symbio.API`.
 2. **Frontend:** Navigate to `/frontend/Symbio.Frontend`, execute `npm install`, and run `npm run dev`.
+
+### 🔌 Expert Workbench Runtime Notes
+* The expert delivery workbench uses authenticated SignalR for live status updates.
+* Ensure the backend API and hub are both reachable on `http://localhost:5001` when testing Epic 6 flows.
+* Expert users are redirected to `/expert/workbench` after authentication and can post milestone logs through the API + hub path.
 
 ---
 
