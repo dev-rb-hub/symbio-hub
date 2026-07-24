@@ -15,6 +15,7 @@ builder.Services.AddDbContext<SymbioDbContext>(options =>
 builder.Services.AddScoped<Symbio.Core.Repositories.IProjectRepository, Symbio.Infrastructure.ProjectRepository>();
 builder.Services.AddScoped<Symbio.Core.Repositories.ITalentDiscoveryRepository, Symbio.Infrastructure.TalentDiscoveryRepository>();
 builder.Services.AddScoped<Symbio.Core.Repositories.ICompletionEvidenceRepository, Symbio.Infrastructure.CompletionEvidenceRepository>();
+builder.Services.AddScoped<Symbio.Core.Repositories.IPinchOnboardingGateway, Symbio.Infrastructure.MockPinchOnboardingGateway>();
 builder.Services.AddSecurityServices(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddSignalR();
@@ -38,3 +39,5 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.Run();
+
+public partial class Program { }

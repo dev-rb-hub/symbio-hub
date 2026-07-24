@@ -13,6 +13,7 @@ import { UserProfilePage } from './pages/UserProfilePage';
 import { ProjectWizardPage } from './pages/ProjectWizardPage';
 import { MarketplacePage } from './pages/MarketplacePage';
 import { TalentDiscoveryPage } from './pages/TalentDiscoveryPage';
+import { EscrowOnboardingPage } from './pages/EscrowOnboardingPage';
 import { PublicRouteGuard } from './components/routing/PublicRouteGuard';
 import { ProtectedRoute } from './components/routing/ProtectedRoute';
 import { NavigationBar } from './components/NavigationBar';
@@ -26,6 +27,7 @@ const App: React.FC = () => (
       <Route path="/marketplace" element={<MarketplacePage />} />
       <Route path="/talent/discovery" element={<ProtectedRoute allowedRoles={['SME']}><TalentDiscoveryPage /></ProtectedRoute>} />
       <Route path="/project/new" element={<ProtectedRoute allowedRoles={['SME']}><ProjectWizardPage /></ProtectedRoute>} />
+      <Route path="/escrow/onboarding" element={<ProtectedRoute allowedRoles={['Expert']}><EscrowOnboardingPage /></ProtectedRoute>} />
       <Route path="/login" element={<PublicRouteGuard><LoginPage /></PublicRouteGuard>} />
       <Route path="/onboarding" element={<ProtectedRoute allowedRoles={['SME', 'Expert']}><TrustOnboardingPage /></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute allowedRoles={['SME', 'Expert', 'Admin']}><UserProfilePage /></ProtectedRoute>} />

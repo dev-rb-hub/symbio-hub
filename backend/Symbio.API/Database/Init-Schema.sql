@@ -53,6 +53,16 @@ CREATE TABLE IF NOT EXISTS DeliveryLogs (
     CreatedAt TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS EscrowOnboardingProfiles (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ExpertEmail TEXT NOT NULL UNIQUE,
+    ProviderAccountId TEXT NOT NULL,
+    Status TEXT NOT NULL,
+    OnboardingUrl TEXT NOT NULL,
+    LastSyncedAtUtc TEXT NOT NULL,
+    OnboardedAtUtc TEXT
+);
+
 INSERT INTO Jobs (Title, Description, ClientName, ClientSurname, Budget, ContactEmail, IsPublished, PostedAt)
 VALUES
 ('Regional Retail Website Refresh', 'Build a mobile-first homepage and checkout experience for a small NSW retail brand.', 'Harper', 'Bright', 9500.00, 'contact@harperbright.com', 1, '2026-07-19T00:00:00Z'),
@@ -69,6 +79,10 @@ VALUES
 (1, 'expert@example.com', 'expert@example.com', 'info', 'Completed first pass on mobile layouts and core checkout states.', '2026-07-25T04:00:00Z'),
 (1, 'expert@example.com', 'expert@example.com', 'success', 'Shared milestone preview with the SME for feedback.', '2026-07-25T06:00:00Z'),
 (2, 'expert@example.com', 'expert@example.com', 'warning', 'Waiting on data sample confirmation before building dashboard cards.', '2026-07-25T07:00:00Z');
+
+INSERT INTO EscrowOnboardingProfiles (ExpertEmail, ProviderAccountId, Status, OnboardingUrl, LastSyncedAtUtc, OnboardedAtUtc)
+VALUES
+('expert@example.com', 'pinch-glassbox-expert-example-com', 'Pending', 'https://connect.getpinch.com.au/glassbox/onboarding/pinch-glassbox-expert-example-com', '2026-07-25T08:00:00Z', NULL);
 
 INSERT INTO Users (Email, PasswordHash, Role, CreatedAt, IsActive, CompanyName, BusinessIdentifier, ProfileSummary, OnboardingCompleted, OnboardedAt)
 VALUES

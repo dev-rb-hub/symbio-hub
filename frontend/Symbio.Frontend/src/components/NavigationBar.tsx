@@ -17,6 +17,9 @@ export const NavigationBar: React.FC = () => {
         {session && session.role === 'Expert' && (
           <Link to="/expert/workbench" style={{ color: '#333', textDecoration: 'none' }}>Workbench</Link>
         )}
+        {session && session.role === 'Expert' && (
+          <Link to="/escrow/onboarding" style={{ color: '#333', textDecoration: 'none' }}>Escrow onboarding</Link>
+        )}
         {session && session.role === 'SME' && (
           <Link to="/project/new" style={{ color: '#333', textDecoration: 'none' }}>Post a Project</Link>
         )}

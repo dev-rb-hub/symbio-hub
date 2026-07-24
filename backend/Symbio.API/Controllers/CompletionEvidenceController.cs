@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Symbio.API.Data;
 using Symbio.Core.Models;
 using Symbio.Core.Repositories;
 
@@ -11,10 +13,12 @@ namespace Symbio.API.Controllers
     public class CompletionEvidenceController : ControllerBase
     {
         private readonly ICompletionEvidenceRepository _completionEvidenceRepository;
+        private readonly SymbioDbContext _dbContext;
 
-        public CompletionEvidenceController(ICompletionEvidenceRepository completionEvidenceRepository)
+        public CompletionEvidenceController(ICompletionEvidenceRepository completionEvidenceRepository, SymbioDbContext dbContext)
         {
             _completionEvidenceRepository = completionEvidenceRepository;
+            _dbContext = dbContext;
         }
 
         public record FileHashEvidenceRequest(string MilestoneId, string? EpicId, string EvidenceReferenceValue, string? SourceCommitSha, string? Notes, string? TargetDeploymentUrl);
@@ -30,6 +34,19 @@ namespace Symbio.API.Controllers
             }
 
             var actor = User.Identity?.Name ?? "unknown";
+            var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+
+            if (role != "Admin")
+            {
+                var escrowVerified = await IsEscrowVerifiedAsync(actor);
+                if (!escrowVerified)
+                {
+                    return StatusCode(StatusCodes.Status412PreconditionFailed, new
+                    {
+                        message = "Escrow onboarding must be verified before recording completion evidence."
+                    });
+                }
+            }
 
             var record = CompletionEvidenceRecord.FromArtifactHash(
                 request.MilestoneId.Trim(),
@@ -55,6 +72,19 @@ namespace Symbio.API.Controllers
             }
 
             var actor = User.Identity?.Name ?? "unknown";
+            var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+
+            if (role != "Admin")
+            {
+                var escrowVerified = await IsEscrowVerifiedAsync(actor);
+                if (!escrowVerified)
+                {
+                    return StatusCode(StatusCodes.Status412PreconditionFailed, new
+                    {
+                        message = "Escrow onboarding must be verified before recording completion evidence."
+                    });
+                }
+            }
 
             var record = CompletionEvidenceRecord.FromGitCommit(
                 request.MilestoneId.Trim(),
@@ -120,15 +150,42 @@ namespace Symbio.API.Controllers
             var records = await _completionEvidenceRepository.GetByMilestoneAsync(milestoneId.Trim());
             var hasVerifiedEvidence = records.Any(item => item.IsVerified);
 
+            var escrowEligibleActor = records
+                .OrderByDescending(item => item.LoggedAtUtc)
+                .Select(item => item.LoggedByEmail)
+                .FirstOrDefault();
+
+            var escrowVerified = !string.IsNullOrWhiteSpace(escrowEligibleActor)
+                && await IsEscrowVerifiedAsync(escrowEligibleActor);
+
+            var canSettle = hasVerifiedEvidence && escrowVerified;
+
             return Ok(new
             {
                 milestoneId,
-                canSettle = hasVerifiedEvidence,
-                reason = hasVerifiedEvidence
-                    ? "Verified technical delivery evidence is available."
-                    : "No verified technical delivery evidence found for this milestone.",
-                evidenceCount = records.Count
+                canSettle,
+                reason = canSettle
+                    ? "Verified technical delivery evidence is available and expert escrow onboarding is verified."
+                    : !hasVerifiedEvidence
+                        ? "No verified technical delivery evidence found for this milestone."
+                        : "Expert escrow onboarding is not verified for settlement.",
+                evidenceCount = records.Count,
+                escrowVerified
             });
+        }
+
+        private async Task<bool> IsEscrowVerifiedAsync(string expertEmail)
+        {
+            if (string.IsNullOrWhiteSpace(expertEmail))
+            {
+                return false;
+            }
+
+            var profile = await _dbContext.EscrowOnboardingProfiles
+                .FirstOrDefaultAsync(item => item.ExpertEmail == expertEmail);
+
+            return profile != null
+                && profile.Status.Equals(EscrowOnboardingStatus.Verified.ToString(), StringComparison.OrdinalIgnoreCase);
         }
     }
 }

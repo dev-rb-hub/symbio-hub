@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 interface DeliveryAssignment {
@@ -38,6 +39,10 @@ interface WorkbenchOverview {
   recentLogs: DeliveryLogEntry[];
 }
 
+interface EscrowStatus {
+  status: string;
+}
+
 export const ExpertWorkbenchPage: React.FC = () => {
   const { session, logout } = useAuth();
   const [overview, setOverview] = useState<WorkbenchOverview | null>(null);
@@ -49,6 +54,7 @@ export const ExpertWorkbenchPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isPosting, setIsPosting] = useState(false);
   const [connection, setConnection] = useState<HubConnection | null>(null);
+  const [escrowStatus, setEscrowStatus] = useState<EscrowStatus | null>(null);
 
   const expertName = useMemo(() => session?.email ?? 'Expert user', [session?.email]);
   const isLoaded = overview !== null;
@@ -82,7 +88,25 @@ export const ExpertWorkbenchPage: React.FC = () => {
       }
     };
 
+    const loadEscrowStatus = async () => {
+      const response = await fetch('http://localhost:5001/api/payments/onboarding/status', {
+        headers: {
+          Authorization: `Bearer ${session.token}`,
+        },
+      });
+
+      if (!response.ok) {
+        return;
+      }
+
+      const data = await response.json();
+      if (active) {
+        setEscrowStatus(data);
+      }
+    };
+
     void loadOverview();
+    void loadEscrowStatus();
 
     const hub = new HubConnectionBuilder()
       .withUrl('http://localhost:5001/hubs/workbench', {
@@ -176,6 +200,7 @@ export const ExpertWorkbenchPage: React.FC = () => {
   const assignments = overview?.assignments ?? [];
   const logs = overview?.recentLogs ?? [];
   const selectedAssignment = assignments.find(item => item.id === selectedAssignmentId) ?? assignments[0] ?? null;
+  const escrowVerified = escrowStatus?.status?.toLowerCase() === 'verified';
 
   return (
     <main style={{ padding: '2rem', fontFamily: 'Arial, sans-serif', maxWidth: 1180, margin: '0 auto' }}>
@@ -188,6 +213,15 @@ export const ExpertWorkbenchPage: React.FC = () => {
       </header>
 
       {error && <div style={{ marginTop: '1rem', color: '#a00' }}>{error}</div>}
+
+      {!escrowVerified && (
+        <section style={{ marginTop: '1rem', padding: '1rem', borderRadius: 12, background: '#fff8f1', border: '1px solid #f3d9b5' }}>
+          <strong>Escrow onboarding required:</strong> Complete Pinch Glassbox onboarding before milestone settlement can be requested.
+          <div style={{ marginTop: '0.6rem' }}>
+            <Link to="/escrow/onboarding" style={{ color: '#a65700', fontWeight: 700, textDecoration: 'none' }}>Open escrow onboarding</Link>
+          </div>
+        </section>
+      )}
 
       {!isLoaded && !error && <div style={{ marginTop: '1rem', color: '#555' }}>Loading delivery workbench...</div>}
 

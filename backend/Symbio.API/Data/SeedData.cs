@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Symbio.API.Models;
+using Symbio.Core.Models;
 
 namespace Symbio.API.Data
 {
@@ -108,7 +109,9 @@ namespace Symbio.API.Data
                 db.SaveChanges();
             }
 
-            db.Database.ExecuteSqlRaw(@"
+            if (db.Database.IsRelational())
+            {
+                db.Database.ExecuteSqlRaw(@"
 CREATE TABLE IF NOT EXISTS DeliveryAssignments (
     Id INTEGER PRIMARY KEY AUTOINCREMENT,
     ExpertEmail TEXT NOT NULL,
@@ -134,7 +137,18 @@ CREATE TABLE IF NOT EXISTS DeliveryLogs (
     Message TEXT NOT NULL,
     CreatedAt TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS EscrowOnboardingProfiles (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ExpertEmail TEXT NOT NULL UNIQUE,
+    ProviderAccountId TEXT NOT NULL,
+    Status TEXT NOT NULL,
+    OnboardingUrl TEXT NOT NULL,
+    LastSyncedAtUtc TEXT NOT NULL,
+    OnboardedAtUtc TEXT
+);
 ");
+            }
 
             if (!db.DeliveryAssignments.Any())
             {
@@ -212,6 +226,25 @@ CREATE TABLE IF NOT EXISTS DeliveryLogs (
                 };
 
                 db.DeliveryLogs.AddRange(logs);
+                db.SaveChanges();
+            }
+
+            if (!db.EscrowOnboardingProfiles.Any())
+            {
+                var onboardingProfiles = new[]
+                {
+                    new EscrowOnboardingProfile
+                    {
+                        ExpertEmail = "expert@example.com",
+                        ProviderAccountId = "pinch-glassbox-expert-example-com",
+                        Status = EscrowOnboardingStatus.Pending.ToString(),
+                        OnboardingUrl = "https://connect.getpinch.com.au/glassbox/onboarding/pinch-glassbox-expert-example-com",
+                        LastSyncedAtUtc = DateTime.UtcNow,
+                        OnboardedAtUtc = null
+                    }
+                };
+
+                db.EscrowOnboardingProfiles.AddRange(onboardingProfiles);
                 db.SaveChanges();
             }
         }

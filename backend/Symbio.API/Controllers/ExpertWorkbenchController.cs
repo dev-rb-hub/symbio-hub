@@ -86,6 +86,37 @@ namespace Symbio.API.Controllers
                 return BadRequest(new { message = "A log message is required." });
             }
 
+            var statusNormalized = request.Status?.Trim().ToLowerInvariant() ?? string.Empty;
+            var statusSignalsSettlement = statusNormalized.Contains("settle")
+                || statusNormalized.Contains("complete")
+                || statusNormalized.Contains("done");
+
+            var hasMilestoneContext = !string.IsNullOrWhiteSpace(request.MilestoneId);
+            var hasEvidencePayload = !string.IsNullOrWhiteSpace(request.EvidenceType)
+                && !string.IsNullOrWhiteSpace(request.EvidenceReferenceValue);
+
+            var requiresEscrowVerification = hasMilestoneContext
+                || hasEvidencePayload
+                || statusSignalsSettlement
+                || request.ProgressPercent.GetValueOrDefault() >= 100;
+
+            if (requiresEscrowVerification)
+            {
+                var escrowProfile = await _dbContext.EscrowOnboardingProfiles
+                    .FirstOrDefaultAsync(item => item.ExpertEmail == email);
+
+                var escrowVerified = escrowProfile != null
+                    && escrowProfile.Status.Equals(EscrowOnboardingStatus.Verified.ToString(), StringComparison.OrdinalIgnoreCase);
+
+                if (!escrowVerified)
+                {
+                    return StatusCode(StatusCodes.Status412PreconditionFailed, new
+                    {
+                        message = "Escrow onboarding must be verified before posting milestone completion, settlement, or evidence-related updates."
+                    });
+                }
+            }
+
             var assignment = await _dbContext.DeliveryAssignments.FirstOrDefaultAsync(item => item.Id == request.DeliveryAssignmentId && item.ExpertEmail == email && item.IsActive);
             if (assignment == null)
             {
