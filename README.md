@@ -15,6 +15,8 @@ Symbio Hub is a cross-platform, containerised open-source platform connecting re
     * **Risk-Free Escrow:** Milestone-based payments powered by [Pinch Payments](https://getpinch.com.au).
     * **AI Modernization:** Tailored deployment tracks for local AI and automation workflows.
 
+For competitor context and market positioning, see [Competitor Landscape](docs/competitor-landscape.md).
+
 ---
 
 ## 🏗️ Cross-Platform Architecture & Virtualization
