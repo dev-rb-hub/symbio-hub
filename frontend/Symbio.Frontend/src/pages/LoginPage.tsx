@@ -4,6 +4,7 @@ import { useAuth, UserRole } from '../context/AuthContext';
 
 export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('password123');
   const [role, setRole] = useState<UserRole>('SME');
   const [error, setError] = useState<string | null>(null);
   const { login } = useAuth();
@@ -18,16 +19,16 @@ export const LoginPage: React.FC = () => {
     const response = await fetch('http://localhost:5001/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password: 'password123', role }),
+      body: JSON.stringify({ email, password, role }),
     });
 
     if (!response.ok) {
-      setError('Unable to sign in.');
+      setError('Unable to sign in or register.');
       return;
     }
 
     const result = await response.json();
-    login(result.token, role, email);
+    login(result.token, result.role || role, email);
     navigate(from, { replace: true });
   };
 
@@ -39,6 +40,10 @@ export const LoginPage: React.FC = () => {
         <label>
           Email
           <input value={email} onChange={e => setEmail(e.target.value)} required style={{ width: '100%', marginTop: '0.5rem', padding: '0.85rem' }} />
+        </label>
+        <label>
+          Password
+          <input type="password" value={password} onChange={e => setPassword(e.target.value)} required style={{ width: '100%', marginTop: '0.5rem', padding: '0.85rem' }} />
         </label>
         <label>
           Role

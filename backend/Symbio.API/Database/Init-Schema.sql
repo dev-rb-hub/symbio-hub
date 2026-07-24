@@ -16,7 +16,12 @@ CREATE TABLE IF NOT EXISTS Users (
     PasswordHash TEXT NOT NULL,
     Role TEXT NOT NULL,
     CreatedAt TEXT NOT NULL,
-    IsActive INTEGER NOT NULL DEFAULT 1
+    IsActive INTEGER NOT NULL DEFAULT 1,
+    CompanyName TEXT NOT NULL DEFAULT '',
+    BusinessIdentifier TEXT NOT NULL DEFAULT '',
+    ProfileSummary TEXT NOT NULL DEFAULT '',
+    OnboardingCompleted INTEGER NOT NULL DEFAULT 0,
+    OnboardedAt TEXT
 );
 
 INSERT INTO Jobs (Title, Description, ClientName, ClientSurname, Budget, ContactEmail, IsPublished, PostedAt)
@@ -25,8 +30,8 @@ VALUES
 ('Local Healthcare Data Dashboard', 'Create a lightweight reporting dashboard for a regional practice using anonymised patient metrics.', 'Jade', 'Taylor', 14500.00, 'jade.taylor@coastalhealth.au', 1, '2026-07-12T00:00:00Z'),
 ('Food Delivery Loyalty Campaign', 'Design and build a customer loyalty landing page with signup flow and campaign analytics.', 'Miles', 'Kerr', 7200.00, 'miles@harvestdeli.au', 1, '2026-07-22T00:00:00Z');
 
-INSERT INTO Users (Email, PasswordHash, Role, CreatedAt, IsActive)
+INSERT INTO Users (Email, PasswordHash, Role, CreatedAt, IsActive, CompanyName, BusinessIdentifier, ProfileSummary, OnboardingCompleted, OnboardedAt)
 VALUES
-('sme@example.com', 'password-hash-placeholder', 'SME', '2026-07-01T00:00:00Z', 1),
-('expert@example.com', 'password-hash-placeholder', 'Expert', '2026-07-01T00:00:00Z', 1),
-('admin@example.com', 'password-hash-placeholder', 'Admin', '2026-07-01T00:00:00Z', 1);
+('sme@example.com', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'SME', '2026-07-01T00:00:00Z', 1, 'Coastal SME Services', 'ABN 12 345 678 901', 'Regional digital transformation for small businesses.', 1, '2026-07-01T00:00:00Z'),
+('expert@example.com', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Expert', '2026-07-01T00:00:00Z', 1, 'North Shore Dev Studio', 'ABN 98 765 432 109', 'Freelance expert in compliance-first application delivery.', 1, '2026-07-01T00:00:00Z'),
+('admin@example.com', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Admin', '2026-07-01T00:00:00Z', 1, 'Symbio Platform Admin', 'ABN 00 000 000 000', 'Platform administrator with full system oversight.', 1, '2026-07-01T00:00:00Z');

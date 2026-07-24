@@ -11,6 +11,55 @@ namespace Symbio.API.Data
             var db = scope.ServiceProvider.GetRequiredService<SymbioDbContext>();
             db.Database.EnsureCreated();
 
+            if (!db.Users.Any())
+            {
+                var users = new[]
+                {
+                    new User
+                    {
+                        Email = "sme@example.com",
+                        PasswordHash = SeedData.HashPassword("password123"),
+                        Role = "SME",
+                        CreatedAt = DateTime.UtcNow,
+                        IsActive = true,
+                        CompanyName = "Coastal SME Services",
+                        BusinessIdentifier = "ABN 12 345 678 901",
+                        ProfileSummary = "Regional digital transformation for small businesses.",
+                        OnboardingCompleted = true,
+                        OnboardedAt = DateTime.UtcNow
+                    },
+                    new User
+                    {
+                        Email = "expert@example.com",
+                        PasswordHash = SeedData.HashPassword("password123"),
+                        Role = "Expert",
+                        CreatedAt = DateTime.UtcNow,
+                        IsActive = true,
+                        CompanyName = "North Shore Dev Studio",
+                        BusinessIdentifier = "ABN 98 765 432 109",
+                        ProfileSummary = "Freelance expert in compliance-first application delivery.",
+                        OnboardingCompleted = true,
+                        OnboardedAt = DateTime.UtcNow
+                    },
+                    new User
+                    {
+                        Email = "admin@example.com",
+                        PasswordHash = SeedData.HashPassword("password123"),
+                        Role = "Admin",
+                        CreatedAt = DateTime.UtcNow,
+                        IsActive = true,
+                        CompanyName = "Symbio Platform Admin",
+                        BusinessIdentifier = "ABN 00 000 000 000",
+                        ProfileSummary = "Platform administrator with full system oversight.",
+                        OnboardingCompleted = true,
+                        OnboardedAt = DateTime.UtcNow
+                    }
+                };
+
+                db.Users.AddRange(users);
+                db.SaveChanges();
+            }
+
             if (db.Jobs.Any())
             {
                 return;
@@ -55,6 +104,14 @@ namespace Symbio.API.Data
 
             db.Jobs.AddRange(jobs);
             db.SaveChanges();
+        }
+
+        public static string HashPassword(string password)
+        {
+            using var sha256 = System.Security.Cryptography.SHA256.Create();
+            var bytes = System.Text.Encoding.UTF8.GetBytes(password ?? string.Empty);
+            var hash = sha256.ComputeHash(bytes);
+            return Convert.ToHexString(hash).ToLowerInvariant();
         }
     }
 }

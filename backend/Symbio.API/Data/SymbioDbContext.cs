@@ -11,5 +11,6 @@ namespace Symbio.API.Data
         }
 
         public DbSet<Job> Jobs { get; set; } = null!;
+        public DbSet<User> Users { get; set; } = null!;
     }
 }
