@@ -6,6 +6,8 @@ param sqlDbName string = 'SymbioHubDb'
 param administratorLogin string = 'symbioadmin'
 @secure()
 param administratorLoginPassword string
+@secure()
+param cosmosConnectionString string = ''
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2023-10-01' = {
   name: appServicePlanName
@@ -38,6 +40,22 @@ resource webApp 'Microsoft.Web/sites@2023-10-01' = {
           name: 'WEBSITE_RUN_FROM_PACKAGE'
           value: '1'
         }
+        {
+          name: 'Cosmos__ConnectionString'
+          value: cosmosConnectionString
+        }
+        {
+          name: 'Cosmos__DatabaseName'
+          value: 'SymbioHub'
+        }
+        {
+          name: 'Cosmos__ContainerName'
+          value: 'Projects'
+        }
+        {
+          name: 'Cosmos__TalentContainerName'
+          value: 'TalentProfiles'
+        }
       ]
     }
   }
@@ -50,11 +68,6 @@ resource sqlServer 'Microsoft.Sql/servers@2022-08-01-preview' = {
     administratorLogin: administratorLogin
     administratorLoginPassword: administratorLoginPassword
     version: '12.0'
-  }
-  sku: {
-    name: 'GP_S_Gen5_2'
-    tier: 'GeneralPurpose'
-    capacity: 2
   }
 }
 

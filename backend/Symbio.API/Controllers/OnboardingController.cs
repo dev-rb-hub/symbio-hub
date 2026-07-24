@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Symbio.API.Data;
 using Symbio.API.Models;
+using Symbio.Core.Models;
+using Symbio.Core.Repositories;
 
 namespace Symbio.API.Controllers
 {
@@ -11,10 +13,12 @@ namespace Symbio.API.Controllers
     public class OnboardingController : ControllerBase
     {
         private readonly SymbioDbContext _dbContext;
+        private readonly ITalentDiscoveryRepository _talentDiscoveryRepository;
 
-        public OnboardingController(SymbioDbContext dbContext)
+        public OnboardingController(SymbioDbContext dbContext, ITalentDiscoveryRepository talentDiscoveryRepository)
         {
             _dbContext = dbContext;
+            _talentDiscoveryRepository = talentDiscoveryRepository;
         }
 
         public record OnboardingRequest(string Email, string CompanyName, string BusinessIdentifier, string ProfileSummary);
@@ -75,8 +79,31 @@ namespace Symbio.API.Controllers
             user.OnboardedAt = DateTime.UtcNow;
 
             await _dbContext.SaveChangesAsync();
+            await _talentDiscoveryRepository.UpsertTalentProfileAsync(MapToTalentProfile(user));
 
             return Ok(new { message = "Profile updated" });
+        }
+
+        private static TalentProfile MapToTalentProfile(User user)
+        {
+            return new TalentProfile
+            {
+                Id = user.Email,
+                Name = string.IsNullOrWhiteSpace(user.CompanyName) ? user.Email : user.CompanyName,
+                CompanyName = user.CompanyName,
+                Email = user.Email,
+                Role = user.Role,
+                Location = "Regional NSW",
+                ProfileSummary = user.ProfileSummary,
+                Skills = new List<string>(),
+                Services = new List<string>(),
+                HourlyRate = 0,
+                Availability = user.Role == "SME" ? "Seeking delivery partners" : "Available for discovery",
+                IsVerified = user.OnboardingCompleted,
+                IsDiscoverable = true,
+                FeaturedRank = user.Role == "Expert" ? 100 : 70,
+                LastActiveAt = user.OnboardedAt ?? DateTime.UtcNow
+            };
         }
     }
 }
