@@ -41,19 +41,22 @@ To eliminate "it works on my machine" bottlenecks and support open-source develo
 
 ```text
 dev-rb-hub/symbio-hub/
-├── .devcontainer/       # Unified VS Code Developer Container configuration
-├── .github/workflows/   # CI/CD validation and automated cloud deployment pipelines
-├── backend/             # Containerised .NET Core Microservices / APIs
-│   ├── Symbio.API/      # Primary Web API delivery layer
-│   └── Dockerfile       # Multi-stage production build script
-├── frontend/            # Decoupled Single Page Application (SPA) Workspace
-│   └── Symbio.Frontend/ # React Web UI (Vite / TypeScript)
-├── infrastructure/      # Infrastructure as Code (Azure Bicep / Container configurations)
-├── .editorconfig        # Global team linting and styling layout engine
-├── docker-compose.yml   # Multi-service runtime local orchestration matrix
-├── CONTRIBUTING.md      # Local engineering guidelines & git practices
-├── LICENSE              # Apache License 2.0
-└── README.md            # Primary repository landing page
+├── .github/workflows/              # CI/CD validation and automation pipelines
+├── backend/                        # .NET backend workspace
+│   ├── Symbio.API/                 # Web API host and HTTP endpoints
+│   ├── Symbio.API.Tests/           # Integration and endpoint tests
+│   ├── Symbio.Core/                # Domain contracts, models, and services
+│   ├── Symbio.Infrastructure/      # External integrations and repositories
+│   └── Dockerfile                  # Backend dev container image
+├── frontend/                       # React frontend workspace
+│   └── Symbio.Frontend/            # Vite + TypeScript application
+├── docs/                           # Contributor and product documentation
+├── infrastructure/                 # IaC assets (Bicep and deployment config)
+├── docker-compose.yml              # Local multi-service orchestration
+├── AGENTS.md                       # Agent instructions entry point
+├── CONTRIBUTING.md                 # Engineering and contribution guidelines
+├── LICENSE                         # Apache License 2.0
+└── README.md                       # Repository landing page
 ```
 
 ---
