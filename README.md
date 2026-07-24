@@ -96,3 +96,59 @@ Review our [Contribution Guidelines](CONTRIBUTING.md) to understand branching co
 ## 📄 License
 
 This project is licensed under the **Apache License 2.0**. See the [LICENSE](LICENSE) file for comprehensive details.
+
+---
+
+## 🗺️ Product Roadmap & Strategic Horizons
+
+Symbio Hub uses a role-isolated, state-aware delivery matrix. The development lifecycle is broken down below by core public/authenticated states, functional domains, and its native Australian financial engine powered by Pinch Payments.
+
+### 🧩 Unified User Journey Epic Matrix
+
+```text
+                               ┌────────────────────────────────────────┐
+                               │       Symbio Hub Gateway Router        │
+                               └───────────────────┬────────────────────┘
+                                                   │
+                ┌──────────────────────────────────┴──────────────────────────────────┐
+                ▼                                                                     ▼
+    ┌───────────────────────┐                                             ┌───────────────────────┐
+    │  LOGGED-OUT (PUBLIC)  │                                             │  LOGGED-IN (AUTHED)   │
+    ├───────────────────────┤                                             ├───────────────────────┤
+    │ • Read-Only Pitch UI  │                                             │ • Identity JWT Checks │
+    │ • Masked Job Feeds    │                                             │ • Route Guard Matrix  │
+    │ • Masked Talent Grid  │                                             │ • Role-Based Segments │
+    └───────────┬───────────┘                                             └───────────┬───────────┘
+                │                                                                     │
+                └──────────────────────────────────┬──────────────────────────────────┘
+                                                   │
+         ┌─────────────────────────────────────────┼─────────────────────────────────────────┐
+         ▼                                         ▼                                         ▼
+┌─────────────────────────────────┐┌─────────────────────────────────┐┌─────────────────────────────────┐
+│         ROLE: SME USER          ││      ROLE: FREELANCE EXPERT      ││      ROLE: PLATFORM ADMIN      │
+├─────────────────────────────────┤├─────────────────────────────────┤├─────────────────────────────────┤
+│ • ABN / Company Matching Registry││ • Professional Capability Profile││ • Multi-Tenant Escalation Desk  │
+│ • Simplified Scope-of-Work (SoW)││ • Delivery Workbench UI         ││ • System Override Engine        │
+│ • Spatial/Keyword Talent Search ││ • Milestone Completion Logging  ││ • Sub-Merchant Compliance Audit │
+│ • Pinch BECS Direct Debit Setup ││ • Pinch Glassbox Account Sync   ││ • Automated Ledger Oversight    │
+└─────────────────────────────────┘└─────────────────────────────────┘└─────────────────────────────────┘
+```
+
+### 📋 Comprehensive Functional Roadmap Tracking
+
+| Epic ID | Epic Category | Targeted User Roles | Core State Focus | Operational Engine | Target Project Module | Status |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **01** | **Public Experience** | Guest / Anonymous | Logged-Out | Non-Payment | `Symbio.Frontend` / Public Pages | #1 |
+| **02** | **Session & Security** | All Roles | State Handshake | Non-Payment | `Symbio.Frontend` / Router Guards | #2 |
+| **03** | **Trust Onboarding** | SME & Expert | Logged-In | Non-Payment | `Symbio.Infrastructure` / Auth0 & ABR | #3 |
+| **04** | **Demand Marketplace** | SME | Logged-In | Non-Payment | `Symbio.API` / Cosmos DB Jobs | #4 |
+| **05** | **Talent Discovery** | SME | Logged-In | Non-Payment | `Symbio.Infrastructure` / Cosmos NoSQL | #5 |
+| **06** | **Delivery Workbench** | Expert | Logged-In | Non-Payment | `Symbio.Frontend` / SignalR Logs | #6 |
+| **07** | **Escrow Onboarding** | Expert | Logged-In | **Pinch Payment** | `Symbio.Core` / Pinch Glassbox Hub | #7 |
+| **08** | **Milestone Settlement**| SME & Expert | Logged-In | **Pinch Payment** | `Symbio.Infrastructure` / Pinch BECS | #8 |
+| **09** | **Accounting Ledger** | SME | Logged-In | **Pinch Payment** | `Symbio.Infrastructure` / Accounting Sync | #9 |
+| **10** | **Retainer Management** | SME & Expert | Logged-In | **Pinch Payment** | `Symbio.API` / Pinch Subscriptions | #10 |
+| **11** | **Operations Command** | Platform Admin | Logged-In | Complete Ecosystem | `Symbio.API` / Admin Overrides | #11 |
+
+*💡 Note to Contributors: To link an active pull request to an epic milestone, append `Closes #<Epic-Issue-Number>` within your PR description body to trigger our automated repository status workflows.*
+
