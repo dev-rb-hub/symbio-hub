@@ -158,6 +158,12 @@ Symbio Hub uses a role-isolated, state-aware delivery matrix. The development li
 >
 > ✅ Epic 7 complete: expert escrow onboarding, Pinch Glassbox account-link workflow, and onboarding verification state are implemented.
 >
+> ✅ Epic 8 complete: milestone settlement orchestration, pre-approval capture, and queued BECS debit execution are implemented.
+>
+> ✅ Epic 9 complete: accounting invoice feed synchronization, ledger status webhooks, and SME live accounting updates are implemented.
+>
+> ✅ Epic 10 complete: maintenance retainer contracts, flexible metered usage calculations, and recurring billing control center workflows are implemented.
+>
 | Epic ID | Epic Category | Targeted User Roles | Core State Focus | Operational Engine | Target Project Module | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **01** | **Public Experience** | Guest / Anonymous | Logged-Out | Non-Payment | `Symbio.Frontend` / Public Pages | ✅ Done |
@@ -167,9 +173,9 @@ Symbio Hub uses a role-isolated, state-aware delivery matrix. The development li
 | **05** | **Talent Discovery** | SME | Logged-In | Non-Payment | `Symbio.Infrastructure` / Cosmos NoSQL | ✅ Done |
 | **06** | **Delivery Workbench** | Expert | Logged-In | Non-Payment | `Symbio.Frontend` / SignalR Logs | ✅ Done |
 | **07** | **Escrow Onboarding** | Expert | Logged-In | **Pinch Payment** | `Symbio.Core` / Pinch Glassbox Hub | ✅ Done |
-| **08** | **Milestone Settlement**| SME & Expert | Logged-In | **Pinch Payment** | `Symbio.Infrastructure` / Pinch BECS | #8 |
-| **09** | **Accounting Ledger** | SME | Logged-In | **Pinch Payment** | `Symbio.Infrastructure` / Accounting Sync | #9 |
-| **10** | **Retainer Management** | SME & Expert | Logged-In | **Pinch Payment** | `Symbio.API` / Pinch Subscriptions | #10 |
+| **08** | **Milestone Settlement**| SME & Expert | Logged-In | **Pinch Payment** | `Symbio.Infrastructure` / Pinch BECS | ✅ Done |
+| **09** | **Accounting Ledger** | SME | Logged-In | **Pinch Payment** | `Symbio.Infrastructure` / Accounting Sync | ✅ Done |
+| **10** | **Retainer Management** | SME & Expert | Logged-In | **Pinch Payment** | `Symbio.API` / Pinch Subscriptions | ✅ Done |
 | **11** | **Operations Command** | Platform Admin | Logged-In | Complete Ecosystem | `Symbio.API` / Admin Overrides | #11 |
 
 *💡 Note to Contributors: To link an active pull request to an epic milestone, append `Closes #<Epic-Issue-Number>` within your PR description body to trigger our automated repository status workflows.*
