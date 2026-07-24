@@ -123,6 +123,11 @@ namespace Symbio.API.Controllers
                 return NotFound(new { message = "Delivery assignment not found." });
             }
 
+            if (assignment.Status.Equals("Under Review", StringComparison.OrdinalIgnoreCase))
+            {
+                return Conflict(new { message = "This assignment is currently under review and locked for expert edits." });
+            }
+
             if (request.ProgressPercent.HasValue)
             {
                 assignment.ProgressPercent = Math.Clamp(request.ProgressPercent.Value, 0, 100);

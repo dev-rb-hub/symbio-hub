@@ -63,6 +63,18 @@ CREATE TABLE IF NOT EXISTS EscrowOnboardingProfiles (
     OnboardedAtUtc TEXT
 );
 
+CREATE TABLE IF NOT EXISTS ProjectPaymentStateRecords (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ProjectId TEXT NOT NULL UNIQUE,
+    State TEXT NOT NULL,
+    GrossAmount REAL NOT NULL,
+    PlatformFeeAmount REAL NOT NULL,
+    ContractorAmount REAL NOT NULL,
+    Currency TEXT NOT NULL,
+    LastProviderReference TEXT,
+    UpdatedAtUtc TEXT NOT NULL
+);
+
 INSERT INTO Jobs (Title, Description, ClientName, ClientSurname, Budget, ContactEmail, IsPublished, PostedAt)
 VALUES
 ('Regional Retail Website Refresh', 'Build a mobile-first homepage and checkout experience for a small NSW retail brand.', 'Harper', 'Bright', 9500.00, 'contact@harperbright.com', 1, '2026-07-19T00:00:00Z'),
@@ -83,6 +95,11 @@ VALUES
 INSERT INTO EscrowOnboardingProfiles (ExpertEmail, ProviderAccountId, Status, OnboardingUrl, LastSyncedAtUtc, OnboardedAtUtc)
 VALUES
 ('expert@example.com', 'pinch-glassbox-expert-example-com', 'Pending', 'https://connect.getpinch.com.au/glassbox/onboarding/pinch-glassbox-expert-example-com', '2026-07-25T08:00:00Z', NULL);
+
+INSERT INTO ProjectPaymentStateRecords (ProjectId, State, GrossAmount, PlatformFeeAmount, ContractorAmount, Currency, LastProviderReference, UpdatedAtUtc)
+VALUES
+('demo-project-epic7-1', 'AwaitingPayment', 9500, 0, 0, 'AUD', NULL, '2026-07-25T08:00:00Z'),
+('demo-project-epic7-2', 'AwaitingPayment', 14500, 0, 0, 'AUD', NULL, '2026-07-25T08:00:00Z');
 
 INSERT INTO Users (Email, PasswordHash, Role, CreatedAt, IsActive, CompanyName, BusinessIdentifier, ProfileSummary, OnboardingCompleted, OnboardedAt)
 VALUES

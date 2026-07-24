@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { apiRequest } from '../lib/apiClient';
 
 interface ProfileData {
   email: string;
@@ -26,17 +27,7 @@ export const TrustOnboardingPage: React.FC = () => {
   useEffect(() => {
     if (!session) return;
 
-    fetch('http://localhost:5001/api/onboarding/profile', {
-      headers: {
-        Authorization: `Bearer ${session.token}`,
-      },
-    })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Unable to load profile information.');
-        }
-        return response.json();
-      })
+    apiRequest<ProfileData>('/api/onboarding/profile', { token: session.token })
       .then(data => {
         setProfile(data);
         setCompanyName(data.companyName || '');
@@ -58,26 +49,27 @@ export const TrustOnboardingPage: React.FC = () => {
 
     setIsSubmitting(true);
 
-    const response = await fetch('http://localhost:5001/api/onboarding/profile', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${session.token}`,
-      },
-      body: JSON.stringify({
-        email: session.email,
-        companyName,
-        businessIdentifier,
-        profileSummary,
-      }),
-    });
-
-    setIsSubmitting(false);
-
-    if (!response.ok) {
+    try
+    {
+      await apiRequest<{ message: string }>('/api/onboarding/profile', {
+        method: 'POST',
+        token: session.token,
+        body: {
+          email: session.email,
+          companyName,
+          businessIdentifier,
+          profileSummary,
+        },
+      });
+    }
+    catch
+    {
+      setIsSubmitting(false);
       setError('Failed to submit onboarding updates.');
       return;
     }
+
+    setIsSubmitting(false);
 
     setSuccess('Trust onboarding completed successfully.');
     navigate(session.role === 'SME' ? '/sme/dashboard' : '/expert/workbench');

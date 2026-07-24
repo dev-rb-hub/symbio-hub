@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { apiRequest } from '../lib/apiClient';
 
 interface ProjectScope {
   id: string;
@@ -17,13 +18,7 @@ export const MarketplacePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('http://localhost:5001/api/project')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Failed to load marketplace projects.');
-        }
-        return response.json();
-      })
+    apiRequest<ProjectScope[]>('/api/project')
       .then(data => setProjects(data))
       .catch(() => setError('Could not load public project scopes.'));
   }, []);

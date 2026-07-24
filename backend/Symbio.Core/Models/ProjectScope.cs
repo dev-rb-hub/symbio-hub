@@ -12,6 +12,7 @@ namespace Symbio.Core.Models
         public decimal Budget { get; set; }
         public string ClientEmail { get; set; } = string.Empty;
         public bool IsPublished { get; set; } = true;
+        public string PaymentState { get; set; } = "AwaitingPayment";
         public DateTime PostedAt { get; set; } = DateTime.UtcNow;
         public List<ProjectMilestone> Milestones { get; set; } = new();
     }

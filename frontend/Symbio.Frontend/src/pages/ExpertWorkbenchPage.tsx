@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { API_BASE_URL, apiRequest } from '../lib/apiClient';
 
 interface DeliveryAssignment {
   id: number;
@@ -67,41 +68,41 @@ export const ExpertWorkbenchPage: React.FC = () => {
     let active = true;
 
     const loadOverview = async () => {
-      const response = await fetch('http://localhost:5001/api/expertWorkbench/overview', {
-        headers: {
-          Authorization: `Bearer ${session.token}`,
-        },
-      });
+      try
+      {
+        const data = await apiRequest<WorkbenchOverview>('/api/expertWorkbench/overview', {
+          token: session.token,
+        });
 
-      if (!response.ok) {
+        if (active) {
+          setOverview(data);
+          setSelectedAssignmentId(previous => (previous === '' && data.assignments?.[0]?.id ? data.assignments[0].id : previous));
+          setError(null);
+        }
+      }
+      catch
+      {
         if (active) {
           setError('Failed to load delivery workbench data.');
         }
         return;
       }
-
-      const data = await response.json();
-      if (active) {
-        setOverview(data);
-        setSelectedAssignmentId(previous => (previous === '' && data.assignments?.[0]?.id ? data.assignments[0].id : previous));
-        setError(null);
-      }
     };
 
     const loadEscrowStatus = async () => {
-      const response = await fetch('http://localhost:5001/api/payments/onboarding/status', {
-        headers: {
-          Authorization: `Bearer ${session.token}`,
-        },
-      });
+      try
+      {
+        const data = await apiRequest<EscrowStatus>('/api/payments/onboarding/status', {
+          token: session.token,
+        });
 
-      if (!response.ok) {
-        return;
+        if (active) {
+          setEscrowStatus(data);
+        }
       }
-
-      const data = await response.json();
-      if (active) {
-        setEscrowStatus(data);
+      catch
+      {
+        return;
       }
     };
 
@@ -109,7 +110,7 @@ export const ExpertWorkbenchPage: React.FC = () => {
     void loadEscrowStatus();
 
     const hub = new HubConnectionBuilder()
-      .withUrl('http://localhost:5001/hubs/workbench', {
+      .withUrl(`${API_BASE_URL}/hubs/workbench`, {
         accessTokenFactory: () => session.token,
       })
       .withAutomaticReconnect()
@@ -165,27 +166,28 @@ export const ExpertWorkbenchPage: React.FC = () => {
     setIsPosting(true);
     setError(null);
 
-    const response = await fetch('http://localhost:5001/api/expertWorkbench/logs', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${session.token}`,
-      },
-      body: JSON.stringify({
-        deliveryAssignmentId: selectedAssignmentId,
-        message: updateMessage,
-        level: updateLevel,
-        progressPercent: updateProgress ? Number(updateProgress) : null,
-        status: updateStatus || null,
-      }),
-    });
-
-    setIsPosting(false);
-
-    if (!response.ok) {
+    try
+    {
+      await apiRequest('/api/expertWorkbench/logs', {
+        method: 'POST',
+        token: session.token,
+        body: {
+          deliveryAssignmentId: selectedAssignmentId,
+          message: updateMessage,
+          level: updateLevel,
+          progressPercent: updateProgress ? Number(updateProgress) : null,
+          status: updateStatus || null,
+        },
+      });
+    }
+    catch
+    {
+      setIsPosting(false);
       setError('Unable to post the workbench update.');
       return;
     }
+
+    setIsPosting(false);
 
     setUpdateMessage('');
     setUpdateLevel('info');

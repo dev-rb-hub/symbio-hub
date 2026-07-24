@@ -147,6 +147,18 @@ CREATE TABLE IF NOT EXISTS EscrowOnboardingProfiles (
     LastSyncedAtUtc TEXT NOT NULL,
     OnboardedAtUtc TEXT
 );
+
+CREATE TABLE IF NOT EXISTS ProjectPaymentStateRecords (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ProjectId TEXT NOT NULL UNIQUE,
+    State TEXT NOT NULL,
+    GrossAmount REAL NOT NULL,
+    PlatformFeeAmount REAL NOT NULL,
+    ContractorAmount REAL NOT NULL,
+    Currency TEXT NOT NULL,
+    LastProviderReference TEXT,
+    UpdatedAtUtc TEXT NOT NULL
+);
 ");
             }
 
@@ -245,6 +257,36 @@ CREATE TABLE IF NOT EXISTS EscrowOnboardingProfiles (
                 };
 
                 db.EscrowOnboardingProfiles.AddRange(onboardingProfiles);
+                db.SaveChanges();
+            }
+
+            if (!db.ProjectPaymentStateRecords.Any())
+            {
+                var paymentStates = new[]
+                {
+                    new ProjectPaymentStateRecord
+                    {
+                        ProjectId = "demo-project-epic7-1",
+                        State = "AwaitingPayment",
+                        GrossAmount = 9500m,
+                        PlatformFeeAmount = 0m,
+                        ContractorAmount = 0m,
+                        Currency = "AUD",
+                        UpdatedAtUtc = DateTime.UtcNow
+                    },
+                    new ProjectPaymentStateRecord
+                    {
+                        ProjectId = "demo-project-epic7-2",
+                        State = "AwaitingPayment",
+                        GrossAmount = 14500m,
+                        PlatformFeeAmount = 0m,
+                        ContractorAmount = 0m,
+                        Currency = "AUD",
+                        UpdatedAtUtc = DateTime.UtcNow
+                    }
+                };
+
+                db.ProjectPaymentStateRecords.AddRange(paymentStates);
                 db.SaveChanges();
             }
         }

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { apiRequest } from '../lib/apiClient';
 
 interface PublicJob {
   id: number;
@@ -16,13 +17,7 @@ export const PublicJobs: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('http://localhost:5001/api/jobs/public')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Unable to load public jobs at this time.');
-        }
-        return response.json();
-      })
+    apiRequest<PublicJob[]>('/api/jobs/public')
       .then(data => setJobs(data))
       .catch(() => setError('Failed to fetch public jobs.'));
   }, []);

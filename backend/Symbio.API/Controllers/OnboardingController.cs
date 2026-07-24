@@ -14,11 +14,19 @@ namespace Symbio.API.Controllers
     {
         private readonly SymbioDbContext _dbContext;
         private readonly ITalentDiscoveryRepository _talentDiscoveryRepository;
+        private readonly IIdentityVerificationService _identityVerificationService;
+        private readonly IPinchMerchantService _pinchMerchantService;
 
-        public OnboardingController(SymbioDbContext dbContext, ITalentDiscoveryRepository talentDiscoveryRepository)
+        public OnboardingController(
+            SymbioDbContext dbContext,
+            ITalentDiscoveryRepository talentDiscoveryRepository,
+            IIdentityVerificationService identityVerificationService,
+            IPinchMerchantService pinchMerchantService)
         {
             _dbContext = dbContext;
             _talentDiscoveryRepository = talentDiscoveryRepository;
+            _identityVerificationService = identityVerificationService;
+            _pinchMerchantService = pinchMerchantService;
         }
 
         public record OnboardingRequest(string Email, string CompanyName, string BusinessIdentifier, string ProfileSummary);
@@ -72,9 +80,15 @@ namespace Symbio.API.Controllers
                 return NotFound();
             }
 
-            user.CompanyName = request.CompanyName;
-            user.BusinessIdentifier = request.BusinessIdentifier;
-            user.ProfileSummary = request.ProfileSummary;
+            var identifierValid = await _identityVerificationService.ValidateBusinessIdentifierAsync(request.BusinessIdentifier ?? string.Empty);
+            if (!identifierValid)
+            {
+                return BadRequest(new { message = "Business identifier failed validation." });
+            }
+
+            user.CompanyName = request.CompanyName ?? string.Empty;
+            user.BusinessIdentifier = request.BusinessIdentifier ?? string.Empty;
+            user.ProfileSummary = request.ProfileSummary ?? string.Empty;
             user.OnboardingCompleted = true;
             user.OnboardedAt = DateTime.UtcNow;
 
@@ -83,6 +97,36 @@ namespace Symbio.API.Controllers
             if (string.Equals(user.Role, "Expert", StringComparison.OrdinalIgnoreCase))
             {
                 await _talentDiscoveryRepository.UpsertTalentProfileAsync(MapToTalentProfile(user));
+
+                var registration = await _pinchMerchantService.RegisterSubMerchantAsync(
+                    user.Email,
+                    user.BusinessIdentifier,
+                    user.CompanyName);
+
+                var onboardingProfile = await _dbContext.EscrowOnboardingProfiles
+                    .FirstOrDefaultAsync(item => item.ExpertEmail == user.Email);
+
+                if (onboardingProfile == null)
+                {
+                    onboardingProfile = new EscrowOnboardingProfile
+                    {
+                        ExpertEmail = user.Email,
+                        ProviderAccountId = registration.MerchantId,
+                        Status = EscrowOnboardingStatus.Pending.ToString(),
+                        OnboardingUrl = registration.OnboardingUrl,
+                        LastSyncedAtUtc = DateTime.UtcNow
+                    };
+                    _dbContext.EscrowOnboardingProfiles.Add(onboardingProfile);
+                }
+                else
+                {
+                    onboardingProfile.ProviderAccountId = registration.MerchantId;
+                    onboardingProfile.Status = EscrowOnboardingStatus.Pending.ToString();
+                    onboardingProfile.OnboardingUrl = registration.OnboardingUrl;
+                    onboardingProfile.LastSyncedAtUtc = DateTime.UtcNow;
+                }
+
+                await _dbContext.SaveChangesAsync();
             }
 
             return Ok(new { message = "Profile updated" });

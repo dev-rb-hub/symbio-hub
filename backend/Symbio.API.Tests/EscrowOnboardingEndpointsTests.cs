@@ -153,4 +153,42 @@ public class EscrowOnboardingEndpointsTests : IClassFixture<ApiTestFactory>
         Assert.True(readyBody.RootElement.GetProperty("canSettle").GetBoolean());
         Assert.True(readyBody.RootElement.GetProperty("escrowVerified").GetBoolean());
     }
+
+    [Fact]
+    public async Task Experts_Search_Alias_Returns_Paged_Results()
+    {
+        using var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Add("X-Test-Email", "sme@example.com");
+        client.DefaultRequestHeaders.Add("X-Test-Role", "SME");
+
+        var response = await client.GetAsync("/api/experts/search?page=1&pageSize=5&query=developer");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        using var body = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        Assert.Equal(1, body.RootElement.GetProperty("page").GetInt32());
+        Assert.Equal(5, body.RootElement.GetProperty("pageSize").GetInt32());
+        Assert.True(body.RootElement.GetProperty("results").ValueKind == JsonValueKind.Array);
+    }
+
+    [Fact]
+    public async Task Pinch_Settlement_Webhook_Locks_Escrow_And_Applies_10_90_Split()
+    {
+        using var client = _factory.CreateClient();
+
+        var response = await client.PostAsJsonAsync("/api/webhooks/pinch-settlements", new
+        {
+            projectId = "demo-project-epic7-1",
+            settlementStatus = "confirmed",
+            amount = 1000m,
+            currency = "AUD",
+            providerReference = "pinch-ref-001"
+        });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        using var body = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        Assert.Equal("EscrowLocked", body.RootElement.GetProperty("state").GetString());
+        Assert.Equal(100m, body.RootElement.GetProperty("platformFeeAmount").GetDecimal());
+        Assert.Equal(900m, body.RootElement.GetProperty("contractorAmount").GetDecimal());
+    }
 }

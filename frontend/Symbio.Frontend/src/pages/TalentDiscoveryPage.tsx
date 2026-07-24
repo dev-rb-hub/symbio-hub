@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { apiRequest } from '../lib/apiClient';
 
 interface TalentProfile {
   id: string;
@@ -38,21 +39,22 @@ export const TalentDiscoveryPage: React.FC = () => {
     if (currentSkill.trim()) search.set('skill', currentSkill.trim());
     if (currentLocation.trim()) search.set('location', currentLocation.trim());
 
-    const response = await fetch(`http://localhost:5001/api/talent?${search.toString()}`, {
-      headers: {
-        Authorization: `Bearer ${session.token}`,
-      },
-    });
+    try
+    {
+      const data = await apiRequest<TalentProfile[]>(`/api/talent?${search.toString()}`, {
+        token: session.token,
+      });
 
-    setIsLoading(false);
-
-    if (!response.ok) {
+      setProfiles(data);
+    }
+    catch
+    {
+      setIsLoading(false);
       setError('Could not load talent discovery results.');
       return;
     }
 
-    const data = await response.json();
-    setProfiles(data);
+    setIsLoading(false);
   };
 
   useEffect(() => {

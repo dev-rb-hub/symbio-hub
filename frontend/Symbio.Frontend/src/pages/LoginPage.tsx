@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth, UserRole } from '../context/AuthContext';
+import { apiRequest } from '../lib/apiClient';
 
 export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -16,20 +17,21 @@ export const LoginPage: React.FC = () => {
     event.preventDefault();
     setError(null);
 
-    const response = await fetch('http://localhost:5001/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password, role }),
-    });
+    try
+    {
+      const result = await apiRequest<{ token: string; role?: UserRole }>('/api/auth/register', {
+        method: 'POST',
+        body: { email, password, role },
+      });
 
-    if (!response.ok) {
+      login(result.token, result.role || role, email);
+      navigate(from, { replace: true });
+    }
+    catch
+    {
       setError('Unable to sign in or register.');
       return;
     }
-
-    const result = await response.json();
-    login(result.token, result.role || role, email);
-    navigate(from, { replace: true });
   };
 
   return (

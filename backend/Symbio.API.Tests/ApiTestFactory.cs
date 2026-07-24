@@ -95,6 +95,20 @@ public class ApiTestFactory : WebApplicationFactory<Program>
                 });
             }
 
+            if (!db.ProjectPaymentStateRecords.Any())
+            {
+                db.ProjectPaymentStateRecords.Add(new ProjectPaymentStateRecord
+                {
+                    ProjectId = "demo-project-epic7-1",
+                    State = "AwaitingPayment",
+                    GrossAmount = 9500m,
+                    PlatformFeeAmount = 0m,
+                    ContractorAmount = 0m,
+                    Currency = "AUD",
+                    UpdatedAtUtc = DateTime.UtcNow
+                });
+            }
+
             db.SaveChanges();
         });
     }

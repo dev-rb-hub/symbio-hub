@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { apiRequest } from '../lib/apiClient';
 
 interface EscrowStatus {
   expertEmail: string;
@@ -21,20 +22,20 @@ export const EscrowOnboardingPage: React.FC = () => {
       return;
     }
 
-    const response = await fetch('http://localhost:5001/api/payments/onboarding/status', {
-      headers: {
-        Authorization: `Bearer ${session.token}`,
-      },
-    });
+    try
+    {
+      const data = await apiRequest<EscrowStatus>('/api/payments/onboarding/status', {
+        token: session.token,
+      });
 
-    if (!response.ok) {
+      setStatus(data);
+      setError(null);
+    }
+    catch
+    {
       setError('Failed to load escrow onboarding status.');
       return;
     }
-
-    const data = await response.json();
-    setStatus(data);
-    setError(null);
   };
 
   useEffect(() => {
@@ -48,22 +49,24 @@ export const EscrowOnboardingPage: React.FC = () => {
     }
 
     setIsWorking(true);
-    const response = await fetch(`http://localhost:5001/api/payments/onboarding/${path}`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${session.token}`,
-      },
-    });
-    setIsWorking(false);
+    try
+    {
+      const data = await apiRequest<EscrowStatus>(`/api/payments/onboarding/${path}`, {
+        method: 'POST',
+        token: session.token,
+      });
 
-    if (!response.ok) {
+      setStatus(data);
+      setError(null);
+    }
+    catch
+    {
+      setIsWorking(false);
       setError('Escrow onboarding action failed.');
       return;
     }
 
-    const data = await response.json();
-    setStatus(data);
-    setError(null);
+    setIsWorking(false);
   };
 
   if (!session) {

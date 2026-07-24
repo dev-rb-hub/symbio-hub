@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { apiRequest } from '../lib/apiClient';
 
 interface Milestone {
   title: string;
@@ -45,30 +46,31 @@ export const ProjectWizardPage: React.FC = () => {
 
     setIsSubmitting(true);
 
-    const response = await fetch('http://localhost:5001/api/project', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${session.token}`
-      },
-      body: JSON.stringify({
-        title,
-        description,
-        category,
-        location,
-        budget,
-        clientEmail: session.email,
-        milestones,
-        isPublished: true
-      })
-    });
-
-    setIsSubmitting(false);
-
-    if (!response.ok) {
+    try
+    {
+      await apiRequest('/api/project', {
+        method: 'POST',
+        token: session.token,
+        body: {
+          title,
+          description,
+          category,
+          location,
+          budget,
+          clientEmail: session.email,
+          milestones,
+          isPublished: true
+        }
+      });
+    }
+    catch
+    {
+      setIsSubmitting(false);
       setError('Failed to publish the project. Please try again later.');
       return;
     }
+
+    setIsSubmitting(false);
 
     navigate('/marketplace');
   };

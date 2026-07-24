@@ -16,6 +16,7 @@ import { TalentDiscoveryPage } from './pages/TalentDiscoveryPage';
 import { EscrowOnboardingPage } from './pages/EscrowOnboardingPage';
 import { PublicRouteGuard } from './components/routing/PublicRouteGuard';
 import { ProtectedRoute } from './components/routing/ProtectedRoute';
+import { RoleGuard } from './components/routing/RoleGuard';
 import { NavigationBar } from './components/NavigationBar';
 
 const App: React.FC = () => (
@@ -31,9 +32,9 @@ const App: React.FC = () => (
       <Route path="/login" element={<PublicRouteGuard><LoginPage /></PublicRouteGuard>} />
       <Route path="/onboarding" element={<ProtectedRoute allowedRoles={['SME', 'Expert']}><TrustOnboardingPage /></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute allowedRoles={['SME', 'Expert', 'Admin']}><UserProfilePage /></ProtectedRoute>} />
-      <Route path="/sme/dashboard" element={<ProtectedRoute allowedRoles={['SME']}><SmeDashboardPage /></ProtectedRoute>} />
-      <Route path="/expert/workbench" element={<ProtectedRoute allowedRoles={['Expert']}><ExpertWorkbenchPage /></ProtectedRoute>} />
-      <Route path="/admin/control" element={<ProtectedRoute allowedRoles={['Admin']}><AdminControlPage /></ProtectedRoute>} />
+      <Route path="/sme/dashboard" element={<RoleGuard role="SME"><SmeDashboardPage /></RoleGuard>} />
+      <Route path="/expert/workbench" element={<RoleGuard role="Expert"><ExpertWorkbenchPage /></RoleGuard>} />
+      <Route path="/admin/control" element={<RoleGuard role="Admin"><AdminControlPage /></RoleGuard>} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
       <Route path="/404" element={<NotFoundPage />} />
       <Route path="*" element={<Navigate to="/404" replace />} />

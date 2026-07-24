@@ -16,6 +16,9 @@ builder.Services.AddScoped<Symbio.Core.Repositories.IProjectRepository, Symbio.I
 builder.Services.AddScoped<Symbio.Core.Repositories.ITalentDiscoveryRepository, Symbio.Infrastructure.TalentDiscoveryRepository>();
 builder.Services.AddScoped<Symbio.Core.Repositories.ICompletionEvidenceRepository, Symbio.Infrastructure.CompletionEvidenceRepository>();
 builder.Services.AddScoped<Symbio.Core.Repositories.IPinchOnboardingGateway, Symbio.Infrastructure.MockPinchOnboardingGateway>();
+builder.Services.AddScoped<Symbio.Core.Repositories.IIdentityVerificationService, Symbio.Infrastructure.IdentityVerificationService>();
+builder.Services.AddScoped<Symbio.Core.Repositories.IPinchMerchantService, Symbio.Infrastructure.PinchMerchantService>();
+builder.Services.AddSingleton<Symbio.Core.Services.IPaymentSplitCalculator, Symbio.Core.Services.PaymentSplitCalculator>();
 builder.Services.AddSecurityServices(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddSignalR();
@@ -32,6 +35,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<DeliveryWorkbenchHub>("/hubs/workbench");
+app.MapHub<MarketplaceHub>("/hubs/marketplace");
 
 app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
 
