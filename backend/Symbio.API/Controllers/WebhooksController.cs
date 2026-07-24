@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Symbio.API.Data;
 using Symbio.Core.Services;
+using Symbio.Infrastructure;
 
 namespace Symbio.API.Controllers
 {
@@ -13,11 +14,25 @@ namespace Symbio.API.Controllers
     {
         private readonly SymbioDbContext _dbContext;
         private readonly IPaymentSplitCalculator _paymentSplitCalculator;
+        private readonly PinchApiSettings _pinchApiSettings;
 
-        public WebhooksController(SymbioDbContext dbContext, IPaymentSplitCalculator paymentSplitCalculator)
+        public WebhooksController(
+            SymbioDbContext dbContext,
+            IPaymentSplitCalculator paymentSplitCalculator,
+            IConfiguration configuration)
         {
             _dbContext = dbContext;
             _paymentSplitCalculator = paymentSplitCalculator;
+            _pinchApiSettings = new PinchApiSettings
+            {
+                BaseUrl = configuration["Pinch:BaseUrl"] ?? "https://api.getpinch.com.au",
+                ApiKey = configuration["Pinch:ApiKey"] ?? string.Empty,
+                ApiSecret = configuration["Pinch:ApiSecret"] ?? string.Empty,
+                WebhookSecret = configuration["Pinch:WebhookSecret"] ?? string.Empty,
+                ValidateWebhookSignature = bool.TryParse(configuration["Pinch:ValidateWebhookSignature"], out var validate) && validate,
+                TokensPath = configuration["Pinch:TokensPath"] ?? "/tokens",
+                ManagedMerchantsPath = configuration["Pinch:ManagedMerchantsPath"] ?? "/managed-merchants"
+            };
         }
 
         public record PinchSettlementWebhookRequest(string ProjectId, string SettlementStatus, decimal Amount, string Currency, string? ProviderReference);
@@ -25,6 +40,16 @@ namespace Symbio.API.Controllers
         [HttpPost("pinch-settlements")]
         public async Task<IActionResult> HandlePinchSettlements([FromBody] PinchSettlementWebhookRequest request)
         {
+            if (_pinchApiSettings.ValidateWebhookSignature)
+            {
+                if (!Request.Headers.TryGetValue("X-Pinch-Signature", out var signatureHeader)
+                    || string.IsNullOrWhiteSpace(_pinchApiSettings.WebhookSecret)
+                    || !string.Equals(signatureHeader.ToString(), _pinchApiSettings.WebhookSecret, StringComparison.Ordinal))
+                {
+                    return Unauthorized(new { message = "Invalid webhook signature." });
+                }
+            }
+
             if (request == null || string.IsNullOrWhiteSpace(request.ProjectId) || request.Amount <= 0 || string.IsNullOrWhiteSpace(request.SettlementStatus))
             {
                 return BadRequest(new { message = "ProjectId, SettlementStatus, and Amount are required." });

@@ -17,7 +17,7 @@ builder.Services.AddScoped<Symbio.Core.Repositories.ITalentDiscoveryRepository, 
 builder.Services.AddScoped<Symbio.Core.Repositories.ICompletionEvidenceRepository, Symbio.Infrastructure.CompletionEvidenceRepository>();
 builder.Services.AddScoped<Symbio.Core.Repositories.IPinchOnboardingGateway, Symbio.Infrastructure.MockPinchOnboardingGateway>();
 builder.Services.AddScoped<Symbio.Core.Repositories.IIdentityVerificationService, Symbio.Infrastructure.IdentityVerificationService>();
-builder.Services.AddScoped<Symbio.Core.Repositories.IPinchMerchantService, Symbio.Infrastructure.PinchMerchantService>();
+builder.Services.AddHttpClient<Symbio.Core.Repositories.IPinchMerchantService, Symbio.Infrastructure.PinchMerchantService>();
 builder.Services.AddSingleton<Symbio.Core.Services.IPaymentSplitCalculator, Symbio.Core.Services.PaymentSplitCalculator>();
 builder.Services.AddSecurityServices(builder.Configuration);
 builder.Services.AddControllers();
