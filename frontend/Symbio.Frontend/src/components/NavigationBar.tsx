@@ -12,6 +12,9 @@ export const NavigationBar: React.FC = () => {
         <Link to="/jobs" style={{ color: '#333', textDecoration: 'none' }}>Public jobs</Link>
         <Link to="/marketplace" style={{ color: '#333', textDecoration: 'none' }}>Marketplace</Link>
         {session && session.role === 'SME' && (
+          <Link to="/talent/discovery" style={{ color: '#333', textDecoration: 'none' }}>Talent discovery</Link>
+        )}
+        {session && session.role === 'SME' && (
           <Link to="/project/new" style={{ color: '#333', textDecoration: 'none' }}>Post a Project</Link>
         )}
         {session && <Link to="/onboarding" style={{ color: '#333', textDecoration: 'none' }}>Trust onboarding</Link>}

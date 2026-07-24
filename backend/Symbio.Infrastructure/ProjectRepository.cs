@@ -1,4 +1,4 @@
-using Azure.Cosmos;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Symbio.Core.Models;
 using Symbio.Core.Repositories;

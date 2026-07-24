@@ -23,11 +23,16 @@ export const LandingPage: React.FC = () => (
           <h2>For Experts</h2>
           <p>Showcase your skills and access regional briefs with compliant, consent-first workflows designed for trusted long-term engagement.</p>
         </article>
+        <article style={{ padding: '1.5rem', background: '#f3faf7', borderRadius: 16 }}>
+          <h2>Talent discovery</h2>
+          <p>SMEs can search verified expert profiles by skill, location, and summary to shortlist local delivery partners faster.</p>
+        </article>
       </div>
 
       <nav style={{ marginTop: '2.5rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
         <Link to="/jobs" style={{ textDecoration: 'none', padding: '0.85rem 1.25rem', background: '#0072ce', color: '#fff', borderRadius: 999 }}>Browse public jobs</Link>
         <Link to="/marketplace" style={{ textDecoration: 'none', padding: '0.85rem 1.25rem', background: '#f1f3f6', color: '#111', borderRadius: 999 }}>Explore marketplace</Link>
+        <Link to="/talent/discovery" style={{ textDecoration: 'none', padding: '0.85rem 1.25rem', background: '#0f9d58', color: '#fff', borderRadius: 999 }}>Find talent</Link>
         <Link to="/login" style={{ textDecoration: 'none', padding: '0.85rem 1.25rem', background: '#f1f3f6', color: '#111', borderRadius: 999 }}>Log in</Link>
         <Link to="/onboarding" style={{ textDecoration: 'none', padding: '0.85rem 1.25rem', background: '#0f9d58', color: '#fff', borderRadius: 999 }}>Start trust onboarding</Link>
       </nav>

@@ -4,6 +4,7 @@ param webAppName string = 'symbio-hub-app'
 param sqlServerName string = 'symbio-hub-sql'
 param sqlDbName string = 'SymbioHubDb'
 param administratorLogin string = 'symbioadmin'
+@secure()
 param administratorLoginPassword string
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2023-10-01' = {
@@ -58,16 +59,9 @@ resource sqlServer 'Microsoft.Sql/servers@2022-08-01-preview' = {
 }
 
 resource sqlDb 'Microsoft.Sql/servers/databases@2022-08-01-preview' = {
-  name: '${sqlServer.name}/${sqlDbName}'
+  parent: sqlServer
+  name: sqlDbName
   location: location
-  properties: {
-    sku: {
-      name: 'S0'
-      tier: 'Standard'
-      capacity: 10
-    }
-  }
-  dependsOn: [sqlServer]
 }
 
 resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2023-05-15' = {
@@ -98,17 +92,18 @@ resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2023-05-15' = {
 }
 
 resource cosmosDb 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2023-05-15' = {
-  name: '${cosmosAccount.name}/SymbioHub'
+  parent: cosmosAccount
+  name: 'SymbioHub'
   properties: {
     resource: {
       id: 'SymbioHub'
     }
   }
-  dependsOn: [cosmosAccount]
 }
 
 resource cosmosContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2023-05-15' = {
-  name: '${cosmosAccount.name}/SymbioHub/Projects'
+  parent: cosmosDb
+  name: 'Projects'
   properties: {
     resource: {
       id: 'Projects'
@@ -119,8 +114,22 @@ resource cosmosContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/con
       defaultTtl: -1
     }
   }
-  dependsOn: [cosmosDb]
 }
 
-output webAppUrl string = webApp.defaultHostName
+resource talentProfilesContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2023-05-15' = {
+  parent: cosmosDb
+  name: 'TalentProfiles'
+  properties: {
+    resource: {
+      id: 'TalentProfiles'
+      partitionKey: {
+        paths: ['/Role']
+        kind: 'Hash'
+      }
+      defaultTtl: -1
+    }
+  }
+}
+
+output webAppUrl string = webApp.properties.defaultHostName
 output cosmosEndpoint string = cosmosAccount.properties.documentEndpoint
