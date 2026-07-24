@@ -56,6 +56,10 @@ resource webApp 'Microsoft.Web/sites@2023-10-01' = {
           name: 'Cosmos__TalentContainerName'
           value: 'TalentProfiles'
         }
+        {
+          name: 'Cosmos__CompletionEvidenceContainerName'
+          value: 'CompletionEvidence'
+        }
       ]
     }
   }
@@ -137,6 +141,21 @@ resource talentProfilesContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatab
       id: 'TalentProfiles'
       partitionKey: {
         paths: ['/Role']
+        kind: 'Hash'
+      }
+      defaultTtl: -1
+    }
+  }
+}
+
+resource completionEvidenceContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2023-05-15' = {
+  parent: cosmosDb
+  name: 'CompletionEvidence'
+  properties: {
+    resource: {
+      id: 'CompletionEvidence'
+      partitionKey: {
+        paths: ['/EpicId']
         kind: 'Hash'
       }
       defaultTtl: -1
