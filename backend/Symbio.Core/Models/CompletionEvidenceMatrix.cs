@@ -11,44 +11,37 @@ public class CompletionEvidenceMatrix
     {
         ArgumentNullException.ThrowIfNull(record);
 
-        if (string.IsNullOrWhiteSpace(record.EpicId))
+        if (string.IsNullOrWhiteSpace(record.MilestoneId))
         {
-            throw new ArgumentException("EpicId is required when recording completion evidence.", nameof(record));
+            throw new ArgumentException("MilestoneId is required when recording completion evidence.", nameof(record));
         }
 
-        if (record.EvidenceType == CompletionEvidenceType.FileHash)
+        if (string.IsNullOrWhiteSpace(record.EvidenceReferenceValue))
         {
-            if (string.IsNullOrWhiteSpace(record.ArtifactPath) || string.IsNullOrWhiteSpace(record.ArtifactHash))
-            {
-                throw new ArgumentException("File-hash evidence must include both ArtifactPath and ArtifactHash.", nameof(record));
-            }
-
-            var existing = _records.FirstOrDefault(item =>
-                item.EpicId.Equals(record.EpicId, StringComparison.OrdinalIgnoreCase)
-                && item.EvidenceType == CompletionEvidenceType.FileHash
-                && item.ArtifactPath.Equals(record.ArtifactPath, StringComparison.OrdinalIgnoreCase));
-
-            if (existing is not null)
-            {
-                existing.ArtifactHash = record.ArtifactHash;
-                existing.SourceCommitSha = record.SourceCommitSha;
-                existing.Notes = record.Notes;
-                existing.CapturedAt = DateTime.UtcNow;
-                UpdatedAt = DateTime.UtcNow;
-                return;
-            }
+            throw new ArgumentException("EvidenceReferenceValue is required.", nameof(record));
         }
 
-        if (record.EvidenceType == CompletionEvidenceType.RepositoryReference)
+        if (string.IsNullOrWhiteSpace(record.LoggedByEmail))
         {
-            if (string.IsNullOrWhiteSpace(record.RepositoryReference))
-            {
-                throw new ArgumentException("Repository-reference evidence must include RepositoryReference.", nameof(record));
-            }
+            throw new ArgumentException("LoggedByEmail is required.", nameof(record));
         }
 
+        // Append-only behavior keeps a full audit trail of all evidence submissions.
         _records.Add(record);
         UpdatedAt = DateTime.UtcNow;
+    }
+
+    public IReadOnlyList<CompletionEvidenceRecord> ForMilestone(string milestoneId)
+    {
+        if (string.IsNullOrWhiteSpace(milestoneId))
+        {
+            return Array.Empty<CompletionEvidenceRecord>();
+        }
+
+        return _records
+            .Where(item => item.MilestoneId.Equals(milestoneId, StringComparison.OrdinalIgnoreCase))
+            .OrderByDescending(item => item.LoggedAtUtc)
+            .ToList();
     }
 
     public IReadOnlyList<CompletionEvidenceRecord> ForEpic(string epicId)
@@ -60,7 +53,7 @@ public class CompletionEvidenceMatrix
 
         return _records
             .Where(item => item.EpicId.Equals(epicId, StringComparison.OrdinalIgnoreCase))
-            .OrderByDescending(item => item.CapturedAt)
+            .OrderByDescending(item => item.LoggedAtUtc)
             .ToList();
     }
 }

@@ -155,7 +155,7 @@ resource completionEvidenceContainer 'Microsoft.DocumentDB/databaseAccounts/sqlD
     resource: {
       id: 'CompletionEvidence'
       partitionKey: {
-        paths: ['/EpicId']
+        paths: ['/MilestoneId']
         kind: 'Hash'
       }
       defaultTtl: -1

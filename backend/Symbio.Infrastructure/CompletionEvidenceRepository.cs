@@ -31,7 +31,7 @@ namespace Symbio.Infrastructure
         {
             ArgumentNullException.ThrowIfNull(record);
 
-            record.CapturedAt = DateTime.UtcNow;
+            record.LoggedAtUtc = DateTime.UtcNow;
 
             if (_container == null)
             {
@@ -43,7 +43,38 @@ namespace Symbio.Infrastructure
                 return;
             }
 
-            await _container.UpsertItemAsync(record, new PartitionKey(record.EpicId));
+            await _container.CreateItemAsync(record, new PartitionKey(record.PartitionKey));
+        }
+
+        public async Task<IReadOnlyList<CompletionEvidenceRecord>> GetByMilestoneAsync(string milestoneId)
+        {
+            if (string.IsNullOrWhiteSpace(milestoneId))
+            {
+                return Array.Empty<CompletionEvidenceRecord>();
+            }
+
+            if (_container == null)
+            {
+                lock (LocalLock)
+                {
+                    return LocalMatrix.ForMilestone(milestoneId);
+                }
+            }
+
+            var query = new QueryDefinition("SELECT * FROM c WHERE c.MilestoneId = @milestoneId")
+                .WithParameter("@milestoneId", milestoneId);
+            var iterator = _container.GetItemQueryIterator<CompletionEvidenceRecord>(query);
+            var results = new List<CompletionEvidenceRecord>();
+
+            while (iterator.HasMoreResults)
+            {
+                var response = await iterator.ReadNextAsync();
+                results.AddRange(response.Resource);
+            }
+
+            return results
+                .OrderByDescending(item => item.LoggedAtUtc)
+                .ToList();
         }
 
         public async Task<IReadOnlyList<CompletionEvidenceRecord>> GetByEpicAsync(string epicId)
@@ -72,7 +103,7 @@ namespace Symbio.Infrastructure
             }
 
             return results
-                .OrderByDescending(item => item.CapturedAt)
+                .OrderByDescending(item => item.LoggedAtUtc)
                 .ToList();
         }
 

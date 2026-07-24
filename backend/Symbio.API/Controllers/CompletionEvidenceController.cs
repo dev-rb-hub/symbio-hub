@@ -7,7 +7,7 @@ namespace Symbio.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public class CompletionEvidenceController : ControllerBase
     {
         private readonly ICompletionEvidenceRepository _completionEvidenceRepository;
@@ -17,21 +17,26 @@ namespace Symbio.API.Controllers
             _completionEvidenceRepository = completionEvidenceRepository;
         }
 
-        public record FileHashEvidenceRequest(string EpicId, string ArtifactPath, string ArtifactHash, string? SourceCommitSha, string? Notes);
-        public record RepositoryReferenceEvidenceRequest(string EpicId, string RepositoryReference, string? SourceCommitSha, string? Notes);
+        public record FileHashEvidenceRequest(string MilestoneId, string? EpicId, string EvidenceReferenceValue, string? SourceCommitSha, string? Notes, string? TargetDeploymentUrl);
+        public record GitCommitEvidenceRequest(string MilestoneId, string? EpicId, string EvidenceReferenceValue, string? SourceCommitSha, string? Notes, string? TargetDeploymentUrl);
 
         [HttpPost("file-hash")]
+        [Authorize(Roles = "Expert,Admin")]
         public async Task<IActionResult> RecordFileHash([FromBody] FileHashEvidenceRequest request)
         {
-            if (request == null || string.IsNullOrWhiteSpace(request.EpicId) || string.IsNullOrWhiteSpace(request.ArtifactPath) || string.IsNullOrWhiteSpace(request.ArtifactHash))
+            if (request == null || string.IsNullOrWhiteSpace(request.MilestoneId) || string.IsNullOrWhiteSpace(request.EvidenceReferenceValue))
             {
-                return BadRequest(new { message = "EpicId, ArtifactPath, and ArtifactHash are required." });
+                return BadRequest(new { message = "MilestoneId and EvidenceReferenceValue are required." });
             }
 
-            var record = CompletionEvidenceRecord.FromFileHash(
-                request.EpicId.Trim(),
-                request.ArtifactPath.Trim(),
-                request.ArtifactHash.Trim(),
+            var actor = User.Identity?.Name ?? "unknown";
+
+            var record = CompletionEvidenceRecord.FromArtifactHash(
+                request.MilestoneId.Trim(),
+                request.EpicId?.Trim() ?? string.Empty,
+                request.EvidenceReferenceValue.Trim(),
+                actor,
+                request.TargetDeploymentUrl?.Trim() ?? string.Empty,
                 request.SourceCommitSha,
                 request.Notes);
 
@@ -40,26 +45,46 @@ namespace Symbio.API.Controllers
             return Ok(record);
         }
 
-        [HttpPost("repository-reference")]
-        public async Task<IActionResult> RecordRepositoryReference([FromBody] RepositoryReferenceEvidenceRequest request)
+        [HttpPost("git-commit")]
+        [Authorize(Roles = "Expert,Admin")]
+        public async Task<IActionResult> RecordGitCommit([FromBody] GitCommitEvidenceRequest request)
         {
-            if (request == null || string.IsNullOrWhiteSpace(request.EpicId) || string.IsNullOrWhiteSpace(request.RepositoryReference))
+            if (request == null || string.IsNullOrWhiteSpace(request.MilestoneId) || string.IsNullOrWhiteSpace(request.EvidenceReferenceValue))
             {
-                return BadRequest(new { message = "EpicId and RepositoryReference are required." });
+                return BadRequest(new { message = "MilestoneId and EvidenceReferenceValue are required." });
             }
 
-            var record = CompletionEvidenceRecord.FromRepositoryReference(
-                request.EpicId.Trim(),
-                request.RepositoryReference.Trim(),
+            var actor = User.Identity?.Name ?? "unknown";
+
+            var record = CompletionEvidenceRecord.FromGitCommit(
+                request.MilestoneId.Trim(),
+                request.EpicId?.Trim() ?? string.Empty,
+                request.EvidenceReferenceValue.Trim(),
+                actor,
+                request.TargetDeploymentUrl?.Trim() ?? string.Empty,
                 request.SourceCommitSha,
                 request.Notes);
 
             await _completionEvidenceRepository.RecordAsync(record);
 
             return Ok(record);
+        }
+
+        [HttpGet("milestone/{milestoneId}")]
+        [Authorize(Roles = "Expert,Admin,SME")]
+        public async Task<IActionResult> GetByMilestone(string milestoneId)
+        {
+            if (string.IsNullOrWhiteSpace(milestoneId))
+            {
+                return BadRequest(new { message = "MilestoneId is required." });
+            }
+
+            var records = await _completionEvidenceRepository.GetByMilestoneAsync(milestoneId.Trim());
+            return Ok(records);
         }
 
         [HttpGet("epic/{epicId}")]
+        [Authorize(Roles = "Admin,SME")]
         public async Task<IActionResult> GetByEpic(string epicId)
         {
             if (string.IsNullOrWhiteSpace(epicId))
@@ -72,6 +97,7 @@ namespace Symbio.API.Controllers
         }
 
         [HttpGet("matrix")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetMatrix()
         {
             var matrix = await _completionEvidenceRepository.GetMatrixAsync();
@@ -79,6 +105,29 @@ namespace Symbio.API.Controllers
             {
                 matrix.UpdatedAt,
                 records = matrix.Records
+            });
+        }
+
+        [HttpGet("milestone/{milestoneId}/can-settle")]
+        [Authorize(Roles = "Admin,SME")]
+        public async Task<IActionResult> CanSettleMilestone(string milestoneId)
+        {
+            if (string.IsNullOrWhiteSpace(milestoneId))
+            {
+                return BadRequest(new { message = "MilestoneId is required." });
+            }
+
+            var records = await _completionEvidenceRepository.GetByMilestoneAsync(milestoneId.Trim());
+            var hasVerifiedEvidence = records.Any(item => item.IsVerified);
+
+            return Ok(new
+            {
+                milestoneId,
+                canSettle = hasVerifiedEvidence,
+                reason = hasVerifiedEvidence
+                    ? "Verified technical delivery evidence is available."
+                    : "No verified technical delivery evidence found for this milestone.",
+                evidenceCount = records.Count
             });
         }
     }

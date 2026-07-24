@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Symbio.API.Data;
 using Symbio.API.Hubs;
 using Symbio.API.Models;
+using Symbio.Core.Models;
+using Symbio.Core.Repositories;
 
 namespace Symbio.API.Controllers
 {
@@ -15,14 +17,31 @@ namespace Symbio.API.Controllers
     {
         private readonly SymbioDbContext _dbContext;
         private readonly IHubContext<DeliveryWorkbenchHub> _hubContext;
+        private readonly ICompletionEvidenceRepository _completionEvidenceRepository;
 
-        public ExpertWorkbenchController(SymbioDbContext dbContext, IHubContext<DeliveryWorkbenchHub> hubContext)
+        public ExpertWorkbenchController(
+            SymbioDbContext dbContext,
+            IHubContext<DeliveryWorkbenchHub> hubContext,
+            ICompletionEvidenceRepository completionEvidenceRepository)
         {
             _dbContext = dbContext;
             _hubContext = hubContext;
+            _completionEvidenceRepository = completionEvidenceRepository;
         }
 
-        public record WorkbenchLogRequest(int DeliveryAssignmentId, string Message, string? Level, int? ProgressPercent, string? Status);
+        public record WorkbenchLogRequest(
+            int DeliveryAssignmentId,
+            string Message,
+            string? Level,
+            int? ProgressPercent,
+            string? Status,
+            string? MilestoneId,
+            string? EpicId,
+            string? EvidenceType,
+            string? EvidenceReferenceValue,
+            string? TargetDeploymentUrl,
+            string? SourceCommitSha,
+            string? EvidenceNotes);
 
         [HttpGet("overview")]
         public async Task<IActionResult> GetOverview()
@@ -96,6 +115,45 @@ namespace Symbio.API.Controllers
             };
 
             _dbContext.DeliveryLogs.Add(log);
+
+            var shouldCaptureEvidence = !string.IsNullOrWhiteSpace(request.MilestoneId)
+                && !string.IsNullOrWhiteSpace(request.EvidenceType)
+                && !string.IsNullOrWhiteSpace(request.EvidenceReferenceValue);
+
+            if (shouldCaptureEvidence)
+            {
+                if (!TryParseEvidenceType(request.EvidenceType!, out var parsedType))
+                {
+                    return BadRequest(new { message = "EvidenceType must be BuildArtifactHash or GitCommitSHA." });
+                }
+
+                CompletionEvidenceRecord record;
+                if (parsedType == CompletionEvidenceType.BuildArtifactHash)
+                {
+                    record = CompletionEvidenceRecord.FromArtifactHash(
+                        request.MilestoneId!,
+                        request.EpicId ?? string.Empty,
+                        request.EvidenceReferenceValue!,
+                        email,
+                        request.TargetDeploymentUrl ?? string.Empty,
+                        request.SourceCommitSha,
+                        request.EvidenceNotes);
+                }
+                else
+                {
+                    record = CompletionEvidenceRecord.FromGitCommit(
+                        request.MilestoneId!,
+                        request.EpicId ?? string.Empty,
+                        request.EvidenceReferenceValue!,
+                        email,
+                        request.TargetDeploymentUrl ?? string.Empty,
+                        request.SourceCommitSha,
+                        request.EvidenceNotes);
+                }
+
+                await _completionEvidenceRepository.RecordAsync(record);
+            }
+
             await _dbContext.SaveChangesAsync();
 
             var payload = new
@@ -116,6 +174,32 @@ namespace Symbio.API.Controllers
             await _hubContext.Clients.Group(DeliveryWorkbenchHub.GetGroupName(email)).SendAsync("WorkbenchLogCreated", payload);
 
             return Ok(payload);
+        }
+
+        private static bool TryParseEvidenceType(string value, out CompletionEvidenceType evidenceType)
+        {
+            evidenceType = CompletionEvidenceType.BuildArtifactHash;
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return false;
+            }
+
+            var normalized = value.Trim();
+            if (normalized.Equals("BuildArtifactHash", StringComparison.OrdinalIgnoreCase))
+            {
+                evidenceType = CompletionEvidenceType.BuildArtifactHash;
+                return true;
+            }
+
+            if (normalized.Equals("GitCommitSHA", StringComparison.OrdinalIgnoreCase)
+                || normalized.Equals("GitCommitSha", StringComparison.OrdinalIgnoreCase))
+            {
+                evidenceType = CompletionEvidenceType.GitCommitSha;
+                return true;
+            }
+
+            return false;
         }
     }
 }
