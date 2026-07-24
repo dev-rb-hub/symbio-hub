@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Symbio.API.Data;
 using Symbio.API.Hubs;
+using Symbio.API.Middleware;
 using Symbio.API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +20,7 @@ builder.Services.AddScoped<Symbio.Core.Repositories.IPinchOnboardingGateway, Sym
 builder.Services.AddScoped<Symbio.Core.Repositories.IIdentityVerificationService, Symbio.Infrastructure.IdentityVerificationService>();
 builder.Services.AddHttpClient<Symbio.Core.Repositories.IPinchMerchantService, Symbio.Infrastructure.PinchMerchantService>();
 builder.Services.AddSingleton<Symbio.Core.Services.IPaymentSplitCalculator, Symbio.Core.Services.PaymentSplitCalculator>();
+builder.Services.AddScoped<PinchSignatureValidationFilter>();
 builder.Services.AddSecurityServices(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddSignalR();

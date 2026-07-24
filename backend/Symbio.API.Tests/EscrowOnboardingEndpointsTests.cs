@@ -177,11 +177,20 @@ public class EscrowOnboardingEndpointsTests : IClassFixture<ApiTestFactory>
 
         var response = await client.PostAsJsonAsync("/api/webhooks/pinch-settlements", new
         {
-            projectId = "demo-project-epic7-1",
-            settlementStatus = "confirmed",
-            amount = 1000m,
-            currency = "AUD",
-            providerReference = "pinch-ref-001"
+            id = "evt_pinch_001",
+            type = "transfer",
+            eventDate = DateTime.UtcNow,
+            metadata = new
+            {
+                projectId = "demo-project-epic7-1"
+            },
+            data = new
+            {
+                settlementStatus = "confirmed",
+                amount = 1000m,
+                currency = "AUD",
+                providerReference = "pinch-ref-001"
+            }
         });
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
