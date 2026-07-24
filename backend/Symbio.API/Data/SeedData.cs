@@ -62,48 +62,158 @@ namespace Symbio.API.Data
 
             if (db.Jobs.Any())
             {
-                return;
+                // keep going so later bootstrap data can be added independently
             }
 
-            var jobs = new[]
+            if (!db.Jobs.Any())
             {
-                new Job
+                var jobs = new[]
                 {
-                    Title = "Regional Retail Website Refresh",
-                    Description = "Build a mobile-first homepage and checkout experience for a small NSW retail brand.",
-                    ClientName = "Harper",
-                    ClientSurname = "Bright",
-                    Budget = 9500m,
-                    ContactEmail = "contact@harperbright.com",
-                    IsPublished = true,
-                    PostedAt = DateTime.UtcNow.AddDays(-5)
-                },
-                new Job
-                {
-                    Title = "Local Healthcare Data Dashboard",
-                    Description = "Create a lightweight reporting dashboard for a regional practice using anonymised patient metrics.",
-                    ClientName = "Jade",
-                    ClientSurname = "Taylor",
-                    Budget = 14500m,
-                    ContactEmail = "jade.taylor@coastalhealth.au",
-                    IsPublished = true,
-                    PostedAt = DateTime.UtcNow.AddDays(-12)
-                },
-                new Job
-                {
-                    Title = "Food Delivery Loyalty Campaign",
-                    Description = "Design and build a customer loyalty landing page with signup flow and campaign analytics.",
-                    ClientName = "Miles",
-                    ClientSurname = "Kerr",
-                    Budget = 7200m,
-                    ContactEmail = "miles@harvestdeli.au",
-                    IsPublished = true,
-                    PostedAt = DateTime.UtcNow.AddDays(-2)
-                }
-            };
+                    new Job
+                    {
+                        Title = "Regional Retail Website Refresh",
+                        Description = "Build a mobile-first homepage and checkout experience for a small NSW retail brand.",
+                        ClientName = "Harper",
+                        ClientSurname = "Bright",
+                        Budget = 9500m,
+                        ContactEmail = "contact@harperbright.com",
+                        IsPublished = true,
+                        PostedAt = DateTime.UtcNow.AddDays(-5)
+                    },
+                    new Job
+                    {
+                        Title = "Local Healthcare Data Dashboard",
+                        Description = "Create a lightweight reporting dashboard for a regional practice using anonymised patient metrics.",
+                        ClientName = "Jade",
+                        ClientSurname = "Taylor",
+                        Budget = 14500m,
+                        ContactEmail = "jade.taylor@coastalhealth.au",
+                        IsPublished = true,
+                        PostedAt = DateTime.UtcNow.AddDays(-12)
+                    },
+                    new Job
+                    {
+                        Title = "Food Delivery Loyalty Campaign",
+                        Description = "Design and build a customer loyalty landing page with signup flow and campaign analytics.",
+                        ClientName = "Miles",
+                        ClientSurname = "Kerr",
+                        Budget = 7200m,
+                        ContactEmail = "miles@harvestdeli.au",
+                        IsPublished = true,
+                        PostedAt = DateTime.UtcNow.AddDays(-2)
+                    }
+                };
 
-            db.Jobs.AddRange(jobs);
-            db.SaveChanges();
+                db.Jobs.AddRange(jobs);
+                db.SaveChanges();
+            }
+
+            db.Database.ExecuteSqlRaw(@"
+CREATE TABLE IF NOT EXISTS DeliveryAssignments (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ExpertEmail TEXT NOT NULL,
+    ProjectTitle TEXT NOT NULL,
+    ClientName TEXT NOT NULL,
+    Category TEXT NOT NULL,
+    ScopeSummary TEXT NOT NULL,
+    CurrentMilestone TEXT NOT NULL,
+    Status TEXT NOT NULL,
+    ProgressPercent INTEGER NOT NULL,
+    Priority TEXT NOT NULL,
+    DueDate TEXT NOT NULL,
+    IsActive INTEGER NOT NULL DEFAULT 1,
+    UpdatedAt TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS DeliveryLogs (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    DeliveryAssignmentId INTEGER NOT NULL,
+    ExpertEmail TEXT NOT NULL,
+    CreatedByEmail TEXT NOT NULL,
+    Level TEXT NOT NULL,
+    Message TEXT NOT NULL,
+    CreatedAt TEXT NOT NULL
+);
+");
+
+            if (!db.DeliveryAssignments.Any())
+            {
+                var assignments = new[]
+                {
+                    new DeliveryAssignment
+                    {
+                        Id = 1,
+                        ExpertEmail = "expert@example.com",
+                        ProjectTitle = "Regional Retail Website Refresh",
+                        ClientName = "Harper Bright",
+                        Category = "Web Experience",
+                        ScopeSummary = "Rebuild the public homepage and checkout flow with mobile-first delivery milestones.",
+                        CurrentMilestone = "Checkout prototype ready for review",
+                        Status = "In Progress",
+                        ProgressPercent = 48,
+                        Priority = "High",
+                        DueDate = DateTime.UtcNow.AddDays(7),
+                        IsActive = true,
+                        UpdatedAt = DateTime.UtcNow.AddHours(-3)
+                    },
+                    new DeliveryAssignment
+                    {
+                        Id = 2,
+                        ExpertEmail = "expert@example.com",
+                        ProjectTitle = "Local Healthcare Data Dashboard",
+                        ClientName = "Jade Taylor",
+                        Category = "Analytics",
+                        ScopeSummary = "Create a lightweight dashboard for practice metrics and reporting visibility.",
+                        CurrentMilestone = "Data schema alignment",
+                        Status = "Ready for build",
+                        ProgressPercent = 22,
+                        Priority = "Medium",
+                        DueDate = DateTime.UtcNow.AddDays(12),
+                        IsActive = true,
+                        UpdatedAt = DateTime.UtcNow.AddHours(-8)
+                    }
+                };
+
+                db.DeliveryAssignments.AddRange(assignments);
+                db.SaveChanges();
+            }
+
+            if (!db.DeliveryLogs.Any())
+            {
+                var logs = new[]
+                {
+                    new DeliveryLogEntry
+                    {
+                        DeliveryAssignmentId = 1,
+                        ExpertEmail = "expert@example.com",
+                        CreatedByEmail = "expert@example.com",
+                        Level = "info",
+                        Message = "Completed first pass on mobile layouts and core checkout states.",
+                        CreatedAt = DateTime.UtcNow.AddHours(-4)
+                    },
+                    new DeliveryLogEntry
+                    {
+                        DeliveryAssignmentId = 1,
+                        ExpertEmail = "expert@example.com",
+                        CreatedByEmail = "expert@example.com",
+                        Level = "success",
+                        Message = "Shared milestone preview with the SME for feedback.",
+                        CreatedAt = DateTime.UtcNow.AddHours(-2)
+                    },
+                    new DeliveryLogEntry
+                    {
+                        DeliveryAssignmentId = 2,
+                        ExpertEmail = "expert@example.com",
+                        CreatedByEmail = "expert@example.com",
+                        Level = "warning",
+                        Message = "Waiting on data sample confirmation before building dashboard cards.",
+                        CreatedAt = DateTime.UtcNow.AddHours(-1)
+                    }
+                };
+
+                db.DeliveryLogs.AddRange(logs);
+                db.SaveChanges();
+            }
         }
 
         public static string HashPassword(string password)

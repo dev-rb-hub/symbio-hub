@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Symbio.API.Data;
+using Symbio.API.Hubs;
 using Symbio.API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,7 @@ builder.Services.AddScoped<Symbio.Core.Repositories.IProjectRepository, Symbio.I
 builder.Services.AddScoped<Symbio.Core.Repositories.ITalentDiscoveryRepository, Symbio.Infrastructure.TalentDiscoveryRepository>();
 builder.Services.AddSecurityServices(builder.Configuration);
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -27,6 +29,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<DeliveryWorkbenchHub>("/hubs/workbench");
 
 app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
 

@@ -21,7 +21,7 @@ export const LandingPage: React.FC = () => (
         </article>
         <article style={{ padding: '1.5rem', background: '#fff8f1', borderRadius: 16 }}>
           <h2>For Experts</h2>
-          <p>Showcase your skills and access regional briefs with compliant, consent-first workflows designed for trusted long-term engagement.</p>
+          <p>Showcase your skills, review delivery workbench updates, and access regional briefs with compliant, consent-first workflows designed for trusted long-term engagement.</p>
         </article>
         <article style={{ padding: '1.5rem', background: '#f3faf7', borderRadius: 16 }}>
           <h2>Talent discovery</h2>

@@ -27,11 +27,48 @@ CREATE TABLE IF NOT EXISTS Users (
     OnboardedAt TEXT
 );
 
+CREATE TABLE IF NOT EXISTS DeliveryAssignments (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ExpertEmail TEXT NOT NULL,
+    ProjectTitle TEXT NOT NULL,
+    ClientName TEXT NOT NULL,
+    Category TEXT NOT NULL,
+    ScopeSummary TEXT NOT NULL,
+    CurrentMilestone TEXT NOT NULL,
+    Status TEXT NOT NULL,
+    ProgressPercent INTEGER NOT NULL,
+    Priority TEXT NOT NULL,
+    DueDate TEXT NOT NULL,
+    IsActive INTEGER NOT NULL DEFAULT 1,
+    UpdatedAt TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS DeliveryLogs (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    DeliveryAssignmentId INTEGER NOT NULL,
+    ExpertEmail TEXT NOT NULL,
+    CreatedByEmail TEXT NOT NULL,
+    Level TEXT NOT NULL,
+    Message TEXT NOT NULL,
+    CreatedAt TEXT NOT NULL
+);
+
 INSERT INTO Jobs (Title, Description, ClientName, ClientSurname, Budget, ContactEmail, IsPublished, PostedAt)
 VALUES
 ('Regional Retail Website Refresh', 'Build a mobile-first homepage and checkout experience for a small NSW retail brand.', 'Harper', 'Bright', 9500.00, 'contact@harperbright.com', 1, '2026-07-19T00:00:00Z'),
 ('Local Healthcare Data Dashboard', 'Create a lightweight reporting dashboard for a regional practice using anonymised patient metrics.', 'Jade', 'Taylor', 14500.00, 'jade.taylor@coastalhealth.au', 1, '2026-07-12T00:00:00Z'),
 ('Food Delivery Loyalty Campaign', 'Design and build a customer loyalty landing page with signup flow and campaign analytics.', 'Miles', 'Kerr', 7200.00, 'miles@harvestdeli.au', 1, '2026-07-22T00:00:00Z');
+
+INSERT INTO DeliveryAssignments (ExpertEmail, ProjectTitle, ClientName, Category, ScopeSummary, CurrentMilestone, Status, ProgressPercent, Priority, DueDate, IsActive, UpdatedAt)
+VALUES
+('expert@example.com', 'Regional Retail Website Refresh', 'Harper Bright', 'Web Experience', 'Rebuild the public homepage and checkout flow with mobile-first delivery milestones.', 'Checkout prototype ready for review', 'In Progress', 48, 'High', '2026-07-31T00:00:00Z', 1, '2026-07-25T08:00:00Z'),
+('expert@example.com', 'Local Healthcare Data Dashboard', 'Jade Taylor', 'Analytics', 'Create a lightweight dashboard for practice metrics and reporting visibility.', 'Data schema alignment', 'Ready for build', 22, 'Medium', '2026-08-05T00:00:00Z', 1, '2026-07-25T03:00:00Z');
+
+INSERT INTO DeliveryLogs (DeliveryAssignmentId, ExpertEmail, CreatedByEmail, Level, Message, CreatedAt)
+VALUES
+(1, 'expert@example.com', 'expert@example.com', 'info', 'Completed first pass on mobile layouts and core checkout states.', '2026-07-25T04:00:00Z'),
+(1, 'expert@example.com', 'expert@example.com', 'success', 'Shared milestone preview with the SME for feedback.', '2026-07-25T06:00:00Z'),
+(2, 'expert@example.com', 'expert@example.com', 'warning', 'Waiting on data sample confirmation before building dashboard cards.', '2026-07-25T07:00:00Z');
 
 INSERT INTO Users (Email, PasswordHash, Role, CreatedAt, IsActive, CompanyName, BusinessIdentifier, ProfileSummary, OnboardingCompleted, OnboardedAt)
 VALUES
