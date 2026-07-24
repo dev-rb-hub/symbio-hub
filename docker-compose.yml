@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # 1. Containerised .NET Backend REST API Layer
   symbio-backend:
@@ -8,16 +6,13 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-      target: build # Intercepts the multi-stage build early to retain compilation toolsets
     ports:
       - "5001:8080" # Maps local port 5001 to container HTTP port 8080
-      - "5002:8081" # Maps local port 5002 to container HTTPS port 8081
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:8080;https://+:8081
+      - ASPNETCORE_URLS=http://+:8080
     volumes:
-      - ./backend:/src # Mounts local source folder into the compilation directory
-      - ~/.aspnet/https:/root/.aspnet/https:ro # Shares your local dev SSL certificates
+      - ./backend:/src # Mounts backend source for live development
     networks:
       - symbio-network
 
@@ -27,7 +22,7 @@ services:
     container_name: symbio_frontend_dev
     build:
       context: ./frontend/Symbio.Frontend
-      dockerfile: ../../.devcontainer/Dockerfile # Borrows the Node-ready Dev Container base
+      dockerfile: Dockerfile
     ports:
       - "5173:5173" # Maps local development port 5173 directly to Vite
     environment:
