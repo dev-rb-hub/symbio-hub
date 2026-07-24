@@ -10,8 +10,23 @@ CREATE TABLE IF NOT EXISTS Jobs (
     PostedAt TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS Users (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Email TEXT NOT NULL UNIQUE,
+    PasswordHash TEXT NOT NULL,
+    Role TEXT NOT NULL,
+    CreatedAt TEXT NOT NULL,
+    IsActive INTEGER NOT NULL DEFAULT 1
+);
+
 INSERT INTO Jobs (Title, Description, ClientName, ClientSurname, Budget, ContactEmail, IsPublished, PostedAt)
 VALUES
 ('Regional Retail Website Refresh', 'Build a mobile-first homepage and checkout experience for a small NSW retail brand.', 'Harper', 'Bright', 9500.00, 'contact@harperbright.com', 1, '2026-07-19T00:00:00Z'),
 ('Local Healthcare Data Dashboard', 'Create a lightweight reporting dashboard for a regional practice using anonymised patient metrics.', 'Jade', 'Taylor', 14500.00, 'jade.taylor@coastalhealth.au', 1, '2026-07-12T00:00:00Z'),
 ('Food Delivery Loyalty Campaign', 'Design and build a customer loyalty landing page with signup flow and campaign analytics.', 'Miles', 'Kerr', 7200.00, 'miles@harvestdeli.au', 1, '2026-07-22T00:00:00Z');
+
+INSERT INTO Users (Email, PasswordHash, Role, CreatedAt, IsActive)
+VALUES
+('sme@example.com', 'password-hash-placeholder', 'SME', '2026-07-01T00:00:00Z', 1),
+('expert@example.com', 'password-hash-placeholder', 'Expert', '2026-07-01T00:00:00Z', 1),
+('admin@example.com', 'password-hash-placeholder', 'Admin', '2026-07-01T00:00:00Z', 1);
