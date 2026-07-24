@@ -3,7 +3,6 @@ using Symbio.Core.Repositories;
 using Microsoft.Extensions.Configuration;
 using System.Net.Http.Json;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Text.Json;
 
 namespace Symbio.Infrastructure;
@@ -25,7 +24,7 @@ public class PinchMerchantService : IPinchMerchantService
         string companyName,
         CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(_settings.ApiKey) || string.IsNullOrWhiteSpace(_settings.ApiSecret))
+        if (string.IsNullOrWhiteSpace(_settings.ApplicationId) || string.IsNullOrWhiteSpace(_settings.SecretKey))
         {
             return RegisterMockAsync(expertEmail);
         }
@@ -122,15 +121,8 @@ public class PinchMerchantService : IPinchMerchantService
 
         using var request = new HttpRequestMessage(HttpMethod.Post, tokensUrl)
         {
-            Content = new FormUrlEncodedContent(new Dictionary<string, string>
-            {
-                ["grant_type"] = "client_credentials",
-                ["scope"] = "api1"
-            })
+            Content = new FormUrlEncodedContent(BuildTokenFormFields())
         };
-
-        var basicToken = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_settings.ApiKey}:{_settings.ApiSecret}"));
-        request.Headers.Authorization = new AuthenticationHeaderValue("Basic", basicToken);
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
         if (!response.IsSuccessStatusCode)
@@ -207,5 +199,22 @@ public class PinchMerchantService : IPinchMerchantService
         return root.TryGetProperty(propertyName, out var value) && value.ValueKind is JsonValueKind.True or JsonValueKind.False
             ? value.GetBoolean()
             : null;
+    }
+
+    private Dictionary<string, string> BuildTokenFormFields()
+    {
+        var fields = new Dictionary<string, string>
+        {
+            ["grant_type"] = "client_credentials",
+            ["client_id"] = _settings.ApplicationId,
+            ["client_secret"] = _settings.SecretKey
+        };
+
+        if (!string.IsNullOrWhiteSpace(_settings.TokenScope))
+        {
+            fields["scope"] = _settings.TokenScope.Trim();
+        }
+
+        return fields;
     }
 }

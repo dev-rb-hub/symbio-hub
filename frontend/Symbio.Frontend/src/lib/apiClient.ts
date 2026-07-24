@@ -1,4 +1,6 @@
-const API_BASE_URL = 'http://localhost:5001';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL?.trim()
+  || (import.meta.env.DEV ? '/api-proxy' : 'http://localhost:5001');
 
 type RequestOptions = {
   method?: string;

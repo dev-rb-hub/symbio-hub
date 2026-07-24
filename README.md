@@ -68,6 +68,11 @@ Detailed setup and runtime instructions now live in docs:
 - [Getting Started](docs/getting-started.md)
 - [API Reference](docs/api-reference.md)
 
+Configuration highlights:
+
+- Local database and developer config defaults are documented in [Getting Started](docs/getting-started.md#database-setup-local).
+- Pinch sandbox portal and credential setup are documented in [Getting Started](docs/getting-started.md#developer-configuration-defaults).
+
 Quick start:
 
 ```powershell

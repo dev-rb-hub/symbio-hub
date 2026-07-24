@@ -129,7 +129,7 @@ public sealed class PinchDebitService : IPinchDebitService
 
     private bool HasCredentials()
     {
-        return !string.IsNullOrWhiteSpace(_settings.ApiKey) && !string.IsNullOrWhiteSpace(_settings.ApiSecret);
+        return !string.IsNullOrWhiteSpace(_settings.ApplicationId) && !string.IsNullOrWhiteSpace(_settings.SecretKey);
     }
 
     private async Task<string?> GetAccessTokenAsync(CancellationToken cancellationToken)
@@ -139,15 +139,8 @@ public sealed class PinchDebitService : IPinchDebitService
 
         using var request = new HttpRequestMessage(HttpMethod.Post, tokensUrl)
         {
-            Content = new FormUrlEncodedContent(new Dictionary<string, string>
-            {
-                ["grant_type"] = "client_credentials",
-                ["scope"] = "api1"
-            })
+            Content = new FormUrlEncodedContent(BuildTokenFormFields())
         };
-
-        var basicToken = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_settings.ApiKey}:{_settings.ApiSecret}"));
-        request.Headers.Authorization = new AuthenticationHeaderValue("Basic", basicToken);
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
         if (!response.IsSuccessStatusCode)
@@ -195,5 +188,22 @@ public sealed class PinchDebitService : IPinchDebitService
         return root.TryGetProperty(propertyName, out var value) && value.ValueKind == JsonValueKind.String
             ? value.GetString()
             : null;
+    }
+
+    private Dictionary<string, string> BuildTokenFormFields()
+    {
+        var fields = new Dictionary<string, string>
+        {
+            ["grant_type"] = "client_credentials",
+            ["client_id"] = _settings.ApplicationId,
+            ["client_secret"] = _settings.SecretKey
+        };
+
+        if (!string.IsNullOrWhiteSpace(_settings.TokenScope))
+        {
+            fields["scope"] = _settings.TokenScope.Trim();
+        }
+
+        return fields;
     }
 }

@@ -1,6 +1,5 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Symbio.Core.Models;
@@ -111,7 +110,7 @@ public sealed class PinchRecurringBillingService : IRecurringBillingService
 
     private bool HasCredentials()
     {
-        return !string.IsNullOrWhiteSpace(_settings.ApiKey) && !string.IsNullOrWhiteSpace(_settings.ApiSecret);
+        return !string.IsNullOrWhiteSpace(_settings.ApplicationId) && !string.IsNullOrWhiteSpace(_settings.SecretKey);
     }
 
     private async Task<string?> GetAccessTokenAsync(CancellationToken cancellationToken)
@@ -121,15 +120,8 @@ public sealed class PinchRecurringBillingService : IRecurringBillingService
 
         using var request = new HttpRequestMessage(HttpMethod.Post, tokensUrl)
         {
-            Content = new FormUrlEncodedContent(new Dictionary<string, string>
-            {
-                ["grant_type"] = "client_credentials",
-                ["scope"] = "api1"
-            })
+            Content = new FormUrlEncodedContent(BuildTokenFormFields())
         };
-
-        var basicToken = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_settings.ApiKey}:{_settings.ApiSecret}"));
-        request.Headers.Authorization = new AuthenticationHeaderValue("Basic", basicToken);
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
         if (!response.IsSuccessStatusCode)
@@ -176,5 +168,22 @@ public sealed class PinchRecurringBillingService : IRecurringBillingService
         return root.TryGetProperty(propertyName, out var value) && value.ValueKind == JsonValueKind.String
             ? value.GetString()
             : null;
+    }
+
+    private Dictionary<string, string> BuildTokenFormFields()
+    {
+        var fields = new Dictionary<string, string>
+        {
+            ["grant_type"] = "client_credentials",
+            ["client_id"] = _settings.ApplicationId,
+            ["client_secret"] = _settings.SecretKey
+        };
+
+        if (!string.IsNullOrWhiteSpace(_settings.TokenScope))
+        {
+            fields["scope"] = _settings.TokenScope.Trim();
+        }
+
+        return fields;
     }
 }

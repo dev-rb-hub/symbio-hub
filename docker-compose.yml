@@ -27,6 +27,7 @@ services:
       - "5173:5173" # Maps local development port 5173 directly to Vite
     environment:
       - CHOKIDAR_USEPOLLING=true # Forces accurate file change tracking inside virtualized Linux volumes
+      - VITE_API_PROXY_TARGET=http://symbio-backend:8080
     volumes:
       - ./frontend/Symbio.Frontend:/app
       - /app/node_modules # Anonymous volume to lock down node modules separation from host system
