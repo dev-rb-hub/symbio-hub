@@ -22,7 +22,7 @@ namespace Symbio.Infrastructure
             {
                 var client = new CosmosClient(connectionString);
                 var database = client.CreateDatabaseIfNotExistsAsync(databaseName).GetAwaiter().GetResult();
-                var containerResponse = database.Database.CreateContainerIfNotExistsAsync(new ContainerProperties(containerName, "/EpicId")).GetAwaiter().GetResult();
+                var containerResponse = database.Database.CreateContainerIfNotExistsAsync(new ContainerProperties(containerName, "/MilestoneId")).GetAwaiter().GetResult();
                 _container = containerResponse.Container;
             }
         }
