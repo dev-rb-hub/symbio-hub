@@ -70,4 +70,57 @@ resource sqlDb 'Microsoft.Sql/servers/databases@2022-08-01-preview' = {
   dependsOn: [sqlServer]
 }
 
+resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2023-05-15' = {
+  name: 'symbio-hub-cosmos'
+  location: location
+  kind: 'GlobalDocumentDB'
+  properties: {
+    databaseAccountOfferType: 'Standard'
+    locations: [
+      {
+        locationName: location
+        failoverPriority: 0
+        isZoneRedundant: false
+      }
+    ]
+    capabilities: [
+      {
+        name: 'EnableServerless'
+      }
+      {
+        name: 'EnableMultipleWriteLocations'
+      }
+    ]
+    consistencyPolicy: {
+      defaultConsistencyLevel: 'Session'
+    }
+  }
+}
+
+resource cosmosDb 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2023-05-15' = {
+  name: '${cosmosAccount.name}/SymbioHub'
+  properties: {
+    resource: {
+      id: 'SymbioHub'
+    }
+  }
+  dependsOn: [cosmosAccount]
+}
+
+resource cosmosContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2023-05-15' = {
+  name: '${cosmosAccount.name}/SymbioHub/Projects'
+  properties: {
+    resource: {
+      id: 'Projects'
+      partitionKey: {
+        paths: ['/Category']
+        kind: 'Hash'
+      }
+      defaultTtl: -1
+    }
+  }
+  dependsOn: [cosmosDb]
+}
+
 output webAppUrl string = webApp.defaultHostName
+output cosmosEndpoint string = cosmosAccount.properties.documentEndpoint

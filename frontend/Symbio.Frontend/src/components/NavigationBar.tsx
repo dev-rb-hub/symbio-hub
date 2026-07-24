@@ -10,6 +10,10 @@ export const NavigationBar: React.FC = () => {
       <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
         <Link to="/" style={{ color: '#0072ce', fontWeight: 700, textDecoration: 'none' }}>Symbio Hub</Link>
         <Link to="/jobs" style={{ color: '#333', textDecoration: 'none' }}>Public jobs</Link>
+        <Link to="/marketplace" style={{ color: '#333', textDecoration: 'none' }}>Marketplace</Link>
+        {session && session.role === 'SME' && (
+          <Link to="/project/new" style={{ color: '#333', textDecoration: 'none' }}>Post a Project</Link>
+        )}
         {session && <Link to="/onboarding" style={{ color: '#333', textDecoration: 'none' }}>Trust onboarding</Link>}
         {session && <Link to="/profile" style={{ color: '#333', textDecoration: 'none' }}>Profile</Link>}
       </div>

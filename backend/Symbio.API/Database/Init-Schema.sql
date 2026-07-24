@@ -30,6 +30,19 @@ VALUES
 ('Local Healthcare Data Dashboard', 'Create a lightweight reporting dashboard for a regional practice using anonymised patient metrics.', 'Jade', 'Taylor', 14500.00, 'jade.taylor@coastalhealth.au', 1, '2026-07-12T00:00:00Z'),
 ('Food Delivery Loyalty Campaign', 'Design and build a customer loyalty landing page with signup flow and campaign analytics.', 'Miles', 'Kerr', 7200.00, 'miles@harvestdeli.au', 1, '2026-07-22T00:00:00Z');
 
+CREATE TABLE IF NOT EXISTS Projects (
+    Id TEXT PRIMARY KEY,
+    Title TEXT NOT NULL,
+    Description TEXT NOT NULL,
+    Category TEXT NOT NULL,
+    Location TEXT NOT NULL,
+    Budget REAL NOT NULL,
+    ClientEmail TEXT NOT NULL,
+    MilestonesJson TEXT NOT NULL,
+    IsPublished INTEGER NOT NULL DEFAULT 1,
+    PostedAt TEXT NOT NULL
+);
+
 INSERT INTO Users (Email, PasswordHash, Role, CreatedAt, IsActive, CompanyName, BusinessIdentifier, ProfileSummary, OnboardingCompleted, OnboardedAt)
 VALUES
 ('sme@example.com', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'SME', '2026-07-01T00:00:00Z', 1, 'Coastal SME Services', 'ABN 12 345 678 901', 'Regional digital transformation for small businesses.', 1, '2026-07-01T00:00:00Z'),

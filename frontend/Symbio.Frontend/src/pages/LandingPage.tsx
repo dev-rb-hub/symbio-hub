@@ -27,6 +27,7 @@ export const LandingPage: React.FC = () => (
 
       <nav style={{ marginTop: '2.5rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
         <Link to="/jobs" style={{ textDecoration: 'none', padding: '0.85rem 1.25rem', background: '#0072ce', color: '#fff', borderRadius: 999 }}>Browse public jobs</Link>
+        <Link to="/marketplace" style={{ textDecoration: 'none', padding: '0.85rem 1.25rem', background: '#f1f3f6', color: '#111', borderRadius: 999 }}>Explore marketplace</Link>
         <Link to="/login" style={{ textDecoration: 'none', padding: '0.85rem 1.25rem', background: '#f1f3f6', color: '#111', borderRadius: 999 }}>Log in</Link>
         <Link to="/onboarding" style={{ textDecoration: 'none', padding: '0.85rem 1.25rem', background: '#0f9d58', color: '#fff', borderRadius: 999 }}>Start trust onboarding</Link>
       </nav>

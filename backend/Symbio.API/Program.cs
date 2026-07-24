@@ -11,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<SymbioDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=SymbioHub.db"));
 
+builder.Services.AddScoped<Symbio.Core.Repositories.IProjectRepository, Symbio.Infrastructure.ProjectRepository>();
 builder.Services.AddSecurityServices(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
