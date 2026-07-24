@@ -188,6 +188,22 @@ CREATE TABLE IF NOT EXISTS DirectDebitPullRequests (
     RequestedAtUtc TEXT NOT NULL,
     ProcessedAtUtc TEXT
 );
+
+CREATE TABLE IF NOT EXISTS AccountingInvoices (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ProjectId TEXT NOT NULL,
+    MilestoneId TEXT NOT NULL,
+    ClientEmail TEXT NOT NULL,
+    Provider TEXT NOT NULL,
+    ProviderInvoiceId TEXT NOT NULL,
+    InvoiceNumber TEXT NOT NULL,
+    Status TEXT NOT NULL,
+    TotalAmount REAL NOT NULL,
+    Currency TEXT NOT NULL,
+    LedgerPayloadJson TEXT NOT NULL,
+    CreatedAtUtc TEXT NOT NULL,
+    UpdatedAtUtc TEXT NOT NULL
+);
 ");
             }
 

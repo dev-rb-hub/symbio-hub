@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Symbio.API.Data;
+using Symbio.API.Hubs;
 using Symbio.API.Middleware;
 using Symbio.API.Models;
 using Symbio.Core.Services;
@@ -15,14 +17,25 @@ namespace Symbio.API.Controllers
     {
         private readonly SymbioDbContext _dbContext;
         private readonly IPaymentSplitCalculator _paymentSplitCalculator;
+        private readonly IHubContext<AccountingHub> _accountingHubContext;
 
         public WebhooksController(
             SymbioDbContext dbContext,
-            IPaymentSplitCalculator paymentSplitCalculator)
+            IPaymentSplitCalculator paymentSplitCalculator,
+            IHubContext<AccountingHub> accountingHubContext)
         {
             _dbContext = dbContext;
             _paymentSplitCalculator = paymentSplitCalculator;
+            _accountingHubContext = accountingHubContext;
         }
+
+        public sealed record AccountingInvoiceStatusWebhookRequest(
+            string Provider,
+            string ProviderInvoiceId,
+            string Status,
+            string? ProjectId,
+            string? MilestoneId,
+            string? InvoiceNumber);
 
         [HttpPost("pinch-settlements")]
         [ServiceFilter(typeof(PinchSignatureValidationFilter))]
@@ -69,6 +82,73 @@ namespace Symbio.API.Controllers
                 state.Currency,
                 state.LastProviderReference,
                 state.UpdatedAtUtc
+            });
+        }
+
+        [HttpPost("accounting-invoices")]
+        public async Task<IActionResult> HandleAccountingInvoiceStatus([FromBody] AccountingInvoiceStatusWebhookRequest request)
+        {
+            if (request == null || string.IsNullOrWhiteSpace(request.ProviderInvoiceId) || string.IsNullOrWhiteSpace(request.Status))
+            {
+                return BadRequest(new { message = "ProviderInvoiceId and Status are required." });
+            }
+
+            var invoice = await _dbContext.AccountingInvoices
+                .FirstOrDefaultAsync(item => item.ProviderInvoiceId == request.ProviderInvoiceId)
+                ?? await _dbContext.AccountingInvoices.FirstOrDefaultAsync(item =>
+                    !string.IsNullOrWhiteSpace(request.ProjectId)
+                    && !string.IsNullOrWhiteSpace(request.MilestoneId)
+                    && item.ProjectId == request.ProjectId
+                    && item.MilestoneId == request.MilestoneId);
+
+            if (invoice == null)
+            {
+                return NotFound(new { message = "Invoice record not found." });
+            }
+
+            invoice.Status = request.Status.Trim();
+            if (!string.IsNullOrWhiteSpace(request.InvoiceNumber))
+            {
+                invoice.InvoiceNumber = request.InvoiceNumber.Trim();
+            }
+            if (!string.IsNullOrWhiteSpace(request.Provider))
+            {
+                invoice.Provider = request.Provider.Trim();
+            }
+            invoice.UpdatedAtUtc = DateTime.UtcNow;
+
+            var paymentState = await _dbContext.ProjectPaymentStateRecords
+                .FirstOrDefaultAsync(item => item.ProjectId == invoice.ProjectId);
+
+            if (paymentState != null && request.Status.Equals("Paid", StringComparison.OrdinalIgnoreCase))
+            {
+                paymentState.State = "Paid";
+                paymentState.UpdatedAtUtc = DateTime.UtcNow;
+                paymentState.LastProviderReference = invoice.ProviderInvoiceId;
+            }
+
+            await _dbContext.SaveChangesAsync();
+
+            await _accountingHubContext.Clients.Group(AccountingHub.GetGroupName(invoice.ClientEmail)).SendAsync("InvoiceStatusChanged", new
+            {
+                invoice.ProjectId,
+                invoice.MilestoneId,
+                invoice.Provider,
+                invoice.ProviderInvoiceId,
+                invoice.InvoiceNumber,
+                invoiceStatus = invoice.Status,
+                paymentState = paymentState?.State ?? "Unknown",
+                invoice.TotalAmount,
+                invoice.Currency,
+                updatedAtUtc = invoice.UpdatedAtUtc
+            });
+
+            return Ok(new
+            {
+                invoice.ProviderInvoiceId,
+                invoice.Status,
+                paymentState = paymentState?.State ?? "Unknown",
+                invoice.UpdatedAtUtc
             });
         }
     }

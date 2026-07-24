@@ -21,6 +21,7 @@ builder.Services.AddScoped<Symbio.Core.Repositories.IPinchOnboardingGateway, Sym
 builder.Services.AddScoped<Symbio.Core.Repositories.IIdentityVerificationService, Symbio.Infrastructure.IdentityVerificationService>();
 builder.Services.AddHttpClient<Symbio.Core.Repositories.IPinchMerchantService, Symbio.Infrastructure.PinchMerchantService>();
 builder.Services.AddHttpClient<Symbio.Core.Repositories.IPinchDebitService, Symbio.Infrastructure.PinchDebitService>();
+builder.Services.AddScoped<Symbio.Core.Repositories.IAccountingInvoicingService, Symbio.Infrastructure.PinchInvoicingService>();
 builder.Services.AddSingleton<Symbio.Core.Services.IPaymentSplitCalculator, Symbio.Core.Services.PaymentSplitCalculator>();
 builder.Services.AddScoped<PinchSignatureValidationFilter>();
 builder.Services.AddHostedService<MilestoneDebitWorker>();
@@ -41,6 +42,7 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapHub<DeliveryWorkbenchHub>("/hubs/workbench");
 app.MapHub<MarketplaceHub>("/hubs/marketplace");
+app.MapHub<AccountingHub>("/hubs/accounting");
 
 app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
 

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Symbio.API.Data;
+using Symbio.API.Models;
 using Symbio.Core.Models;
 using Symbio.Core.Repositories;
 using Symbio.Core.Services;
@@ -50,6 +51,7 @@ public sealed class MilestoneDebitWorker : BackgroundService
         using var scope = _serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<SymbioDbContext>();
         var pinchDebitService = scope.ServiceProvider.GetRequiredService<IPinchDebitService>();
+        var accountingInvoicingService = scope.ServiceProvider.GetRequiredService<IAccountingInvoicingService>();
         var splitCalculator = scope.ServiceProvider.GetRequiredService<IPaymentSplitCalculator>();
 
         var pending = await dbContext.DirectDebitPullRequests
@@ -97,6 +99,46 @@ public sealed class MilestoneDebitWorker : BackgroundService
                     paymentState.Currency = request.Currency;
                     paymentState.LastProviderReference = result.DebitId;
                     paymentState.UpdatedAtUtc = DateTime.UtcNow;
+                }
+
+                var preApproval = await dbContext.PaymentPreApprovals
+                    .Where(item => item.ProjectId == request.ProjectId && item.MilestoneId == request.MilestoneId)
+                    .OrderByDescending(item => item.CreatedAtUtc)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                var clientEmail = preApproval?.ClientEmail ?? "sme@example.com";
+                var invoiceResult = await accountingInvoicingService.TranslateAndCreateInvoiceAsync(new AccountingInvoiceCreateRequest
+                {
+                    ProjectId = request.ProjectId,
+                    MilestoneId = request.MilestoneId,
+                    ClientEmail = clientEmail,
+                    GrossAmount = split.GrossAmount,
+                    PlatformFeeAmount = split.PlatformFeeAmount,
+                    ContractorAmount = split.ContractorAmount,
+                    Currency = request.Currency,
+                    SettledAtUtc = DateTime.UtcNow
+                }, cancellationToken);
+
+                var existingInvoice = await dbContext.AccountingInvoices
+                    .FirstOrDefaultAsync(item => item.ProviderInvoiceId == invoiceResult.InvoiceId, cancellationToken);
+
+                if (existingInvoice == null)
+                {
+                    dbContext.AccountingInvoices.Add(new AccountingInvoiceRecord
+                    {
+                        ProjectId = request.ProjectId,
+                        MilestoneId = request.MilestoneId,
+                        ClientEmail = clientEmail,
+                        Provider = invoiceResult.Provider,
+                        ProviderInvoiceId = invoiceResult.InvoiceId,
+                        InvoiceNumber = invoiceResult.InvoiceNumber,
+                        Status = invoiceResult.Status,
+                        TotalAmount = invoiceResult.TotalAmount,
+                        Currency = invoiceResult.Currency,
+                        LedgerPayloadJson = invoiceResult.LedgerPayloadJson,
+                        CreatedAtUtc = DateTime.UtcNow,
+                        UpdatedAtUtc = DateTime.UtcNow
+                    });
                 }
             }
             else

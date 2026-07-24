@@ -46,6 +46,50 @@ public class PaymentsController : ControllerBase
         decimal? Amount,
         string? Currency);
 
+    [HttpGet("sme/invoices")]
+    [Authorize(Roles = "SME")]
+    public async Task<IActionResult> GetSmeInvoices()
+    {
+        var email = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            return Unauthorized();
+        }
+
+        var invoices = await _dbContext.AccountingInvoices
+            .Where(item => item.ClientEmail == email)
+            .OrderByDescending(item => item.UpdatedAtUtc)
+            .Take(50)
+            .ToListAsync();
+
+        var projectIds = invoices.Select(item => item.ProjectId).Distinct().ToList();
+        var states = await _dbContext.ProjectPaymentStateRecords
+            .Where(item => projectIds.Contains(item.ProjectId))
+            .ToDictionaryAsync(item => item.ProjectId, item => item);
+
+        var results = invoices.Select(item => new
+        {
+            item.ProjectId,
+            item.MilestoneId,
+            item.Provider,
+            item.ProviderInvoiceId,
+            item.InvoiceNumber,
+            invoiceStatus = item.Status,
+            paymentState = states.TryGetValue(item.ProjectId, out var state) ? state.State : "Unknown",
+            item.TotalAmount,
+            item.Currency,
+            item.CreatedAtUtc,
+            item.UpdatedAtUtc
+        });
+
+        return Ok(new
+        {
+            clientEmail = email,
+            count = invoices.Count,
+            invoices = results
+        });
+    }
+
     [HttpPost("pre-approvals")]
     [Authorize(Roles = "SME")]
     public async Task<IActionResult> CapturePreApproval([FromBody] CapturePreApprovalRequest request)

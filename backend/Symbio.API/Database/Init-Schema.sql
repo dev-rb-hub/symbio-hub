@@ -104,6 +104,22 @@ CREATE TABLE IF NOT EXISTS DirectDebitPullRequests (
     ProcessedAtUtc TEXT
 );
 
+CREATE TABLE IF NOT EXISTS AccountingInvoices (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ProjectId TEXT NOT NULL,
+    MilestoneId TEXT NOT NULL,
+    ClientEmail TEXT NOT NULL,
+    Provider TEXT NOT NULL,
+    ProviderInvoiceId TEXT NOT NULL,
+    InvoiceNumber TEXT NOT NULL,
+    Status TEXT NOT NULL,
+    TotalAmount REAL NOT NULL,
+    Currency TEXT NOT NULL,
+    LedgerPayloadJson TEXT NOT NULL,
+    CreatedAtUtc TEXT NOT NULL,
+    UpdatedAtUtc TEXT NOT NULL
+);
+
 INSERT INTO Jobs (Title, Description, ClientName, ClientSurname, Budget, ContactEmail, IsPublished, PostedAt)
 VALUES
 ('Regional Retail Website Refresh', 'Build a mobile-first homepage and checkout experience for a small NSW retail brand.', 'Harper', 'Bright', 9500.00, 'contact@harperbright.com', 1, '2026-07-19T00:00:00Z'),
