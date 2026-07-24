@@ -2,6 +2,8 @@ using Symbio.Core.Models;
 using Symbio.Core.Repositories;
 using Microsoft.Extensions.Configuration;
 using System.Net.Http.Json;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 
 namespace Symbio.Infrastructure;
@@ -14,16 +16,7 @@ public class PinchMerchantService : IPinchMerchantService
     public PinchMerchantService(HttpClient httpClient, IConfiguration configuration)
     {
         _httpClient = httpClient;
-        _settings = new PinchApiSettings
-        {
-            BaseUrl = configuration["Pinch:BaseUrl"] ?? "https://api.getpinch.com.au",
-            ApiKey = configuration["Pinch:ApiKey"] ?? string.Empty,
-            ApiSecret = configuration["Pinch:ApiSecret"] ?? string.Empty,
-            WebhookSecret = configuration["Pinch:WebhookSecret"] ?? string.Empty,
-            ValidateWebhookSignature = bool.TryParse(configuration["Pinch:ValidateWebhookSignature"], out var validate) && validate,
-            TokensPath = configuration["Pinch:TokensPath"] ?? "/tokens",
-            ManagedMerchantsPath = configuration["Pinch:ManagedMerchantsPath"] ?? "/managed-merchants"
-        };
+        _settings = PinchApiSettings.FromConfiguration(configuration);
     }
 
     public Task<SubMerchantRegistrationResult> RegisterSubMerchantAsync(
@@ -75,13 +68,25 @@ public class PinchMerchantService : IPinchMerchantService
         {
             Content = JsonContent.Create(new
             {
-                externalReference = expertEmail,
-                businessIdentifier,
-                businessName = companyName,
-                email = expertEmail
+                companyName = string.IsNullOrWhiteSpace(companyName) ? "Symbio Expert" : companyName,
+                companyEmail = expertEmail,
+                companyRegistrationNumber = businessIdentifier,
+                bankAccountRoutingNumber = "000000",
+                bankAccountNumber = "000000000",
+                contacts = new[]
+                {
+                    new
+                    {
+                        firstName = InferFirstName(expertEmail),
+                        lastName = InferLastName(expertEmail),
+                        email = expertEmail
+                    }
+                },
+                ipAddress = "127.0.0.1",
+                userAgent = "SymbioHub/1.0"
             })
         };
-        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         using var response = await _httpClient.SendAsync(request, cancellationToken);
         if (!response.IsSuccessStatusCode)
@@ -94,6 +99,7 @@ public class PinchMerchantService : IPinchMerchantService
 
         var merchantId = ReadString(json.RootElement, "merchantId")
             ?? ReadString(json.RootElement, "id")
+            ?? ReadString(json.RootElement, "Id")
             ?? $"pinch-submerchant-{expertEmail.Trim().ToLowerInvariant().Replace("@", "-").Replace(".", "-")}";
 
         var onboardingUrl = ReadString(json.RootElement, "onboardingUrl")
@@ -111,16 +117,22 @@ public class PinchMerchantService : IPinchMerchantService
 
     private async Task<string?> GetAccessTokenAsync(CancellationToken cancellationToken)
     {
-        var baseUrl = _settings.BaseUrl.TrimEnd('/');
-        var tokensUrl = $"{baseUrl}{NormalizePath(_settings.TokensPath)}";
+        var authBaseUrl = _settings.AuthBaseUrl.TrimEnd('/');
+        var tokensUrl = $"{authBaseUrl}{NormalizePath(_settings.TokensPath)}";
 
-        var tokenPayload = new
+        using var request = new HttpRequestMessage(HttpMethod.Post, tokensUrl)
         {
-            key = _settings.ApiKey,
-            secret = _settings.ApiSecret
+            Content = new FormUrlEncodedContent(new Dictionary<string, string>
+            {
+                ["grant_type"] = "client_credentials",
+                ["scope"] = "api1"
+            })
         };
 
-        using var response = await _httpClient.PostAsJsonAsync(tokensUrl, tokenPayload, cancellationToken);
+        var basicToken = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_settings.ApiKey}:{_settings.ApiSecret}"));
+        request.Headers.Authorization = new AuthenticationHeaderValue("Basic", basicToken);
+
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
         if (!response.IsSuccessStatusCode)
         {
             return null;
@@ -132,6 +144,45 @@ public class PinchMerchantService : IPinchMerchantService
         return ReadString(json.RootElement, "token")
             ?? ReadString(json.RootElement, "access_token")
             ?? ReadString(json.RootElement, "accessToken");
+    }
+
+    private static string InferFirstName(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            return "Primary";
+        }
+
+        var local = email.Split('@')[0];
+        var first = local.Split('.', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+        return string.IsNullOrWhiteSpace(first) ? "Primary" : Capitalize(first);
+    }
+
+    private static string InferLastName(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            return "Contact";
+        }
+
+        var local = email.Split('@')[0];
+        var parts = local.Split('.', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length > 1)
+        {
+            return Capitalize(parts[1]);
+        }
+
+        return "Contact";
+    }
+
+    private static string Capitalize(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return value;
+        }
+
+        return char.ToUpperInvariant(value[0]) + value[1..].ToLowerInvariant();
     }
 
     private static string NormalizePath(string path)
