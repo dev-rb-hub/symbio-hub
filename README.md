@@ -140,12 +140,16 @@ Symbio Hub uses a role-isolated, state-aware delivery matrix. The development li
 >
 > ✅ Epic 2 complete: unified authentication handshake, route guard matrix, and session synchronization are implemented.
 >
+> ✅ Epic 3 complete: trust onboarding, user profiles, and verified SME/expert registration are implemented.
+>
+> ✅ Epic 4 complete: demand marketplace project posting, Cosmos-backed project storage, and SME scope wizard are implemented.
+>
 | Epic ID | Epic Category | Targeted User Roles | Core State Focus | Operational Engine | Target Project Module | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **01** | **Public Experience** | Guest / Anonymous | Logged-Out | Non-Payment | `Symbio.Frontend` / Public Pages | ✅ Done |
 | **02** | **Session & Security** | All Roles | State Handshake | Non-Payment | `Symbio.Frontend` / Router Guards | ✅ Done |
 | **03** | **Trust Onboarding** | SME & Expert | Logged-In | Non-Payment | `Symbio.API` / User Profiles | ✅ Done |
-| **04** | **Demand Marketplace** | SME | Logged-In | Non-Payment | `Symbio.API` / Cosmos DB Jobs | #4 |
+| **04** | **Demand Marketplace** | SME | Logged-In | Non-Payment | `Symbio.API` / Cosmos DB Jobs | ✅ Done |
 | **05** | **Talent Discovery** | SME | Logged-In | Non-Payment | `Symbio.Infrastructure` / Cosmos NoSQL | #5 |
 | **06** | **Delivery Workbench** | Expert | Logged-In | Non-Payment | `Symbio.Frontend` / SignalR Logs | #6 |
 | **07** | **Escrow Onboarding** | Expert | Logged-In | **Pinch Payment** | `Symbio.Core` / Pinch Glassbox Hub | #7 |
