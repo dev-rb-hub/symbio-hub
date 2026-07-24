@@ -36,6 +36,11 @@ namespace Symbio.API.Controllers
                 return BadRequest();
             }
 
+            if (request.Role.Equals("Admin", StringComparison.OrdinalIgnoreCase))
+            {
+                return Forbid();
+            }
+
             var normalizedEmail = request.Email.Trim().ToLowerInvariant();
             var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == normalizedEmail);
 
@@ -106,6 +111,11 @@ namespace Symbio.API.Controllers
                 new Claim(ClaimTypes.Name, user.Email),
                 new Claim(ClaimTypes.Role, user.Role)
             };
+
+            if (user.Role.Equals("Admin", StringComparison.OrdinalIgnoreCase))
+            {
+                claims.Add(new Claim("symbio_admin_master", "true"));
+            }
 
             var token = new JwtSecurityToken(
                 issuer: issuer,

@@ -248,6 +248,49 @@ CREATE TABLE IF NOT EXISTS RetainerCharges (
     ProviderReference TEXT,
     ChargedAtUtc TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS AdminProjectFlagRecords (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ProjectId TEXT NOT NULL,
+    MilestoneId TEXT NOT NULL,
+    ReportedByEmail TEXT NOT NULL,
+    Severity TEXT NOT NULL,
+    Reason TEXT NOT NULL,
+    Status TEXT NOT NULL,
+    ResolvedByEmail TEXT,
+    CreatedAtUtc TEXT NOT NULL,
+    ResolvedAtUtc TEXT
+);
+
+CREATE TABLE IF NOT EXISTS AdminUserComplianceRecords (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    UserEmail TEXT NOT NULL,
+    UserRole TEXT NOT NULL,
+    ReviewStatus TEXT NOT NULL,
+    RiskLevel TEXT NOT NULL,
+    Notes TEXT NOT NULL,
+    ReviewedByEmail TEXT,
+    CreatedAtUtc TEXT NOT NULL,
+    ReviewedAtUtc TEXT
+);
+
+CREATE TABLE IF NOT EXISTS AdminSafetySettings (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    SettingKey TEXT NOT NULL UNIQUE,
+    SettingValue TEXT NOT NULL,
+    UpdatedByEmail TEXT NOT NULL,
+    UpdatedAtUtc TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS AdminAuditLogs (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    AdminEmail TEXT NOT NULL,
+    Action TEXT NOT NULL,
+    TargetType TEXT NOT NULL,
+    TargetReference TEXT NOT NULL,
+    DetailJson TEXT NOT NULL,
+    CreatedAtUtc TEXT NOT NULL
+);
 ");
             }
 
@@ -376,6 +419,68 @@ CREATE TABLE IF NOT EXISTS RetainerCharges (
                 };
 
                 db.ProjectPaymentStateRecords.AddRange(paymentStates);
+                db.SaveChanges();
+            }
+
+            if (!db.AdminUserComplianceRecords.Any())
+            {
+                db.AdminUserComplianceRecords.AddRange(
+                    new AdminUserComplianceRecord
+                    {
+                        UserEmail = "expert@example.com",
+                        UserRole = "Expert",
+                        ReviewStatus = "Pending",
+                        RiskLevel = "Medium",
+                        Notes = "Profile requires quarterly trust audit refresh.",
+                        CreatedAtUtc = DateTime.UtcNow.AddDays(-2)
+                    },
+                    new AdminUserComplianceRecord
+                    {
+                        UserEmail = "sme@example.com",
+                        UserRole = "SME",
+                        ReviewStatus = "Pending",
+                        RiskLevel = "Low",
+                        Notes = "ABN confirmation scheduled for next cycle.",
+                        CreatedAtUtc = DateTime.UtcNow.AddDays(-1)
+                    });
+
+                db.SaveChanges();
+            }
+
+            if (!db.AdminProjectFlagRecords.Any())
+            {
+                db.AdminProjectFlagRecords.Add(new AdminProjectFlagRecord
+                {
+                    ProjectId = "demo-project-epic7-1",
+                    MilestoneId = "Kickoff",
+                    ReportedByEmail = "system@symbio.local",
+                    Severity = "High",
+                    Reason = "Settlement latency exceeded threshold and requires manual review.",
+                    Status = "Open",
+                    CreatedAtUtc = DateTime.UtcNow.AddHours(-6)
+                });
+
+                db.SaveChanges();
+            }
+
+            if (!db.AdminSafetySettings.Any())
+            {
+                db.AdminSafetySettings.AddRange(
+                    new AdminSafetySettingRecord
+                    {
+                        SettingKey = "payments.settlement.autoReleaseEnabled",
+                        SettingValue = "false",
+                        UpdatedByEmail = "admin@example.com",
+                        UpdatedAtUtc = DateTime.UtcNow.AddHours(-12)
+                    },
+                    new AdminSafetySettingRecord
+                    {
+                        SettingKey = "compliance.maxOpenFlagsBeforeEscalation",
+                        SettingValue = "5",
+                        UpdatedByEmail = "admin@example.com",
+                        UpdatedAtUtc = DateTime.UtcNow.AddHours(-8)
+                    });
+
                 db.SaveChanges();
             }
         }

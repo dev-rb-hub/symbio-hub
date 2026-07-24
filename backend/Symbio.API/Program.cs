@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Symbio.API.Data;
+using Symbio.API.Endpoints;
 using Symbio.API.Hubs;
 using Symbio.API.Middleware;
 using Symbio.API.Services;
@@ -43,6 +44,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapAdminOperationsEndpoints();
 app.MapHub<DeliveryWorkbenchHub>("/hubs/workbench");
 app.MapHub<MarketplaceHub>("/hubs/marketplace");
 app.MapHub<AccountingHub>("/hubs/accounting");

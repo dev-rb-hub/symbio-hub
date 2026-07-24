@@ -164,6 +164,49 @@ CREATE TABLE IF NOT EXISTS RetainerCharges (
     ChargedAtUtc TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS AdminProjectFlagRecords (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ProjectId TEXT NOT NULL,
+    MilestoneId TEXT NOT NULL,
+    ReportedByEmail TEXT NOT NULL,
+    Severity TEXT NOT NULL,
+    Reason TEXT NOT NULL,
+    Status TEXT NOT NULL,
+    ResolvedByEmail TEXT,
+    CreatedAtUtc TEXT NOT NULL,
+    ResolvedAtUtc TEXT
+);
+
+CREATE TABLE IF NOT EXISTS AdminUserComplianceRecords (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    UserEmail TEXT NOT NULL,
+    UserRole TEXT NOT NULL,
+    ReviewStatus TEXT NOT NULL,
+    RiskLevel TEXT NOT NULL,
+    Notes TEXT NOT NULL,
+    ReviewedByEmail TEXT,
+    CreatedAtUtc TEXT NOT NULL,
+    ReviewedAtUtc TEXT
+);
+
+CREATE TABLE IF NOT EXISTS AdminSafetySettings (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    SettingKey TEXT NOT NULL UNIQUE,
+    SettingValue TEXT NOT NULL,
+    UpdatedByEmail TEXT NOT NULL,
+    UpdatedAtUtc TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS AdminAuditLogs (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    AdminEmail TEXT NOT NULL,
+    Action TEXT NOT NULL,
+    TargetType TEXT NOT NULL,
+    TargetReference TEXT NOT NULL,
+    DetailJson TEXT NOT NULL,
+    CreatedAtUtc TEXT NOT NULL
+);
+
 INSERT INTO Jobs (Title, Description, ClientName, ClientSurname, Budget, ContactEmail, IsPublished, PostedAt)
 VALUES
 ('Regional Retail Website Refresh', 'Build a mobile-first homepage and checkout experience for a small NSW retail brand.', 'Harper', 'Bright', 9500.00, 'contact@harperbright.com', 1, '2026-07-19T00:00:00Z'),
@@ -195,3 +238,17 @@ VALUES
 ('sme@example.com', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'SME', '2026-07-01T00:00:00Z', 1, 'Coastal SME Services', 'ABN 12 345 678 901', 'Regional digital transformation for small businesses.', 1, '2026-07-01T00:00:00Z'),
 ('expert@example.com', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Expert', '2026-07-01T00:00:00Z', 1, 'North Shore Dev Studio', 'ABN 98 765 432 109', 'Freelance expert in compliance-first application delivery.', 1, '2026-07-01T00:00:00Z'),
 ('admin@example.com', 'ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', 'Admin', '2026-07-01T00:00:00Z', 1, 'Symbio Platform Admin', 'ABN 00 000 000 000', 'Platform administrator with full system oversight.', 1, '2026-07-01T00:00:00Z');
+
+INSERT INTO AdminUserComplianceRecords (UserEmail, UserRole, ReviewStatus, RiskLevel, Notes, ReviewedByEmail, CreatedAtUtc, ReviewedAtUtc)
+VALUES
+('expert@example.com', 'Expert', 'Pending', 'Medium', 'Profile requires quarterly trust audit refresh.', NULL, '2026-07-23T00:00:00Z', NULL),
+('sme@example.com', 'SME', 'Pending', 'Low', 'ABN confirmation scheduled for next cycle.', NULL, '2026-07-24T00:00:00Z', NULL);
+
+INSERT INTO AdminProjectFlagRecords (ProjectId, MilestoneId, ReportedByEmail, Severity, Reason, Status, ResolvedByEmail, CreatedAtUtc, ResolvedAtUtc)
+VALUES
+('demo-project-epic7-1', 'Kickoff', 'system@symbio.local', 'High', 'Settlement latency exceeded threshold and requires manual review.', 'Open', NULL, '2026-07-25T02:00:00Z', NULL);
+
+INSERT INTO AdminSafetySettings (SettingKey, SettingValue, UpdatedByEmail, UpdatedAtUtc)
+VALUES
+('payments.settlement.autoReleaseEnabled', 'false', 'admin@example.com', '2026-07-24T20:00:00Z'),
+('compliance.maxOpenFlagsBeforeEscalation', '5', 'admin@example.com', '2026-07-25T00:00:00Z');

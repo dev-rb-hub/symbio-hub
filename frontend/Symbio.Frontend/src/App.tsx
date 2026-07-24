@@ -37,6 +37,9 @@ const App: React.FC = () => (
       <Route path="/sme/dashboard" element={<RoleGuard role="SME"><SmeDashboardPage /></RoleGuard>} />
       <Route path="/expert/workbench" element={<RoleGuard role="Expert"><ExpertWorkbenchPage /></RoleGuard>} />
       <Route path="/admin/control" element={<RoleGuard role="Admin"><AdminControlPage /></RoleGuard>} />
+      <Route path="/admin/telemetry" element={<RoleGuard role="Admin"><AdminControlPage /></RoleGuard>} />
+      <Route path="/admin/compliance" element={<RoleGuard role="Admin"><AdminControlPage /></RoleGuard>} />
+      <Route path="/admin/safety" element={<RoleGuard role="Admin"><AdminControlPage /></RoleGuard>} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
       <Route path="/404" element={<NotFoundPage />} />
       <Route path="*" element={<Navigate to="/404" replace />} />

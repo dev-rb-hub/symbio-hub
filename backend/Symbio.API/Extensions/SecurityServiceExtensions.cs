@@ -43,7 +43,8 @@ namespace Symbio.API.Extensions
             {
                 options.AddPolicy("RequireSmeRole", policy => policy.RequireRole("SME"));
                 options.AddPolicy("RequireExpertRole", policy => policy.RequireRole("Expert"));
-                options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("RequireAdminRole", policy =>
+                    policy.RequireRole("Admin").RequireClaim("symbio_admin_master", "true"));
             });
 
             return services;

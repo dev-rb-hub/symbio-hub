@@ -164,6 +164,8 @@ Symbio Hub uses a role-isolated, state-aware delivery matrix. The development li
 >
 > ✅ Epic 10 complete: maintenance retainer contracts, flexible metered usage calculations, and recurring billing control center workflows are implemented.
 >
+> ✅ Epic 11 complete: platform operations command hub, admin compliance queue, and global safety override controls are implemented.
+>
 | Epic ID | Epic Category | Targeted User Roles | Core State Focus | Operational Engine | Target Project Module | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **01** | **Public Experience** | Guest / Anonymous | Logged-Out | Non-Payment | `Symbio.Frontend` / Public Pages | ✅ Done |
@@ -176,7 +178,7 @@ Symbio Hub uses a role-isolated, state-aware delivery matrix. The development li
 | **08** | **Milestone Settlement**| SME & Expert | Logged-In | **Pinch Payment** | `Symbio.Infrastructure` / Pinch BECS | ✅ Done |
 | **09** | **Accounting Ledger** | SME | Logged-In | **Pinch Payment** | `Symbio.Infrastructure` / Accounting Sync | ✅ Done |
 | **10** | **Retainer Management** | SME & Expert | Logged-In | **Pinch Payment** | `Symbio.API` / Pinch Subscriptions | ✅ Done |
-| **11** | **Operations Command** | Platform Admin | Logged-In | Complete Ecosystem | `Symbio.API` / Admin Overrides | #11 |
+| **11** | **Operations Command** | Platform Admin | Logged-In | Complete Ecosystem | `Symbio.API` / Admin Overrides | ✅ Done |
 
 *💡 Note to Contributors: To link an active pull request to an epic milestone, append `Closes #<Epic-Issue-Number>` within your PR description body to trigger our automated repository status workflows.*
 

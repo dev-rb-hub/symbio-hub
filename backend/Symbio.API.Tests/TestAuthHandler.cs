@@ -28,11 +28,19 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
             ? roleHeader.ToString()
             : "Expert";
 
-        var claims = new[]
+        var hasMasterClaim = Request.Headers.TryGetValue("X-Test-Admin-Master", out var masterHeader)
+            && string.Equals(masterHeader.ToString(), "true", StringComparison.OrdinalIgnoreCase);
+
+        var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, email),
             new Claim(ClaimTypes.Role, role)
         };
+
+        if (hasMasterClaim)
+        {
+            claims.Add(new Claim("symbio_admin_master", "true"));
+        }
 
         var identity = new ClaimsIdentity(claims, SchemeName);
         var principal = new ClaimsPrincipal(identity);
