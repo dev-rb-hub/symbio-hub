@@ -1,9 +1,8 @@
 using Symbio.Core.Models;
 using Symbio.Core.Repositories;
 using Microsoft.Extensions.Configuration;
-using System.Net.Http.Json;
-using System.Net.Http.Headers;
-using System.Text.Json;
+using Pinch.SDK;
+using Pinch.SDK.Merchants;
 
 namespace Symbio.Infrastructure;
 
@@ -11,11 +10,13 @@ public class PinchMerchantService : IPinchMerchantService
 {
     private readonly HttpClient _httpClient;
     private readonly PinchApiSettings _settings;
+    private readonly PinchApi? _pinchApi;
 
     public PinchMerchantService(HttpClient httpClient, IConfiguration configuration)
     {
         _httpClient = httpClient;
         _settings = PinchApiSettings.FromConfiguration(configuration);
+        _pinchApi = HasCredentials() ? CreatePinchApi() : null;
     }
 
     public Task<SubMerchantRegistrationResult> RegisterSubMerchantAsync(
@@ -24,7 +25,7 @@ public class PinchMerchantService : IPinchMerchantService
         string companyName,
         CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(_settings.ApplicationId) || string.IsNullOrWhiteSpace(_settings.SecretKey))
+        if (_pinchApi == null)
         {
             return RegisterMockAsync(expertEmail);
         }
@@ -54,88 +55,51 @@ public class PinchMerchantService : IPinchMerchantService
         string companyName,
         CancellationToken cancellationToken)
     {
-        var token = await GetAccessTokenAsync(cancellationToken);
-        if (string.IsNullOrWhiteSpace(token))
+        try
         {
-            return await RegisterMockAsync(expertEmail);
-        }
-
-        var baseUrl = _settings.BaseUrl.TrimEnd('/');
-        var managedMerchantUrl = $"{baseUrl}{NormalizePath(_settings.ManagedMerchantsPath)}";
-
-        using var request = new HttpRequestMessage(HttpMethod.Post, managedMerchantUrl)
-        {
-            Content = JsonContent.Create(new
+            var response = await _pinchApi!.Merchant.CreateManagedMerchant(new ManagedMerchantCreateOptions
             {
-                companyName = string.IsNullOrWhiteSpace(companyName) ? "Symbio Expert" : companyName,
-                companyEmail = expertEmail,
-                companyRegistrationNumber = businessIdentifier,
-                bankAccountRoutingNumber = "000000",
-                bankAccountNumber = "000000000",
-                contacts = new[]
+                CompanyName = string.IsNullOrWhiteSpace(companyName) ? "Symbio Expert" : companyName,
+                LegalEntityName = string.IsNullOrWhiteSpace(companyName) ? "Symbio Expert" : companyName,
+                CompanyEmail = expertEmail,
+                CompanyRegistrationNumber = businessIdentifier,
+                BankAccountRoutingNumber = "000000",
+                BankAccountNumber = "000000000",
+                BankAccountName = string.IsNullOrWhiteSpace(companyName) ? "Symbio Expert" : companyName,
+                Contacts =
+                [
+                    new ContactSaveOptions
                 {
-                    new
-                    {
-                        firstName = InferFirstName(expertEmail),
-                        lastName = InferLastName(expertEmail),
-                        email = expertEmail
+                        FirstName = InferFirstName(expertEmail),
+                        LastName = InferLastName(expertEmail),
+                        Email = expertEmail
                     }
-                },
-                ipAddress = "127.0.0.1",
-                userAgent = "SymbioHub/1.0"
-            })
-        };
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                ],
+                IpAddress = "127.0.0.1",
+                UserAgent = "SymbioHub/1.0"
+            });
 
-        using var response = await _httpClient.SendAsync(request, cancellationToken);
-        if (!response.IsSuccessStatusCode)
+            var managedMerchant = response.Data;
+            if (!response.Success || managedMerchant == null || string.IsNullOrWhiteSpace(managedMerchant.Id))
+            {
+                return await RegisterMockAsync(expertEmail);
+            }
+
+            var merchantId = managedMerchant.Id;
+            var onboardingUrl = $"https://connect.getpinch.com.au/glassbox/onboarding/{merchantId}";
+            var requiresMore = managedMerchant.Compliance?.Status == "Pending";
+
+            return new SubMerchantRegistrationResult
+            {
+                MerchantId = merchantId,
+                OnboardingUrl = onboardingUrl,
+                RequiresAdditionalVerification = requiresMore
+            };
+        }
+        catch
         {
             return await RegisterMockAsync(expertEmail);
         }
-
-        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        using var json = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
-
-        var merchantId = ReadString(json.RootElement, "merchantId")
-            ?? ReadString(json.RootElement, "id")
-            ?? ReadString(json.RootElement, "Id")
-            ?? $"pinch-submerchant-{expertEmail.Trim().ToLowerInvariant().Replace("@", "-").Replace(".", "-")}";
-
-        var onboardingUrl = ReadString(json.RootElement, "onboardingUrl")
-            ?? $"https://connect.getpinch.com.au/glassbox/onboarding/{merchantId}";
-
-        var requiresMore = ReadBool(json.RootElement, "requiresAdditionalVerification") ?? false;
-
-        return new SubMerchantRegistrationResult
-        {
-            MerchantId = merchantId,
-            OnboardingUrl = onboardingUrl,
-            RequiresAdditionalVerification = requiresMore
-        };
-    }
-
-    private async Task<string?> GetAccessTokenAsync(CancellationToken cancellationToken)
-    {
-        var authBaseUrl = _settings.AuthBaseUrl.TrimEnd('/');
-        var tokensUrl = $"{authBaseUrl}{NormalizePath(_settings.TokensPath)}";
-
-        using var request = new HttpRequestMessage(HttpMethod.Post, tokensUrl)
-        {
-            Content = new FormUrlEncodedContent(BuildTokenFormFields())
-        };
-
-        using var response = await _httpClient.SendAsync(request, cancellationToken);
-        if (!response.IsSuccessStatusCode)
-        {
-            return null;
-        }
-
-        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        using var json = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
-
-        return ReadString(json.RootElement, "token")
-            ?? ReadString(json.RootElement, "access_token")
-            ?? ReadString(json.RootElement, "accessToken");
     }
 
     private static string InferFirstName(string email)
@@ -177,44 +141,14 @@ public class PinchMerchantService : IPinchMerchantService
         return char.ToUpperInvariant(value[0]) + value[1..].ToLowerInvariant();
     }
 
-    private static string NormalizePath(string path)
+    private bool HasCredentials()
     {
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            return string.Empty;
-        }
-
-        return path.StartsWith('/') ? path : $"/{path}";
+        return !string.IsNullOrWhiteSpace(_settings.ApplicationId) && !string.IsNullOrWhiteSpace(_settings.SecretKey);
     }
 
-    private static string? ReadString(JsonElement root, string propertyName)
+    private PinchApi CreatePinchApi()
     {
-        return root.TryGetProperty(propertyName, out var value) && value.ValueKind == JsonValueKind.String
-            ? value.GetString()
-            : null;
-    }
-
-    private static bool? ReadBool(JsonElement root, string propertyName)
-    {
-        return root.TryGetProperty(propertyName, out var value) && value.ValueKind is JsonValueKind.True or JsonValueKind.False
-            ? value.GetBoolean()
-            : null;
-    }
-
-    private Dictionary<string, string> BuildTokenFormFields()
-    {
-        var fields = new Dictionary<string, string>
-        {
-            ["grant_type"] = "client_credentials",
-            ["client_id"] = _settings.ApplicationId,
-            ["client_secret"] = _settings.SecretKey
-        };
-
-        if (!string.IsNullOrWhiteSpace(_settings.TokenScope))
-        {
-            fields["scope"] = _settings.TokenScope.Trim();
-        }
-
-        return fields;
+        var isLive = _settings.Environment.Equals("Live", StringComparison.OrdinalIgnoreCase);
+        return new PinchApi(_settings.ApplicationId, _settings.SecretKey, isLive);
     }
 }

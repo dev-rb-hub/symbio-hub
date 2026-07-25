@@ -1,8 +1,9 @@
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
 using Microsoft.Extensions.Configuration;
+using Pinch.SDK;
+using Pinch.SDK.Agreements;
+using Pinch.SDK.Payers;
+using Pinch.SDK.Payments;
+using Pinch.SDK.Sources;
 using Symbio.Core.Models;
 using Symbio.Core.Repositories;
 
@@ -12,11 +13,13 @@ public sealed class PinchDebitService : IPinchDebitService
 {
     private readonly HttpClient _httpClient;
     private readonly PinchApiSettings _settings;
+    private readonly PinchApi? _pinchApi;
 
     public PinchDebitService(HttpClient httpClient, IConfiguration configuration)
     {
         _httpClient = httpClient;
         _settings = PinchApiSettings.FromConfiguration(configuration);
+        _pinchApi = HasCredentials() ? CreatePinchApi() : null;
     }
 
     public async Task<PinchPreApprovalResult> CreatePreApprovalAsync(PinchPreApprovalRequest request, CancellationToken cancellationToken = default)
@@ -26,52 +29,56 @@ public sealed class PinchDebitService : IPinchDebitService
             return MockPreApproval(request);
         }
 
-        var token = await GetAccessTokenAsync(cancellationToken);
-        if (string.IsNullOrWhiteSpace(token))
+        if (_pinchApi == null)
         {
             return MockPreApproval(request);
         }
 
-        var url = $"{_settings.BaseUrl.TrimEnd('/')}{NormalizePath(_settings.PreApprovalsPath)}";
-        using var message = new HttpRequestMessage(HttpMethod.Post, url)
+        try
         {
-            Content = JsonContent.Create(new
+            var payerResponse = await _pinchApi.Payer.Save(new PayerSaveOptions
             {
-                amount = request.Amount,
-                currency = request.Currency,
-                reference = $"{request.ProjectId}:{request.MilestoneId}",
-                bankAccountName = request.AccountName,
-                bankAccountRoutingNumber = request.Bsb,
-                bankAccountNumber = request.AccountNumber,
-                customerEmail = request.CustomerEmail
-            })
-        };
-        message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                EmailAddress = request.CustomerEmail,
+                CompanyName = request.AccountName,
+                Metadata = $"project={request.ProjectId};milestone={request.MilestoneId}",
+                Source = new SourceSaveOptions
+                {
+                    SourceType = "bank-account",
+                    BankAccountName = request.AccountName,
+                    BankAccountBsb = request.Bsb,
+                    BankAccountNumber = request.AccountNumber
+                }
+            });
 
-        using var response = await _httpClient.SendAsync(message, cancellationToken);
-        if (!response.IsSuccessStatusCode)
+            var payerId = payerResponse.Data?.Id;
+            if (!payerResponse.Success || string.IsNullOrWhiteSpace(payerId))
+            {
+                return MockPreApproval(request);
+            }
+
+            var agreementResponse = await _pinchApi.Agreement.Create(new AgreementSaveOptions
+            {
+                PayerId = payerId
+            });
+
+            var agreement = agreementResponse.Data;
+            if (!agreementResponse.Success || agreement == null || string.IsNullOrWhiteSpace(agreement.Id))
+            {
+                return MockPreApproval(request);
+            }
+
+            var isApproved = agreement.ConfirmedDateUtc.HasValue;
+            return new PinchPreApprovalResult
+            {
+                PreApprovalId = agreement.Id,
+                IsApproved = isApproved,
+                Status = isApproved ? "Approved" : "Pending"
+            };
+        }
+        catch
         {
             return MockPreApproval(request);
         }
-
-        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        using var json = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
-
-        var preApprovalId = ReadString(json.RootElement, "id")
-            ?? ReadString(json.RootElement, "preApprovalId")
-            ?? $"pap_{request.ProjectId}_{request.MilestoneId}";
-
-        var status = ReadString(json.RootElement, "status") ?? "Approved";
-        var approved = status.Equals("Approved", StringComparison.OrdinalIgnoreCase)
-            || status.Equals("Active", StringComparison.OrdinalIgnoreCase)
-            || status.Equals("Confirmed", StringComparison.OrdinalIgnoreCase);
-
-        return new PinchPreApprovalResult
-        {
-            PreApprovalId = preApprovalId,
-            IsApproved = approved,
-            Status = approved ? "Approved" : status
-        };
     }
 
     public async Task<PinchDirectDebitResult> ExecuteDirectDebitAsync(PinchDirectDebitRequest request, CancellationToken cancellationToken = default)
@@ -81,50 +88,56 @@ public sealed class PinchDebitService : IPinchDebitService
             return MockDebit(request);
         }
 
-        var token = await GetAccessTokenAsync(cancellationToken);
-        if (string.IsNullOrWhiteSpace(token))
+        if (_pinchApi == null)
         {
             return MockDebit(request);
         }
 
-        var url = $"{_settings.BaseUrl.TrimEnd('/')}{NormalizePath(_settings.DirectDebitsPath)}";
-        using var message = new HttpRequestMessage(HttpMethod.Post, url)
+        try
         {
-            Content = JsonContent.Create(new
+            var agreementResponse = await _pinchApi.Agreement.Get(request.PreApprovalId);
+            var agreement = agreementResponse.Data;
+            var payerId = agreement?.Payer?.Id;
+
+            if (!agreementResponse.Success || string.IsNullOrWhiteSpace(payerId))
             {
-                amount = request.Amount,
-                currency = request.Currency,
-                preApprovalId = request.PreApprovalId,
-                reference = $"{request.ProjectId}:{request.MilestoneId}"
-            })
-        };
-        message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                return MockDebit(request);
+            }
 
-        using var response = await _httpClient.SendAsync(message, cancellationToken);
-        if (!response.IsSuccessStatusCode)
+            var paymentResponse = await _pinchApi.Payment.Save(new PaymentSaveOptions
+            {
+                PayerId = payerId,
+                Amount = ToCents(request.Amount),
+                TransactionDate = DateTime.UtcNow,
+                Description = $"{request.ProjectId}:{request.MilestoneId}"
+            });
+
+            var payment = paymentResponse.Data;
+            if (!paymentResponse.Success || payment == null)
+            {
+                return MockDebit(request);
+            }
+
+            var status = string.IsNullOrWhiteSpace(payment.Status) ? "Pending" : payment.Status;
+            var succeeded = status.Equals("Succeeded", StringComparison.OrdinalIgnoreCase)
+                || status.Equals("Processed", StringComparison.OrdinalIgnoreCase)
+                || status.Equals("Confirmed", StringComparison.OrdinalIgnoreCase)
+                || status.Equals("Completed", StringComparison.OrdinalIgnoreCase);
+
+            return new PinchDirectDebitResult
+            {
+                DebitId = string.IsNullOrWhiteSpace(payment.Id)
+                    ? $"debit_{request.ProjectId}_{request.MilestoneId}"
+                    : payment.Id,
+                Status = status,
+                Succeeded = succeeded,
+                ErrorMessage = succeeded ? null : "Pinch SDK reported a non-success debit status."
+            };
+        }
+        catch
         {
             return MockDebit(request);
         }
-
-        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        using var json = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
-
-        var debitId = ReadString(json.RootElement, "id")
-            ?? ReadString(json.RootElement, "paymentId")
-            ?? $"debit_{request.ProjectId}_{request.MilestoneId}";
-
-        var status = ReadString(json.RootElement, "status") ?? "Succeeded";
-        var succeeded = status.Equals("Succeeded", StringComparison.OrdinalIgnoreCase)
-            || status.Equals("Processed", StringComparison.OrdinalIgnoreCase)
-            || status.Equals("Confirmed", StringComparison.OrdinalIgnoreCase);
-
-        return new PinchDirectDebitResult
-        {
-            DebitId = debitId,
-            Status = status,
-            Succeeded = succeeded,
-            ErrorMessage = succeeded ? null : "Pinch API reported a non-success debit status."
-        };
     }
 
     private bool HasCredentials()
@@ -132,25 +145,10 @@ public sealed class PinchDebitService : IPinchDebitService
         return !string.IsNullOrWhiteSpace(_settings.ApplicationId) && !string.IsNullOrWhiteSpace(_settings.SecretKey);
     }
 
-    private async Task<string?> GetAccessTokenAsync(CancellationToken cancellationToken)
+    private PinchApi CreatePinchApi()
     {
-        var authBaseUrl = _settings.AuthBaseUrl.TrimEnd('/');
-        var tokensUrl = $"{authBaseUrl}{NormalizePath(_settings.TokensPath)}";
-
-        using var request = new HttpRequestMessage(HttpMethod.Post, tokensUrl)
-        {
-            Content = new FormUrlEncodedContent(BuildTokenFormFields())
-        };
-
-        using var response = await _httpClient.SendAsync(request, cancellationToken);
-        if (!response.IsSuccessStatusCode)
-        {
-            return null;
-        }
-
-        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        using var json = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
-        return ReadString(json.RootElement, "access_token") ?? ReadString(json.RootElement, "token");
+        var isLive = _settings.Environment.Equals("Live", StringComparison.OrdinalIgnoreCase);
+        return new PinchApi(_settings.ApplicationId, _settings.SecretKey, isLive);
     }
 
     private static PinchPreApprovalResult MockPreApproval(PinchPreApprovalRequest request)
@@ -173,37 +171,8 @@ public sealed class PinchDebitService : IPinchDebitService
         };
     }
 
-    private static string NormalizePath(string path)
+    private static int ToCents(decimal amount)
     {
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            return string.Empty;
-        }
-
-        return path.StartsWith('/') ? path : $"/{path}";
-    }
-
-    private static string? ReadString(JsonElement root, string propertyName)
-    {
-        return root.TryGetProperty(propertyName, out var value) && value.ValueKind == JsonValueKind.String
-            ? value.GetString()
-            : null;
-    }
-
-    private Dictionary<string, string> BuildTokenFormFields()
-    {
-        var fields = new Dictionary<string, string>
-        {
-            ["grant_type"] = "client_credentials",
-            ["client_id"] = _settings.ApplicationId,
-            ["client_secret"] = _settings.SecretKey
-        };
-
-        if (!string.IsNullOrWhiteSpace(_settings.TokenScope))
-        {
-            fields["scope"] = _settings.TokenScope.Trim();
-        }
-
-        return fields;
+        return (int)Math.Round(amount * 100m, MidpointRounding.AwayFromZero);
     }
 }

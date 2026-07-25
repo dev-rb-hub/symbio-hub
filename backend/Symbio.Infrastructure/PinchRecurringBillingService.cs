@@ -1,7 +1,8 @@
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using System.Text.Json;
 using Microsoft.Extensions.Configuration;
+using Pinch.SDK;
+using Pinch.SDK.Payers;
+using Pinch.SDK.Plans;
+using Pinch.SDK.Subscriptions;
 using Symbio.Core.Models;
 using Symbio.Core.Repositories;
 
@@ -11,11 +12,13 @@ public sealed class PinchRecurringBillingService : IRecurringBillingService
 {
     private readonly HttpClient _httpClient;
     private readonly PinchApiSettings _settings;
+    private readonly PinchApi? _pinchApi;
 
     public PinchRecurringBillingService(HttpClient httpClient, IConfiguration configuration)
     {
         _httpClient = httpClient;
         _settings = PinchApiSettings.FromConfiguration(configuration);
+        _pinchApi = HasCredentials() ? CreatePinchApi() : null;
     }
 
     public async Task<RecurringPlanCreateResult> CreatePlanAsync(RecurringPlanCreateRequest request, CancellationToken cancellationToken = default)
@@ -25,39 +28,45 @@ public sealed class PinchRecurringBillingService : IRecurringBillingService
             return MockPlan(request);
         }
 
-        var token = await GetAccessTokenAsync(cancellationToken);
-        if (string.IsNullOrWhiteSpace(token))
+        if (_pinchApi == null)
         {
             return MockPlan(request);
         }
 
-        var url = $"{_settings.BaseUrl.TrimEnd('/')}{NormalizePath(_settings.PlansPath)}";
-        using var message = new HttpRequestMessage(HttpMethod.Post, url)
+        try
         {
-            Content = JsonContent.Create(new
+            var planResponse = await _pinchApi.Plan.Save(new PlanSaveOptions
             {
-                name = request.Name,
-                amount = request.BaseMonthlyAmount,
-                currency = request.Currency,
-                interval = request.Interval
-            })
-        };
-        message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                Name = request.Name,
+                Metadata = $"currency={request.Currency}",
+                RecurringPayment = new PlanRecurringPaymentSaveOptions
+                {
+                    AmountInCents = ToCents(request.BaseMonthlyAmount),
+                    Description = $"{request.Name} recurring payment",
+                    StartDateOffset = 0,
+                    StartDateInterval = "day",
+                    FrequencyOffset = 1,
+                    FrequencyInterval = request.Interval.Equals("monthly", StringComparison.OrdinalIgnoreCase) ? "month" : request.Interval,
+                    EndType = "never"
+                }
+            });
 
-        using var response = await _httpClient.SendAsync(message, cancellationToken);
-        if (!response.IsSuccessStatusCode)
+            var plan = planResponse.Data;
+            if (!planResponse.Success || plan == null || string.IsNullOrWhiteSpace(plan.Id))
+            {
+                return MockPlan(request);
+            }
+
+            return new RecurringPlanCreateResult
+            {
+                ProviderPlanId = plan.Id,
+                Status = "Active"
+            };
+        }
+        catch
         {
             return MockPlan(request);
         }
-
-        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        using var json = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
-
-        return new RecurringPlanCreateResult
-        {
-            ProviderPlanId = ReadString(json.RootElement, "id") ?? ReadString(json.RootElement, "planId") ?? $"plan_{Guid.NewGuid():N}",
-            Status = ReadString(json.RootElement, "status") ?? "Active"
-        };
     }
 
     public async Task<RecurringSubscriptionCreateResult> CreateSubscriptionAsync(RecurringSubscriptionCreateRequest request, CancellationToken cancellationToken = default)
@@ -67,45 +76,50 @@ public sealed class PinchRecurringBillingService : IRecurringBillingService
             return MockSubscription(request);
         }
 
-        var token = await GetAccessTokenAsync(cancellationToken);
-        if (string.IsNullOrWhiteSpace(token))
+        if (_pinchApi == null)
         {
             return MockSubscription(request);
         }
 
-        var url = $"{_settings.BaseUrl.TrimEnd('/')}{NormalizePath(_settings.SubscriptionsPath)}";
-        using var message = new HttpRequestMessage(HttpMethod.Post, url)
+        try
         {
-            Content = JsonContent.Create(new
+            var payerResponse = await _pinchApi.Payer.Save(new PayerSaveOptions
             {
-                planId = request.ProviderPlanId,
-                customerEmail = request.ClientEmail,
-                metadata = new
-                {
-                    projectId = request.ProjectId,
-                    milestoneId = request.MilestoneId,
-                    baseMonthlyAmount = request.BaseMonthlyAmount
-                },
-                startDate = request.StartAtUtc
-            })
-        };
-        message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                EmailAddress = request.ClientEmail,
+                Metadata = $"project={request.ProjectId};milestone={request.MilestoneId}"
+            });
 
-        using var response = await _httpClient.SendAsync(message, cancellationToken);
-        if (!response.IsSuccessStatusCode)
+            var payerId = payerResponse.Data?.Id;
+            if (!payerResponse.Success || string.IsNullOrWhiteSpace(payerId))
+            {
+                return MockSubscription(request);
+            }
+
+            var subscriptionResponse = await _pinchApi.Subscriptions.Create(new SubscriptionCreateOptions
+            {
+                PlanId = request.ProviderPlanId,
+                PayerId = payerId,
+                StartDate = request.StartAtUtc,
+                TotalAmount = ToCents(request.BaseMonthlyAmount)
+            });
+
+            var subscription = subscriptionResponse.Data;
+            if (!subscriptionResponse.Success || subscription == null || string.IsNullOrWhiteSpace(subscription.Id))
+            {
+                return MockSubscription(request);
+            }
+
+            return new RecurringSubscriptionCreateResult
+            {
+                ProviderSubscriptionId = subscription.Id,
+                Status = string.IsNullOrWhiteSpace(subscription.Status) ? "Active" : subscription.Status,
+                NextBillingAtUtc = request.StartAtUtc.AddMonths(1)
+            };
+        }
+        catch
         {
             return MockSubscription(request);
         }
-
-        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        using var json = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
-
-        return new RecurringSubscriptionCreateResult
-        {
-            ProviderSubscriptionId = ReadString(json.RootElement, "id") ?? ReadString(json.RootElement, "subscriptionId") ?? $"sub_{Guid.NewGuid():N}",
-            Status = ReadString(json.RootElement, "status") ?? "Active",
-            NextBillingAtUtc = DateTime.UtcNow.AddMonths(1)
-        };
     }
 
     private bool HasCredentials()
@@ -113,25 +127,15 @@ public sealed class PinchRecurringBillingService : IRecurringBillingService
         return !string.IsNullOrWhiteSpace(_settings.ApplicationId) && !string.IsNullOrWhiteSpace(_settings.SecretKey);
     }
 
-    private async Task<string?> GetAccessTokenAsync(CancellationToken cancellationToken)
+    private PinchApi CreatePinchApi()
     {
-        var authBaseUrl = _settings.AuthBaseUrl.TrimEnd('/');
-        var tokensUrl = $"{authBaseUrl}{NormalizePath(_settings.TokensPath)}";
+        var isLive = _settings.Environment.Equals("Live", StringComparison.OrdinalIgnoreCase);
+        return new PinchApi(_settings.ApplicationId, _settings.SecretKey, isLive);
+    }
 
-        using var request = new HttpRequestMessage(HttpMethod.Post, tokensUrl)
-        {
-            Content = new FormUrlEncodedContent(BuildTokenFormFields())
-        };
-
-        using var response = await _httpClient.SendAsync(request, cancellationToken);
-        if (!response.IsSuccessStatusCode)
-        {
-            return null;
-        }
-
-        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        using var json = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
-        return ReadString(json.RootElement, "access_token") ?? ReadString(json.RootElement, "token");
+    private static long ToCents(decimal amount)
+    {
+        return (long)Math.Round(amount * 100m, MidpointRounding.AwayFromZero);
     }
 
     private static RecurringPlanCreateResult MockPlan(RecurringPlanCreateRequest request)
@@ -151,39 +155,5 @@ public sealed class PinchRecurringBillingService : IRecurringBillingService
             Status = "Active",
             NextBillingAtUtc = request.StartAtUtc.AddMonths(1)
         };
-    }
-
-    private static string NormalizePath(string path)
-    {
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            return string.Empty;
-        }
-
-        return path.StartsWith('/') ? path : $"/{path}";
-    }
-
-    private static string? ReadString(JsonElement root, string propertyName)
-    {
-        return root.TryGetProperty(propertyName, out var value) && value.ValueKind == JsonValueKind.String
-            ? value.GetString()
-            : null;
-    }
-
-    private Dictionary<string, string> BuildTokenFormFields()
-    {
-        var fields = new Dictionary<string, string>
-        {
-            ["grant_type"] = "client_credentials",
-            ["client_id"] = _settings.ApplicationId,
-            ["client_secret"] = _settings.SecretKey
-        };
-
-        if (!string.IsNullOrWhiteSpace(_settings.TokenScope))
-        {
-            fields["scope"] = _settings.TokenScope.Trim();
-        }
-
-        return fields;
     }
 }
