@@ -39,7 +39,10 @@ var app = builder.Build();
 
 SeedData.Initialize(app);
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 app.UseAuthentication();
 app.UseAuthorization();
 
