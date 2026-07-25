@@ -171,3 +171,35 @@ Symbio Hub uses a role-isolated, state-aware delivery matrix. The development li
 
 *💡 Note to Contributors: To link an active pull request to an epic milestone, append `Closes #<Epic-Issue-Number>` within your PR description body to trigger our automated repository status workflows.*
 
+
+## 💖 Sponsor This Project
+
+Symbio Hub is an open-source platform dedicated to bridging the digital divide for regional Australian SMEs. By sponsoring this project, you directly offset our baseline cloud infrastructure costs (Azure Container Apps, Cosmos DB, and telemetry logs) and help keep our regional talent ecosystem active.
+
+### Choose Your Sponsorship Tier 🚀
+
+| Tier | Monthly Impact | Perks |
+| :--- | :--- | :--- |
+| **🌱 Supporter**<br>`$5 AUD/mo` | Offsets baseline domain costs and DNS telemetry routing. | • Sponsor badge on your GitHub profile.<br>• Listed in our `CONTRIBUTORS.md` file. |
+| **🚀 Ecosystem Builder**<br>`$15 AUD/mo` | Funds active staging databases for public community testing. | • Everything above.<br>• Your name linked in the repository README. |
+| **🏗️ Production Partner**<br>`$45 AUD/mo` | **Fully covers active production hosting** & SignalR log streams. | • Everything above.<br>• **Your logo or name prominently featured below.**<br>• Priority review on your feature requests. |
+
+<p align="center">
+  <a href="https://github.com/sponsors/dev-rb-hub">
+    <img src="https://img.shields.io/badge/Sponsor-dev--rb--hub-ea4aaa?logo=githubsponsors&logoColor=white" alt="Sponsor Symbio Hub on GitHub Sponsors" />
+  </a>
+</p>
+
+Primary sponsorship profile: **https://github.com/sponsors/dev-rb-hub**
+
+### 👑 Current Production Partners
+
+*A huge thank you to the organisations keeping our regional innovation engine running:*
+
+<!-- SPONSOR_LOGO_START -->
+<p align="center">
+  <a href="https://github.com/sponsors/dev-rb-hub"><strong>dev-rb-hub</strong></a>
+  <br/>
+  <i>Founding sponsor and project maintainer.</i>
+</p>
+<!-- SPONSOR_LOGO_END -->
