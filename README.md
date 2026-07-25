@@ -1,7 +1,13 @@
 # Symbio Hub
 
+<p align="center">
+  <a href="https://github.com/dev-rb-hub/symbio-hub">
+    <img src="https://repository-images.githubusercontent.com/1308285720/c4538670-6298-4b74-8718-8e31dae93af4" alt="Symbio Hub Social Preview" width="650" />
+  </a>
+</p>
+
 [![License](https://shields.io)](LICENSE)
-[![GitHub Workflow Status](https://shields.io)](https://github.com)
+[![GitHub Workflow Status](https://shields.io)](https://github.com/dev-rb-hub/symbio-hub/actions/workflows/ci.yml)
 
 Symbio Hub is a cross-platform, containerised open-source platform connecting regional SMEs with vetted technical talent. Powered by a decoupled .NET Core backend and a React frontend, the entire ecosystem runs seamlessly across Linux, macOS, and Windows via Docker virtualization.
 
