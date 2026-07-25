@@ -1,50 +1,54 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import symbioLogo from '../assets/images/Symbio-hub-logo.png';
 
 export const NavigationBar: React.FC = () => {
   const { session, logout } = useAuth();
 
   return (
-    <nav style={{ background: '#fff', borderBottom: '1px solid #e1e5ea', padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        <Link to="/" style={{ color: '#0072ce', fontWeight: 700, textDecoration: 'none' }}>Symbio Hub</Link>
-        <Link to="/jobs" style={{ color: '#333', textDecoration: 'none' }}>Public jobs</Link>
-        <Link to="/marketplace" style={{ color: '#333', textDecoration: 'none' }}>Marketplace</Link>
+    <nav className="symbio-nav">
+      <div className="symbio-nav-links">
+        <Link to="/" className="symbio-brand-link">
+          <img src={symbioLogo} alt="Symbio Hub logo" className="symbio-brand-logo" />
+          <span>Symbio Hub</span>
+        </Link>
+        <Link to="/jobs" className="symbio-link">Public jobs</Link>
+        <Link to="/marketplace" className="symbio-link">Marketplace</Link>
         {session && session.role === 'SME' && (
-          <Link to="/talent/discovery" style={{ color: '#333', textDecoration: 'none' }}>Talent discovery</Link>
+          <Link to="/talent/discovery" className="symbio-link">Talent discovery</Link>
         )}
         {session && session.role === 'Expert' && (
-          <Link to="/expert/workbench" style={{ color: '#333', textDecoration: 'none' }}>Workbench</Link>
+          <Link to="/expert/workbench" className="symbio-link">Workbench</Link>
         )}
         {session && session.role === 'Expert' && (
-          <Link to="/escrow/onboarding" style={{ color: '#333', textDecoration: 'none' }}>Escrow onboarding</Link>
+          <Link to="/escrow/onboarding" className="symbio-link">Escrow onboarding</Link>
         )}
         {session && session.role === 'SME' && (
-          <Link to="/project/new" style={{ color: '#333', textDecoration: 'none' }}>Post a Project</Link>
+          <Link to="/project/new" className="symbio-link">Post a Project</Link>
         )}
         {session && session.role === 'SME' && (
-          <Link to="/billing/control-center" style={{ color: '#333', textDecoration: 'none' }}>Recurring Billing</Link>
+          <Link to="/billing/control-center" className="symbio-link">Recurring Billing</Link>
         )}
         {session && session.role === 'Admin' && (
-          <Link to="/admin/control" style={{ color: '#333', textDecoration: 'none' }}>Operations Hub</Link>
+          <Link to="/admin/control" className="symbio-link">Operations Hub</Link>
         )}
         {session && session.role === 'Admin' && (
-          <Link to="/admin/compliance" style={{ color: '#333', textDecoration: 'none' }}>Compliance Queue</Link>
+          <Link to="/admin/compliance" className="symbio-link">Compliance Queue</Link>
         )}
-        {session && <Link to="/onboarding" style={{ color: '#333', textDecoration: 'none' }}>Trust onboarding</Link>}
-        {session && <Link to="/profile" style={{ color: '#333', textDecoration: 'none' }}>Profile</Link>}
+        {session && <Link to="/onboarding" className="symbio-link">Trust onboarding</Link>}
+        {session && <Link to="/profile" className="symbio-link">Profile</Link>}
       </div>
-      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+      <div className="symbio-nav-account">
         {session ? (
           <>
-            <span style={{ color: '#555' }}>{session.email}</span>
-            <button onClick={logout} style={{ padding: '0.5rem 0.85rem', background: '#f1f3f6', border: '1px solid #d6d9dd', borderRadius: 8, cursor: 'pointer' }}>
+            <span className="symbio-user-email">{session.email}</span>
+            <button onClick={logout} className="symbio-logout-button">
               Log out
             </button>
           </>
         ) : (
-          <Link to="/login" style={{ color: '#0072ce', textDecoration: 'none' }}>Log in</Link>
+          <Link to="/login" className="symbio-link-login">Log in</Link>
         )}
       </div>
     </nav>

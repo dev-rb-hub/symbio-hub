@@ -1,0 +1,215 @@
+:root {
+  --symbio-primary: #0072ce;
+  --symbio-text: #1f3040;
+  --symbio-muted: #4f6070;
+  --symbio-border: #dbe3ea;
+  --symbio-surface: #ffffff;
+  --symbio-control: #f4f7fa;
+  --symbio-success: #0f9d58;
+  --symbio-card-a: #f1f7ff;
+  --symbio-card-b: #fff6ee;
+  --symbio-card-c: #f1fbf6;
+  --symbio-cta-light: #eef3f8;
+  --symbio-hero-bg-top: #fbfdff;
+  --symbio-hero-bg-bottom: #f4f8fc;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: var(--symbio-text);
+  background: var(--symbio-surface);
+  font-family: 'Segoe UI', 'Avenir Next', 'Helvetica Neue', sans-serif;
+}
+
+.symbio-nav {
+  background: var(--symbio-surface);
+  border-bottom: 1px solid var(--symbio-border);
+  padding: 0.9rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.symbio-nav-links {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.symbio-brand-link {
+  color: var(--symbio-primary);
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.symbio-brand-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.symbio-link {
+  color: var(--symbio-text);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.symbio-link-login {
+  color: var(--symbio-primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.symbio-nav-account {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-left: auto;
+}
+
+.symbio-user-email {
+  color: var(--symbio-muted);
+  font-size: 0.95rem;
+}
+
+.symbio-logout-button {
+  padding: 0.5rem 0.85rem;
+  background: var(--symbio-control);
+  border: 1px solid var(--symbio-border);
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--symbio-text);
+  font-weight: 600;
+}
+
+.symbio-main {
+  padding: 2rem;
+  min-height: 100vh;
+  background: linear-gradient(180deg, var(--symbio-hero-bg-top) 0%, var(--symbio-hero-bg-bottom) 100%);
+}
+
+.symbio-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.symbio-landing-header {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.symbio-hero-image {
+  width: 100%;
+  max-width: 520px;
+  border-radius: 20px;
+  box-shadow: 0 18px 30px rgba(10, 40, 80, 0.12);
+}
+
+.symbio-kicker {
+  color: var(--symbio-primary);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  margin: 0;
+}
+
+.symbio-heading {
+  font-size: clamp(2rem, 4vw, 4rem);
+  margin: 0.5rem 0;
+}
+
+.symbio-intro {
+  font-size: 1.1rem;
+  line-height: 1.75;
+  color: var(--symbio-text);
+  max-width: 760px;
+}
+
+.symbio-card-grid {
+  margin-top: 2rem;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.symbio-card {
+  padding: 1.5rem;
+  border-radius: 16px;
+}
+
+.symbio-card p {
+  color: var(--symbio-muted);
+}
+
+.symbio-card-a {
+  background: var(--symbio-card-a);
+  border: 1px solid rgba(0, 114, 206, 0.12);
+}
+
+.symbio-card-b {
+  background: var(--symbio-card-b);
+  border: 1px solid rgba(190, 120, 30, 0.12);
+}
+
+.symbio-card-c {
+  background: var(--symbio-card-c);
+  border: 1px solid rgba(15, 157, 88, 0.16);
+}
+
+.symbio-cta-nav {
+  margin-top: 2.5rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.symbio-cta {
+  text-decoration: none;
+  padding: 0.85rem 1.25rem;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.symbio-cta-primary {
+  background: var(--symbio-primary);
+  color: #ffffff;
+}
+
+.symbio-cta-success {
+  background: var(--symbio-success);
+  color: #ffffff;
+}
+
+.symbio-cta-secondary {
+  background: var(--symbio-cta-light);
+  color: var(--symbio-text);
+}
+
+@media (max-width: 768px) {
+  .symbio-main {
+    padding: 1.2rem;
+  }
+
+  .symbio-nav {
+    align-items: flex-start;
+  }
+
+  .symbio-nav-account {
+    width: 100%;
+    justify-content: space-between;
+    margin-left: 0;
+  }
+
+  .symbio-heading {
+    font-size: clamp(1.8rem, 7vw, 2.6rem);
+  }
+}
