@@ -80,7 +80,28 @@ If Docker is not running, Compose commands will fail to connect to the Docker en
 3. Open the repository in VS Code.
 4. Choose **Reopen in Container** when prompted.
 
-## Option C: Bare-metal local run
+## Option C: GitHub Codespaces
+
+1. Push your branch to GitHub.
+2. Open the repository in GitHub.
+3. Select **Code** -> **Codespaces** -> **Create codespace on <branch>**.
+4. Wait for container setup to complete.
+
+The repository now includes a Codespaces-ready dev container config at `.devcontainer/devcontainer.json`.
+
+After startup, run services from the workspace root:
+
+```bash
+dotnet run --project backend/Symbio.API/Symbio.API.csproj
+cd frontend/Symbio.Frontend && npm run dev
+```
+
+Codespaces port forwarding is preconfigured:
+
+- `5001` for backend API
+- `5173` for frontend Vite app
+
+## Option D: Bare-metal local run
 
 ### Backend API
 
