@@ -9,6 +9,9 @@
 [![License](https://shields.io)](LICENSE)
 [![GitHub Workflow Status](https://shields.io)](https://github.com/dev-rb-hub/symbio-hub/actions/workflows/ci.yml)
 
+Regional businesses deserve trusted local digital expertise—not anonymous global marketplaces. 
+Symbio Hub provides a secure marketplace where verified local professionals collaborate with confidence through protected payments and AI-enabled modernization
+
 Symbio Hub is a cross-platform, containerised open-source platform connecting regional SMEs with vetted technical talent. Powered by a decoupled .NET Core backend and a React frontend, the entire ecosystem runs seamlessly across Linux, macOS, and Windows via Docker virtualization.
 
 ---
