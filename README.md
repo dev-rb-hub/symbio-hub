@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://github.com/dev-rb-hub/symbio-hub">
-    <img src="https://repository-images.githubusercontent.com/1308285720/c4538670-6298-4b74-8718-8e31dae93af4" alt="Symbio Hub Social Preview" width="650" />
+    <img src="https://repository-images.githubusercontent.com/1308285720/708960c5-1563-422e-9d4f-4f90c466e189" alt="Symbio Hub Social Preview" width="650" />
   </a>
 </p>
 
