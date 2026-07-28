@@ -27,6 +27,12 @@ Symbio Hub is a cross-platform, containerised open-source platform connecting re
 Product Pitch - see [Hackathon Pitch](docs/pinch-pitch.md).
 For competitor context and market positioning, see [Competitor Landscape](docs/competitor-landscape.md).
 
+<p align="center">
+  <a href="https://github.com/dev-rb-hub/symbio-hub-flyer">
+    <img src="https://github.com/dev-rb-hub/symbio-hub/blob/main/frontend/Symbio.Frontend/src/assets/images/Symbio-hub%20flyer.png" alt="Symbio Hub Flyer" width="650" />
+  </a>
+</p>
+
 ---
 
 ## 🏗️ Cross-Platform Architecture & Virtualization
