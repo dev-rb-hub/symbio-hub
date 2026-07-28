@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import symbioLogo from '../assets/images/Symbio-hub-logo.png';
+import symbioLogo from '../assets/images/Symbio-hub.png';
 
 export const NavigationBar: React.FC = () => {
   const { session, logout } = useAuth();
