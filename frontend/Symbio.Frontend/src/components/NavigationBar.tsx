@@ -19,7 +19,7 @@ export const NavigationBar: React.FC = () => {
           <Link to="/sme/dashboard" className="symbio-link">SME Dashboard</Link>
         )}
         {session && session.role === 'Expert' && (
-          <Link to="/expert/workbench" className="symbio-link">Expert Dashboard</Link>
+          <Link to="/expert/dashboard" className="symbio-link">Expert Dashboard</Link>
         )}
         {session && session.role === 'Admin' && (
           <Link to="/admin/control" className="symbio-link">Admin Dashboard</Link>
@@ -40,9 +40,6 @@ export const NavigationBar: React.FC = () => {
           <Link to="/billing/control-center" className="symbio-link">Recurring Billing</Link>
         )}
         {session && session.role === 'Admin' && (
-          <Link to="/admin/control" className="symbio-link">Operations Hub</Link>
-        )}
-        {session && session.role === 'Admin' && (
           <Link to="/admin/telemetry" className="symbio-link">Telemetry</Link>
         )}
         {session && session.role === 'Admin' && (
@@ -52,7 +49,7 @@ export const NavigationBar: React.FC = () => {
           <Link to="/admin/safety" className="symbio-link">Safety Overrides</Link>
         )}
         {session && (session.role === 'SME' || session.role === 'Expert') && <Link to="/onboarding" className="symbio-link">Trust onboarding</Link>}
-        {session && <Link to="/profile" className="symbio-link">Profile</Link>}
+        {session && <Link to="/settings" className="symbio-link">Settings</Link>}
       </div>
       <div className="symbio-nav-account">
         {session ? (

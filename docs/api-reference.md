@@ -22,6 +22,7 @@ This quick guide lists key API and real-time endpoints used by the frontend and 
 - `POST /api/Project`
 - `GET /api/Talent/search`
 
+- `GET /api/expert/dashboard`
 - `GET /api/ExpertWorkbench/overview`
 - `POST /api/ExpertWorkbench/logs`
 

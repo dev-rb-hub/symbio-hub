@@ -18,7 +18,7 @@ export const PublicRouteGuard: React.FC<PublicRouteGuardProps> = ({ children }) 
       case 'SME':
         return <Navigate to="/sme/dashboard" replace />;
       case 'Expert':
-        return <Navigate to="/expert/workbench" replace />;
+        return <Navigate to="/expert/dashboard" replace />;
       case 'Admin':
         return <Navigate to="/admin/control" replace />;
       default:
