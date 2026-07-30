@@ -6,22 +6,23 @@
     "scripts": {
         "dev": "vite",
         "build": "tsc && vite build",
-        "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+        "lint": "eslint src --report-unused-disable-directives --max-warnings 0",
         "preview": "vite preview"
     },
     "dependencies": {
         "@microsoft/signalr": "^10.0.0",
         "react": "^19.2.8",
         "react-dom": "^19.2.8",
-        "react-router-dom": "^7.18.2"
+        "react-router-dom": "7.18.2"
     },
     "devDependencies": {
         "@types/react": "^19.2.17",
         "@types/react-dom": "^19.2.3",
-        "@typescript-eslint/eslint-plugin": "^8.65.0",
-        "@typescript-eslint/parser": "^8.65.0",
+        "@typescript-eslint/eslint-plugin": "8.65.0",
+        "@typescript-eslint/parser": "8.65.0",
         "@vitejs/plugin-react": "^6.0.4",
-        "typescript": "^7.0.2",
+        "eslint": "10.8.0",
+        "typescript": "5.3.3",
         "vite": "^8.1.5"
     }
 }

@@ -13,3 +13,8 @@ Thank you for helping build financial ecosystems for regional NSW SMEs!
 ## 🛠️ Local Quality Checks
 * **Backend:** Run `dotnet test` and check compliance before opening a PR.
 * **Frontend:** Execute `npm run lint` to catch syntax or formatting issues early.
+
+## 📦 Dependency Hygiene
+* Commit the relevant lock file whenever frontend or backend dependencies change.
+* For frontend toolchain updates, treat `typescript`, `eslint`, and `@typescript-eslint/*` as a coordinated set.
+* Validate dependency changes with a clean container install using `docker compose build symbio-frontend` before merging.
