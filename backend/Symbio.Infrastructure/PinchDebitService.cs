@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Reflection;
 using Pinch.SDK;
 using Pinch.SDK.Agreements;
 using Pinch.SDK.Payers;
@@ -53,18 +54,13 @@ public sealed class PinchDebitService : IPinchDebitService
 
         try
         {
+            var source = CreateSourceSaveOptions(request);
             var payerResponse = await _pinchApi.Payer.Save(new PayerSaveOptions
             {
                 EmailAddress = request.CustomerEmail,
                 CompanyName = request.AccountName,
                 Metadata = $"project={request.ProjectId};milestone={request.MilestoneId}",
-                Source = new SourceSaveOptions
-                {
-                    SourceType = "bank-account",
-                    BankAccountName = request.AccountName,
-                    BankAccountBsb = request.Bsb,
-                    BankAccountNumber = request.AccountNumber
-                }
+                Source = source
             });
 
             var payerId = payerResponse.Data?.Id;
@@ -409,6 +405,26 @@ public sealed class PinchDebitService : IPinchDebitService
             IsApproved = true,
             Status = "Approved"
         };
+    }
+
+    private static SourceSaveOptions CreateSourceSaveOptions(PinchPreApprovalRequest request)
+    {
+        var source = new SourceSaveOptions
+        {
+            SourceType = "bank-account"
+        };
+
+        if (!string.IsNullOrWhiteSpace(request.SourceToken))
+        {
+            source.Token = request.SourceToken.Trim();
+            return source;
+        }
+
+        var sourceType = source.GetType();
+        sourceType.GetProperty("BankAccountName", BindingFlags.Public | BindingFlags.Instance)?.SetValue(source, request.AccountName);
+        sourceType.GetProperty("BankAccountBsb", BindingFlags.Public | BindingFlags.Instance)?.SetValue(source, request.Bsb);
+        sourceType.GetProperty("BankAccountNumber", BindingFlags.Public | BindingFlags.Instance)?.SetValue(source, request.AccountNumber);
+        return source;
     }
 
     private static PinchDirectDebitResult MockDebit(PinchDirectDebitRequest request)

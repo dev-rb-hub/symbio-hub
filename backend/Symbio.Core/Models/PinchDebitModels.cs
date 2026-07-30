@@ -6,6 +6,7 @@ public sealed class PinchPreApprovalRequest
     public string MilestoneId { get; set; } = string.Empty;
     public string CustomerEmail { get; set; } = string.Empty;
     public string AccountName { get; set; } = string.Empty;
+    public string? SourceToken { get; set; }
     public string Bsb { get; set; } = string.Empty;
     public string AccountNumber { get; set; } = string.Empty;
     public decimal Amount { get; set; }
