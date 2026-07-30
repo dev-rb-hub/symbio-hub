@@ -8,7 +8,7 @@ export const LandingPage: React.FC = () => (
       <header className="symbio-landing-header">
         <img src={symbioHero} alt="Symbio Hub" className="symbio-hero-image" />
         <p className="symbio-kicker">Symbio Hub</p>
-        <h1 className="symbio-heading">
+        <h1 className="symbio-page-title">
           Public pitch for regional Australian SMEs and local tech experts
         </h1>
         <p className="symbio-intro">

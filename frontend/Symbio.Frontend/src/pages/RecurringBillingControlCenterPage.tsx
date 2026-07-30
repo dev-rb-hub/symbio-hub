@@ -136,10 +136,10 @@ export const RecurringBillingControlCenterPage: React.FC = () => {
   }, [session]);
 
   return (
-    <main style={{ padding: '2rem', fontFamily: 'Arial, sans-serif', maxWidth: 1080, margin: '0 auto' }}>
+    <main className="symbio-page-main">
       <header>
         <p style={{ margin: 0, color: '#0f5ea8', fontWeight: 700 }}>Recurring billing</p>
-        <h1 style={{ marginTop: '0.35rem' }}>Maintenance Retainer Control Center</h1>
+        <h1 className="symbio-page-title">Maintenance Retainer Control Center</h1>
         <p style={{ color: '#4f5b6c', maxWidth: 820 }}>
           Track monthly retainer subscriptions, included usage coverage, overage previews, and posted recurring BECS charges.
         </p>

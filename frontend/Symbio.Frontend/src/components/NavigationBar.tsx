@@ -1,18 +1,56 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import symbioLogo from '../assets/images/Symbio-hub.png';
 
 export const NavigationBar: React.FC = () => {
   const { session, logout } = useAuth();
+  const location = useLocation();
+  const showExpertDashboardMenu = session?.role === 'Expert' && location.pathname === '/expert/dashboard';
+  const [isDashboardMenuOpen, setIsDashboardMenuOpen] = useState(showExpertDashboardMenu);
+
+  useEffect(() => {
+    if (!showExpertDashboardMenu) {
+      setIsDashboardMenuOpen(false);
+      return;
+    }
+
+    setIsDashboardMenuOpen(true);
+  }, [showExpertDashboardMenu]);
 
   return (
     <nav className="symbio-nav">
       <div className="symbio-nav-links">
-        <Link to="/" className="symbio-brand-link">
-          <img src={symbioLogo} alt="Symbio Hub logo" className="symbio-brand-logo" />
-          <span>Symbio Hub</span>
-        </Link>
+        <div className="symbio-brand-menu-wrap">
+          <Link to="/" className="symbio-brand-link">
+            <img src={symbioLogo} alt="Symbio Hub logo" className="symbio-brand-logo" />
+            <span>Symbio Hub</span>
+          </Link>
+
+          {showExpertDashboardMenu && (
+            <button
+              type="button"
+              className={`symbio-menu-toggle ${isDashboardMenuOpen ? 'is-open' : ''}`.trim()}
+              aria-label="Toggle dashboard submenu"
+              aria-expanded={isDashboardMenuOpen}
+              onClick={() => setIsDashboardMenuOpen(open => !open)}
+            >
+              <span className="symbio-menu-toggle-bar" />
+              <span className="symbio-menu-toggle-bar" />
+              <span className="symbio-menu-toggle-bar" />
+            </button>
+          )}
+
+          {showExpertDashboardMenu && isDashboardMenuOpen && (
+            <div className="symbio-dashboard-submenu">
+              <a href="#dashboard" className="symbio-dashboard-submenu-link">Dashboard</a>
+              <a href="#projects" className="symbio-dashboard-submenu-link">Projects</a>
+              <a href="#milestones" className="symbio-dashboard-submenu-link">Milestones</a>
+              <a href="#payments" className="symbio-dashboard-submenu-link">Payments</a>
+              <a href="#reports" className="symbio-dashboard-submenu-link">Reports</a>
+            </div>
+          )}
+        </div>
         <Link to="/jobs" className="symbio-link">Public jobs</Link>
         <Link to="/marketplace" className="symbio-link">Marketplace</Link>
         {session && session.role === 'SME' && (

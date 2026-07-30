@@ -36,9 +36,9 @@ export const PublicJobs: React.FC = () => {
   }, []);
 
   return (
-    <main style={{ padding: '2rem', fontFamily: 'Arial, sans-serif', maxWidth: 900, margin: '0 auto' }}>
+    <main className="symbio-page-main">
       <header>
-        <h1>Public Jobs Feed</h1>
+        <h1 className="symbio-page-title">Public Jobs Feed</h1>
         <p>Read-only, masked job listings for unauthenticated visitors, with all sensitive budget and contact details hidden.</p>
       </header>
 

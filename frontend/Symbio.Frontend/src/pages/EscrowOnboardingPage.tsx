@@ -124,10 +124,10 @@ export const EscrowOnboardingPage: React.FC = () => {
   const isVerified = currentStatus.toLowerCase() === 'verified';
 
   return (
-    <main style={{ padding: '2rem', fontFamily: 'Arial, sans-serif', maxWidth: 900, margin: '0 auto' }}>
+    <main className="symbio-page-main">
       <header>
         <p style={{ color: '#0072ce', fontWeight: 700, marginBottom: 0 }}>Expert payments</p>
-        <h1 style={{ marginTop: '0.35rem' }}>Escrow Onboarding</h1>
+        <h1 className="symbio-page-title">Escrow Onboarding</h1>
         <p style={{ maxWidth: 720, lineHeight: 1.7, color: '#444' }}>
           Connect your expert profile to the Pinch Glassbox onboarding flow so milestone-based escrow settlement can be enabled.
         </p>

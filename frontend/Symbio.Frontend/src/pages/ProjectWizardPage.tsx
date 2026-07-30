@@ -164,9 +164,9 @@ export const ProjectWizardPage: React.FC = () => {
   };
 
   return (
-    <main style={{ padding: '2rem', fontFamily: 'Arial, sans-serif', maxWidth: 900, margin: '0 auto' }}>
+    <main className="symbio-page-main">
       <header>
-        <h1>Post a New Project</h1>
+        <h1 className="symbio-page-title">Post a New Project</h1>
         <p>Create a concise scope-of-work brief and publish it to the demand marketplace.</p>
       </header>
 

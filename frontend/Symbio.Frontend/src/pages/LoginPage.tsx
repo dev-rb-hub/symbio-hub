@@ -45,8 +45,8 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <main style={{ padding: '2rem', fontFamily: 'Arial, sans-serif', maxWidth: 600, margin: '0 auto' }}>
-      <h1>Access Symbio Hub</h1>
+    <main className="symbio-page-main">
+      <h1 className="symbio-page-title">Access Symbio Hub</h1>
       <p>Preserves your intended destination if you clicked through while logged out.</p>
       <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '1rem', marginTop: '1.5rem' }}>
         <label>

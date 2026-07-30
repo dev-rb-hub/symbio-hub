@@ -205,10 +205,10 @@ export const ExpertWorkbenchPage: React.FC = () => {
   const escrowVerified = escrowStatus?.status?.toLowerCase() === 'verified';
 
   return (
-    <main style={{ padding: '2rem', fontFamily: 'Arial, sans-serif', maxWidth: 1220, margin: '0 auto' }}>
+    <main className="symbio-page-main">
       <section style={{ borderRadius: 18, padding: '1.3rem 1.4rem', background: 'linear-gradient(130deg, #041b2f 0%, #0c4f7d 52%, #16c6d5 100%)', color: '#f7fdff', boxShadow: '0 18px 46px rgba(3, 22, 40, 0.28)' }}>
         <p style={{ margin: 0, color: '#d8f4ff', fontWeight: 700 }}>Expert Delivery Workspace</p>
-        <h1 style={{ margin: '0.35rem 0 0.45rem', fontSize: '1.8rem' }}>Delivery Workbench</h1>
+        <h1 className="symbio-page-title symbio-page-title--dark">Delivery Workbench</h1>
         <p style={{ margin: 0, maxWidth: 820, lineHeight: 1.65, color: '#d8f4ff' }}>
           Track active assignments, post progress logs, and keep client visibility synchronized in real time.
         </p>

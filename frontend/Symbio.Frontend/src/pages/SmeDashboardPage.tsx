@@ -127,10 +127,10 @@ export const SmeDashboardPage: React.FC = () => {
   }, [session]);
 
   return (
-    <main style={{ padding: '2rem', fontFamily: 'Arial, sans-serif', maxWidth: 1080, margin: '0 auto' }}>
+    <main className="symbio-page-main">
       <section style={{ borderRadius: 18, padding: '1.3rem 1.4rem', background: 'linear-gradient(130deg, #031b2f 0%, #0b4f7f 55%, #12bfd6 100%)', color: '#f8fdff', boxShadow: '0 18px 46px rgba(3, 22, 40, 0.28)' }}>
         <p style={{ margin: 0, opacity: 0.9, fontWeight: 700 }}>SME Financial Command</p>
-        <h1 style={{ margin: '0.35rem 0 0.45rem', fontSize: '1.8rem' }}>SME Dashboard</h1>
+        <h1 className="symbio-page-title symbio-page-title--dark">SME Dashboard</h1>
         <p style={{ margin: 0, maxWidth: 760, lineHeight: 1.6, color: '#d8f4ff' }}>
           Welcome back, {session?.email ?? 'SME user'}. Track invoicing health, payment state transitions, and runtime readiness from one control surface.
         </p>

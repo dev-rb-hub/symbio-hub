@@ -112,9 +112,18 @@ export const ExpertDashboardPage: React.FC = () => {
           setError(null);
         }
       })
-      .catch(() => {
+      .catch((err: unknown) => {
         if (active) {
-          setError('Unable to load expert dashboard data.');
+          const message = err instanceof Error ? err.message : 'Request failed';
+
+          if (message.includes('404')) {
+            setError('Expert dashboard endpoint is unavailable (404). Restart the backend API and confirm /api/expert/dashboard is deployed.');
+          } else if (message.includes('401') || message.includes('403')) {
+            setError('Access denied for expert dashboard data. Sign in again with an Expert account.');
+          } else {
+            setError('Unable to load expert dashboard data.');
+          }
+
           setData(null);
         }
       })
@@ -136,10 +145,10 @@ export const ExpertDashboardPage: React.FC = () => {
   const reportSignals = data?.reportLevelSummary ?? [];
 
   return (
-    <main style={{ padding: '2rem', fontFamily: 'Arial, sans-serif', maxWidth: 1220, margin: '0 auto' }}>
+    <main id="dashboard" className="symbio-page-main" style={{ maxWidth: 1220 }}>
       <section style={{ borderRadius: 18, padding: '1.3rem 1.4rem', background: 'linear-gradient(130deg, #031b2f 0%, #0b4f7f 55%, #12bfd6 100%)', color: '#f8fdff', boxShadow: '0 18px 46px rgba(3, 22, 40, 0.28)' }}>
         <p style={{ margin: 0, opacity: 0.9, fontWeight: 700 }}>Expert Delivery Command</p>
-        <h1 style={{ margin: '0.35rem 0 0.45rem', fontSize: '1.8rem' }}>Expert Dashboard</h1>
+        <h1 className="symbio-page-title symbio-page-title--dark">Expert Dashboard</h1>
         <p style={{ margin: 0, maxWidth: 850, lineHeight: 1.6, color: '#d8f4ff' }}>
           Filter and review projects, milestones, payment readiness, and delivery reports from one place before switching into the live workbench.
         </p>
@@ -202,7 +211,7 @@ export const ExpertDashboardPage: React.FC = () => {
             </article>
           </section>
 
-          <section style={{ marginTop: '1.4rem', display: 'grid', gap: '1rem', gridTemplateColumns: '1fr 1fr' }}>
+          <section id="projects" style={{ marginTop: '1.4rem' }}>
             <article style={{ background: '#fff', border: '1px solid #dde3ee', borderRadius: 14, padding: '1rem' }}>
               <h2 style={{ marginTop: 0 }}>Projects</h2>
               {(data.projects.length === 0) && <p style={{ color: '#586375' }}>No projects match the current filters.</p>}
@@ -216,7 +225,9 @@ export const ExpertDashboardPage: React.FC = () => {
                 ))}
               </div>
             </article>
+          </section>
 
+          <section id="milestones" style={{ marginTop: '1rem' }}>
             <article style={{ background: '#fff', border: '1px solid #dde3ee', borderRadius: 14, padding: '1rem' }}>
               <h2 style={{ marginTop: 0 }}>Milestones</h2>
               {(data.milestones.length === 0) && <p style={{ color: '#586375' }}>No milestones match the current filters.</p>}
@@ -232,7 +243,7 @@ export const ExpertDashboardPage: React.FC = () => {
             </article>
           </section>
 
-          <section style={{ marginTop: '1rem', display: 'grid', gap: '1rem', gridTemplateColumns: '1fr 1fr' }}>
+          <section id="payments" style={{ marginTop: '1rem' }}>
             <article style={{ background: '#fff', border: '1px solid #dde3ee', borderRadius: 14, padding: '1rem' }}>
               <h2 style={{ marginTop: 0 }}>Payments</h2>
               {(data.payments.length === 0) && <p style={{ color: '#586375' }}>No payment readiness records yet.</p>}
@@ -250,7 +261,9 @@ export const ExpertDashboardPage: React.FC = () => {
                 ))}
               </div>
             </article>
+          </section>
 
+          <section id="reports" style={{ marginTop: '1rem' }}>
             <article style={{ background: '#fff', border: '1px solid #dde3ee', borderRadius: 14, padding: '1rem' }}>
               <h2 style={{ marginTop: 0 }}>Reports</h2>
               <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '0.7rem' }}>

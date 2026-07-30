@@ -40,8 +40,8 @@ export const UserProfilePage: React.FC = () => {
         };
 
   return (
-    <main style={{ padding: '2rem', fontFamily: 'Arial, sans-serif', maxWidth: 760, margin: '0 auto' }}>
-      <h1>{roleGuidance.heading}</h1>
+    <main className="symbio-page-main">
+      <h1 className="symbio-page-title">{roleGuidance.heading}</h1>
       <p>{roleGuidance.summary}</p>
       <dl style={{ display: 'grid', gap: '0.75rem', marginTop: '1.5rem' }}>
         <div><strong>Email:</strong> {session.email}</div>

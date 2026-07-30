@@ -248,12 +248,12 @@ export const AdminControlPage: React.FC = () => {
   };
 
   return (
-    <main style={{ padding: '2rem', fontFamily: 'Arial, sans-serif', maxWidth: 1100, margin: '0 auto' }}>
+    <main className="symbio-page-main">
       <header style={{ borderRadius: 18, padding: '1.2rem 1.3rem', background: 'linear-gradient(130deg, #041a2f 0%, #0f5ea8 55%, #1dcad3 100%)', color: '#f7fdff', boxShadow: '0 18px 46px rgba(3, 22, 40, 0.28)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem' }}>
           <div>
             <p style={{ margin: 0, color: '#d8f4ff', fontWeight: 700 }}>Platform Operations</p>
-            <h1 style={{ margin: '0.35rem 0 0.25rem' }}>Admin Dashboard</h1>
+            <h1 className="symbio-page-title symbio-page-title--dark" style={{ marginBottom: '0.25rem' }}>Admin Dashboard</h1>
             <p style={{ margin: 0, color: '#d8f4ff' }}>Welcome back, {session?.email ?? 'Admin'}.</p>
           </div>
           <button onClick={logout} style={{ padding: '0.65rem 1rem', background: '#c72c41', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer' }}>
