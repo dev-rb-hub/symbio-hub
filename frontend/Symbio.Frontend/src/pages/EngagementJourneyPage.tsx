@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { apiRequest } from '../lib/apiClient';
 import { PinchRuntimeModePanel, PinchRuntimeModeView } from '../components/payments/PinchRuntimeModePanel';
+import symbioFlyer from '../assets/images/Symbio-hub flyer.png';
 
 type JourneyStage = {
   title: string;
@@ -173,6 +174,43 @@ export const EngagementJourneyPage: React.FC = () => {
           </div>
         </article>
       </section>
+
+      <footer style={{ marginTop: '1.5rem', borderRadius: 20, overflow: 'hidden', background: 'linear-gradient(145deg, #041a2f 0%, #103e63 52%, #dff5ef 100%)', boxShadow: '0 18px 48px rgba(3, 22, 40, 0.18)' }}>
+        <div style={{ padding: '1.3rem', color: '#f4fbff', display: 'grid', gap: '1rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+            <p style={{ margin: 0, fontWeight: 800, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#8de2ea' }}>Marketing flyer</p>
+            <h2 style={{ margin: 0, fontSize: '1.7rem', lineHeight: 1.2 }}>Need a compact Symbio Hub overview for stakeholders?</h2>
+            <p style={{ margin: 0, maxWidth: 920, lineHeight: 1.7, color: '#d8f4ff' }}>
+              Open the flyer section below for a full product snapshot, then jump to the repository for setup notes, contributor guidance, and current demo flows.
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.65rem' }}>
+              <a href="https://github.com/dev-rb-hub/symbio-hub" target="_blank" rel="noreferrer" style={{ textDecoration: 'none', padding: '0.6rem 0.9rem', borderRadius: 999, background: '#fff', color: '#0a3f66', fontWeight: 800 }}>
+                GitHub repository
+              </a>
+              <a href="https://github.com/dev-rb-hub" target="_blank" rel="noreferrer" style={{ textDecoration: 'none', padding: '0.6rem 0.9rem', borderRadius: 999, border: '1px solid rgba(255,255,255,0.5)', color: '#fff', fontWeight: 700 }}>
+                Contact via GitHub
+              </a>
+            </div>
+          </div>
+
+          <details style={{ borderRadius: 18, background: 'rgba(255,255,255,0.94)', padding: '0.9rem 1rem 1rem', color: '#0f2740' }}>
+            <summary style={{ cursor: 'pointer', listStyle: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', fontWeight: 800 }}>
+              <span>Open full marketing flyer</span>
+              <span style={{ padding: '0.35rem 0.65rem', borderRadius: 999, background: '#e6f2fb', color: '#0b4f7f', fontSize: '0.88rem' }}>Expand inline</span>
+            </summary>
+            <p style={{ margin: '0.75rem 0 0', color: '#47607a', lineHeight: 1.6 }}>
+              The full flyer is shown inline below so the entire asset can be reviewed without leaving the journey page.
+            </p>
+            <div style={{ marginTop: '0.85rem', overflowX: 'auto', borderRadius: 14, background: '#f8fbff', padding: '0.85rem', boxShadow: 'inset 0 0 0 1px #dce5f1' }}>
+              <img
+                src={symbioFlyer}
+                alt="Symbio Hub marketing flyer"
+                style={{ display: 'block', width: '100%', minWidth: 320, maxWidth: 980, margin: '0 auto', borderRadius: 14, boxShadow: '0 12px 28px rgba(15, 94, 168, 0.18)' }}
+              />
+            </div>
+          </details>
+        </div>
+      </footer>
     </main>
   );
 };
