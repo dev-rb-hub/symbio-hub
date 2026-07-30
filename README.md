@@ -68,7 +68,8 @@ To eliminate "it works on my machine" bottlenecks and support open-source develo
 
 ```text
 dev-rb-hub/symbio-hub/
-├── .github/workflows/              # CI/CD validation and automation pipelines
+├── .devcontainer/                  # Optional local containerised dev environment
+├── .github/                        # Workflow automation and Copilot repo guidance
 ├── backend/                        # .NET backend workspace
 │   ├── Symbio.API/                 # Web API host and HTTP endpoints
 │   ├── Symbio.API.Tests/           # Integration and endpoint tests
@@ -77,8 +78,8 @@ dev-rb-hub/symbio-hub/
 │   └── Dockerfile                  # Backend dev container image
 ├── frontend/                       # React frontend workspace
 │   └── Symbio.Frontend/            # Vite + TypeScript application
-├── docs/                           # Contributor and product documentation
-├── infrastructure/                 # IaC assets (Bicep and deployment config)
+├── docs/                           # Product guides, setup notes, and API docs
+├── infrastructure/                 # IaC assets including Bicep deployment files
 ├── docker-compose.yml              # Local multi-service orchestration
 ├── AGENTS.md                       # Agent instructions entry point
 ├── CONTRIBUTING.md                 # Engineering and contribution guidelines
@@ -128,10 +129,11 @@ This project is licensed under the **Apache License 2.0**. See the [LICENSE](LIC
 Current roadmap outcomes are implemented across the completed Epic 01 to Epic 11 delivery stream, including:
 
 - Public guest and auth role routing flows.
-- SME project posting and talent discovery.
-- Expert delivery workbench and escrow onboarding.
-- Pinch milestone settlement, accounting sync, and recurring billing.
-- Admin compliance and operational controls.
+- SME project posting, talent discovery, and agreement handoff flows.
+- Expert delivery workbench, escrow onboarding, and live progress updates.
+- Pinch payment runtime visibility, milestone lifecycle, settlement closeout, and recurring billing.
+- Completion evidence capture and settlement readiness checks.
+- Admin compliance, operational controls, and Pinch diagnostics from role settings.
 
 For roadmap-level details and live issue status, use:
 

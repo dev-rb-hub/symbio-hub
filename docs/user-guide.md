@@ -1,52 +1,57 @@
 # User Guide
 
-This guide gives a practical walkthrough of the Symbio Hub demo flows for each role.
+This guide gives a practical walkthrough of the main Symbio Hub demo flows for each role.
 
 ## Role Overview
 
 - Guest: Explore public positioning and read-only opportunities.
-- SME: Post projects, set payment pre-approvals, and track invoice/payment states.
+- SME: Post projects, prepare payment setup, and review delivery and settlement progress.
 - Expert: Confirm onboarding and escrow readiness, then work from the delivery view.
-- Admin: Monitor compliance, telemetry, and safety settings.
+- Admin: Monitor operational health, compliance, and diagnostics.
 
 ## Guest Flow
 
 1. Open the frontend at `http://localhost:5173`.
 2. Review the landing page messaging.
-3. Open public jobs and marketplace views.
-4. If either public page fails initial load, use `Retry`; if a page is empty, use `Refresh`.
-5. Continue to login when ready to test role workflows.
+3. Explore public jobs and marketplace views.
+4. Continue to login when ready to test role workflows.
 
 ## SME Flow
 
 1. Sign in with an SME account from `/login`.
-2. Complete trust onboarding at `/onboarding` if your session is newly seeded.
-3. Open `/project/new` and complete the scope form.
-4. Publish the project and complete payment pre-approval when prompted.
-5. Check the Pinch runtime mode panel (Mock, Sandbox, or Live) on the project flow before confirming payment actions.
-6. Open `/billing/control-center` to review recurring billing controls and confirm the same runtime mode context.
-7. Open `/sme/dashboard` to review invoice/payment state updates and verify runtime mode visibility there.
-8. Visit `/talent/discovery` to inspect available experts.
-9. Use `/profile` to verify role and account details.
+2. Complete trust onboarding if your session is newly seeded.
+3. Create a project and publish the scope.
+4. Review agreement, payment lifecycle, and settlement handoff screens as the project advances.
+5. Use the billing and dashboard views to confirm Pinch runtime mode and payment state.
+6. Open talent discovery to inspect available experts.
+7. Use settings or profile to verify role and account details.
 
 ## Expert Flow
 
 1. Sign in with an Expert account from `/login`.
 2. Complete trust onboarding at `/onboarding` if required.
-3. Open `/expert/dashboard` to search and filter Projects, Milestones, Payments, and Reports.
-4. Open escrow onboarding at `/escrow/onboarding` and verify settlement readiness.
-5. Open `/expert/workbench` to post live delivery updates and progress logs.
-6. Use `/settings` for role-specific account settings.
+3. Open the expert dashboard to review assigned work.
+4. Complete escrow onboarding and verify settlement readiness.
+5. Use the delivery workbench to post live progress updates and milestone notes.
+6. Use settings for role-specific account details.
 
 ## Admin Flow
 
 1. Sign in using a seeded admin account.
-2. Open `/admin/control` for an overview.
-3. Navigate to `/admin/telemetry` for runtime and activity visibility.
-4. Navigate to `/admin/compliance` for review queue operations.
-5. Navigate to `/admin/safety` for safety override controls.
-6. Use `/settings` to verify your admin account details.
-7. Use `Refresh section` to reload only the current admin section.
+2. Open the admin control center for an overview.
+3. Review telemetry, compliance, agreements, and safety sections as needed.
+4. Open settings to run the Pinch payment API diagnostics and review the terminal-style output.
+5. Use `Refresh section` on the control center to reload only the active admin area.
+
+## Additional Features
+
+- Agreement approval: Shared SME, Expert, and Admin flow for reviewing and recording milestone approvals before delivery begins.
+- Payment lifecycle demo: A focused view of the Pinch-backed milestone payment stages from approval through settlement.
+- Settlement closeout: A closeout screen that shows whether completion evidence is sufficient to settle a milestone.
+- Completion evidence matrix: Backend-supported evidence tracking for file hashes, git commits, and milestone readiness checks.
+- Runtime mode panels: Key SME payment screens display whether Pinch is running in Mock, Sandbox, or Live mode.
+- Admin Pinch diagnostics: The settings page includes a diagnostic summary plus terminal-style output for runtime-mode and sandbox verification checks.
+- Webhook trust indicators: Webhook responses report trust outcome fields so operators can validate signature-handling behavior.
 
 ## Demo Notes
 
@@ -59,9 +64,11 @@ This guide gives a practical walkthrough of the Symbio Hub demo flows for each r
 
 ## Troubleshooting
 
-- If pages fail to load data, use each page-level retry action.
+- If pages fail to load data, use each page-level retry or refresh action.
 - If access is denied unexpectedly, sign out and sign in again.
 - If backend endpoints fail, verify API is running at `http://localhost:5001`.
+- If Pinch checks are unclear, open admin settings and run the Pinch diagnostics again to inspect the terminal-style output and environment status.
+- If the diagnostics report mock behavior, verify Pinch credentials and environment configuration before testing live payment scenarios.
 
 ## Related Documentation
 
