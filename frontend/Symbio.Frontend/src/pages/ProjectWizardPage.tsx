@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { apiRequest } from '../lib/apiClient';
@@ -12,6 +12,15 @@ interface Milestone {
 interface CreatedProject {
   id: string;
   budget: number;
+}
+
+interface PaymentRuntimeMode {
+  modeLabel: string;
+  environment: string;
+  credentialsConfigured: boolean;
+  usesMockResponses: boolean;
+  portalUrl: string;
+  guidance: string;
 }
 
 export const ProjectWizardPage: React.FC = () => {
@@ -33,6 +42,21 @@ export const ProjectWizardPage: React.FC = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [pendingProject, setPendingProject] = useState<CreatedProject | null>(null);
   const [preApprovalSuccess, setPreApprovalSuccess] = useState<{ projectId: string; amount: number } | null>(null);
+  const [runtimeMode, setRuntimeMode] = useState<PaymentRuntimeMode | null>(null);
+
+  useEffect(() => {
+    if (!session) {
+      return;
+    }
+
+    apiRequest<PaymentRuntimeMode>('/api/payments/runtime-mode', {
+      token: session.token,
+    })
+      .then(mode => setRuntimeMode(mode))
+      .catch(() => {
+        setRuntimeMode(null);
+      });
+  }, [session]);
 
   const updateMilestone = (index: number, field: 'title' | 'description', value: string) => {
     const next = [...milestones];
@@ -219,6 +243,9 @@ export const ProjectWizardPage: React.FC = () => {
         projectTitle={title.trim() || 'Untitled project'}
         milestoneCount={milestones.length}
         milestoneId={milestones[0]?.title || 'Kickoff'}
+        runtimeModeLabel={runtimeMode?.modeLabel}
+        runtimeModeGuidance={runtimeMode?.guidance}
+        usesMockResponses={runtimeMode?.usesMockResponses}
         isSubmitting={isPreApprovalSubmitting}
         onCancel={() => {
           setShowPaymentModal(false);
