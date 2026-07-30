@@ -35,6 +35,7 @@ public class PaymentsController : ControllerBase
         string ProjectId,
         string MilestoneId,
         string AccountName,
+        string? SourceToken,
         string Bsb,
         string AccountNumber,
         decimal Amount,
@@ -157,10 +158,11 @@ public class PaymentsController : ControllerBase
             return BadRequest(new { message = "ProjectId, MilestoneId, AccountName, and Amount (>= 5000) are required." });
         }
 
+        var hasSourceToken = !string.IsNullOrWhiteSpace(request.SourceToken);
         var normalizedBsb = NormalizeBsb(request.Bsb);
         var normalizedAccount = request.AccountNumber?.Replace(" ", string.Empty, StringComparison.Ordinal) ?? string.Empty;
 
-        if (!BsbRegex.IsMatch(normalizedBsb) || !AccountNumberRegex.IsMatch(normalizedAccount))
+        if (!hasSourceToken && (!BsbRegex.IsMatch(normalizedBsb) || !AccountNumberRegex.IsMatch(normalizedAccount)))
         {
             return BadRequest(new { message = "Please provide a valid Australian BSB and account number." });
         }
@@ -173,6 +175,7 @@ public class PaymentsController : ControllerBase
             MilestoneId = request.MilestoneId.Trim(),
             CustomerEmail = clientEmail,
             AccountName = request.AccountName.Trim(),
+            SourceToken = request.SourceToken?.Trim(),
             Bsb = normalizedBsb,
             AccountNumber = normalizedAccount,
             Amount = request.Amount,

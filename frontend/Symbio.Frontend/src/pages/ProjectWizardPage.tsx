@@ -122,7 +122,7 @@ export const ProjectWizardPage: React.FC = () => {
     }
   };
 
-  const handleCapturePreApproval = async (payload: { accountName: string; bsb: string; accountNumber: string }) => {
+  const handleCapturePreApproval = async (payload: { accountName: string; sourceToken: string }) => {
     if (!session || !pendingProject) {
       return;
     }
@@ -140,8 +140,7 @@ export const ProjectWizardPage: React.FC = () => {
           projectId: pendingProject.id,
           milestoneId: milestones[0]?.title || 'Kickoff',
           accountName: payload.accountName,
-          bsb: payload.bsb,
-          accountNumber: payload.accountNumber,
+          sourceToken: payload.sourceToken,
           amount: pendingProject.budget,
           currency: 'AUD'
         }

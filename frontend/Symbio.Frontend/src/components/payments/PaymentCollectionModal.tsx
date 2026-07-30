@@ -12,21 +12,8 @@ type Props = {
   isSubmitting: boolean;
   submissionError?: string | null;
   onCancel: () => void;
-  onSubmit: (payload: { accountName: string; bsb: string; accountNumber: string }) => void;
+  onSubmit: (payload: { accountName: string; sourceToken: string }) => void;
 };
-
-function formatBsb(input: string): string {
-  const digits = input.replace(/\D/g, '').slice(0, 6);
-  if (digits.length <= 3) {
-    return digits;
-  }
-
-  return `${digits.slice(0, 3)}-${digits.slice(3)}`;
-}
-
-function formatAccountNumber(input: string): string {
-  return input.replace(/\D/g, '').slice(0, 9);
-}
 
 export const PaymentCollectionModal: React.FC<Props> = ({
   isOpen,
@@ -43,14 +30,13 @@ export const PaymentCollectionModal: React.FC<Props> = ({
   onSubmit,
 }) => {
   const [accountName, setAccountName] = useState('');
-  const [bsb, setBsb] = useState('');
-  const [accountNumber, setAccountNumber] = useState('');
+  const [sourceToken, setSourceToken] = useState('');
   const [hasAuthority, setHasAuthority] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const isValid = useMemo(() => {
-    return hasAuthority && accountName.trim().length > 1 && /^\d{3}-\d{3}$/.test(bsb) && /^\d{3,9}$/.test(accountNumber);
-  }, [accountName, bsb, accountNumber, hasAuthority]);
+    return hasAuthority && accountName.trim().length > 1 && sourceToken.trim().length > 10;
+  }, [accountName, hasAuthority, sourceToken]);
 
   if (!isOpen) {
     return null;
@@ -58,12 +44,12 @@ export const PaymentCollectionModal: React.FC<Props> = ({
 
   const submit = () => {
     if (!isValid) {
-      setError('Confirm debit authority and enter a valid account name, BSB, and account number.');
+      setError('Confirm debit authority and enter a valid account name and Pinch source token.');
       return;
     }
 
     setError(null);
-    onSubmit({ accountName: accountName.trim(), bsb, accountNumber });
+    onSubmit({ accountName: accountName.trim(), sourceToken: sourceToken.trim() });
   };
 
   return (
@@ -94,38 +80,24 @@ export const PaymentCollectionModal: React.FC<Props> = ({
             />
           </label>
 
-          <div style={{ display: 'grid', gap: '0.85rem', gridTemplateColumns: '1fr 1fr' }}>
-            <label style={{ display: 'grid', gap: '0.4rem' }}>
-              <span>BSB</span>
-              <input
-                value={bsb}
-                onChange={event => setBsb(formatBsb(event.target.value))}
-                inputMode="numeric"
-                placeholder="123-456"
-                style={{ padding: '0.82rem', borderRadius: 10, border: '1px solid #ccd5e3' }}
-              />
-            </label>
-
-            <label style={{ display: 'grid', gap: '0.4rem' }}>
-              <span>Account Number</span>
-              <input
-                value={accountNumber}
-                onChange={event => setAccountNumber(formatAccountNumber(event.target.value))}
-                inputMode="numeric"
-                placeholder="123456789"
-                style={{ padding: '0.82rem', borderRadius: 10, border: '1px solid #ccd5e3' }}
-              />
-            </label>
-          </div>
+          <label style={{ display: 'grid', gap: '0.4rem' }}>
+            <span>Pinch Source Token</span>
+            <input
+              value={sourceToken}
+              onChange={event => setSourceToken(event.target.value)}
+              placeholder="src_..."
+              style={{ padding: '0.82rem', borderRadius: 10, border: '1px solid #ccd5e3' }}
+            />
+          </label>
 
           <p style={{ margin: 0, color: '#637089', fontSize: '0.9rem' }}>
-            This creates a one-time pre-approval token through Pinch so direct debit can be pulled on deployment sign-off without card rails.
+            This should come from Pinch Capture JS or another tokenization flow so bank details never touch Symbio Hub directly.
           </p>
 
           <div style={{ margin: 0, padding: '0.75rem 0.9rem', borderRadius: 10, border: '1px solid #d9e4f1', background: '#f7faff', color: '#234567', fontSize: '0.92rem' }}>
             <strong>What happens next:</strong>
             <ol style={{ margin: '0.45rem 0 0.1rem 1.1rem', padding: 0 }}>
-              <li>Pinch validates account details and authorization.</li>
+              <li>Pinch validates the token and authorization.</li>
               <li>This project is marked escrow-ready for kickoff settlement.</li>
               <li>You can continue to the marketplace or dashboard after confirmation.</li>
             </ol>
