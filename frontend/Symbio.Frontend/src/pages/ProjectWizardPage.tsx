@@ -81,10 +81,11 @@ export const ProjectWizardPage: React.FC = () => {
     }
 
     setIsSubmitting(true);
+    let createdProject: CreatedProject | null = null;
 
     try
     {
-      const createdProject = await apiRequest<CreatedProject>('/api/project', {
+      createdProject = await apiRequest<CreatedProject>('/api/project', {
         method: 'POST',
         token: session.token,
         body: {
@@ -116,7 +117,9 @@ export const ProjectWizardPage: React.FC = () => {
 
     setIsSubmitting(false);
 
-    navigate('/marketplace');
+    if (createdProject) {
+      navigate(`/journey?projectId=${encodeURIComponent(createdProject.id)}&stage=published`);
+    }
   };
 
   const handleCapturePreApproval = async (payload: { accountName: string; bsb: string; accountNumber: string }) => {
@@ -193,10 +196,10 @@ export const ProjectWizardPage: React.FC = () => {
               style={{ padding: '0.7rem 0.95rem', borderRadius: 8, border: 'none', background: '#0f9d58', color: '#fff', cursor: 'pointer' }}
               onClick={() => {
                 setPreApprovalSuccess(null);
-                navigate('/marketplace');
+                navigate(`/journey?projectId=${encodeURIComponent(preApprovalSuccess.projectId)}&stage=pre-approved`);
               }}
             >
-              Continue to marketplace
+              Open engagement journey
             </button>
             <button
               type="button"

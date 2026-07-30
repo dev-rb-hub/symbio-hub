@@ -112,6 +112,7 @@ export const NavigationBar: React.FC = () => {
         </div>
         <Link to="/jobs" className="symbio-link">Public jobs</Link>
         <Link to="/marketplace" className="symbio-link">Marketplace</Link>
+        <Link to="/journey" className="symbio-link">Journey</Link>
         {session && <span className="symbio-role-spacer" aria-hidden="true" />}
         {session && session.role === 'SME' && (
           <Link to="/sme/dashboard" className="symbio-link symbio-link-role">SME Dashboard</Link>
