@@ -46,6 +46,24 @@ public class PaymentsController : ControllerBase
         decimal? Amount,
         string? Currency);
 
+    [HttpGet("runtime-mode")]
+    [Authorize(Roles = "SME,Expert,Admin")]
+    public IActionResult GetRuntimeMode()
+    {
+        var runtimeMode = _pinchDebitService.GetRuntimeMode();
+        return Ok(new
+        {
+            runtimeMode.ModeLabel,
+            runtimeMode.Environment,
+            runtimeMode.CredentialsConfigured,
+            runtimeMode.UsesMockResponses,
+            runtimeMode.PortalUrl,
+            guidance = runtimeMode.UsesMockResponses
+                ? "Mock mode active: settlement and pre-approval responses are simulated until Pinch credentials are configured."
+                : "Pinch integration credentials are configured for this environment."
+        });
+    }
+
     [HttpGet("sme/invoices")]
     [Authorize(Roles = "SME")]
     public async Task<IActionResult> GetSmeInvoices()

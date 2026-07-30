@@ -6,6 +6,9 @@ type Props = {
   projectTitle: string;
   milestoneCount: number;
   milestoneId: string;
+  runtimeModeLabel?: string;
+  runtimeModeGuidance?: string;
+  usesMockResponses?: boolean;
   isSubmitting: boolean;
   onCancel: () => void;
   onSubmit: (payload: { accountName: string; bsb: string; accountNumber: string }) => void;
@@ -30,6 +33,9 @@ export const PaymentCollectionModal: React.FC<Props> = ({
   projectTitle,
   milestoneCount,
   milestoneId,
+  runtimeModeLabel,
+  runtimeModeGuidance,
+  usesMockResponses,
   isSubmitting,
   onCancel,
   onSubmit,
@@ -68,6 +74,9 @@ export const PaymentCollectionModal: React.FC<Props> = ({
           </p>
           <p style={{ margin: '0.4rem 0 0', color: '#4f5b6c' }}>
             Project {projectTitle || 'Untitled project'} · {milestoneCount} milestone{milestoneCount === 1 ? '' : 's'}
+          </p>
+          <p style={{ margin: '0.4rem 0 0', color: usesMockResponses ? '#9a4b00' : '#0f5ea8', fontWeight: 700 }}>
+            Payment mode: {runtimeModeLabel ?? 'Unknown'}
           </p>
         </header>
 
@@ -109,6 +118,12 @@ export const PaymentCollectionModal: React.FC<Props> = ({
           <p style={{ margin: 0, color: '#637089', fontSize: '0.9rem' }}>
             This creates a one-time pre-approval token through Pinch so direct debit can be pulled on deployment sign-off without card rails.
           </p>
+
+          {runtimeModeGuidance && (
+            <div style={{ margin: 0, padding: '0.75rem 0.9rem', borderRadius: 10, border: `1px solid ${usesMockResponses ? '#f1c089' : '#b9d8f6'}`, background: usesMockResponses ? '#fff6ec' : '#eef7ff', color: usesMockResponses ? '#7e4700' : '#1f4f7a', fontSize: '0.92rem' }}>
+              {runtimeModeGuidance}
+            </div>
+          )}
 
           {error && <div style={{ color: '#a80000', fontWeight: 600 }}>{error}</div>}
 

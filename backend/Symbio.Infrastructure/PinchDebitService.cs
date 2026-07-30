@@ -140,6 +140,24 @@ public sealed class PinchDebitService : IPinchDebitService
         }
     }
 
+    public PinchIntegrationRuntimeMode GetRuntimeMode()
+    {
+        var credentialsConfigured = HasCredentials();
+        var environment = string.IsNullOrWhiteSpace(_settings.Environment) ? "Sandbox" : _settings.Environment.Trim();
+        var modeLabel = credentialsConfigured
+            ? (environment.Equals("Live", StringComparison.OrdinalIgnoreCase) ? "Live" : "Sandbox")
+            : "Mock";
+
+        return new PinchIntegrationRuntimeMode
+        {
+            ModeLabel = modeLabel,
+            Environment = environment,
+            CredentialsConfigured = credentialsConfigured,
+            UsesMockResponses = !credentialsConfigured,
+            PortalUrl = _settings.PortalUrl
+        };
+    }
+
     private bool HasCredentials()
     {
         return !string.IsNullOrWhiteSpace(_settings.ApplicationId) && !string.IsNullOrWhiteSpace(_settings.SecretKey);
