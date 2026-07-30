@@ -34,9 +34,15 @@ export const NavigationBar: React.FC = () => {
           <Link to="/admin/control" className="symbio-link">Operations Hub</Link>
         )}
         {session && session.role === 'Admin' && (
+          <Link to="/admin/telemetry" className="symbio-link">Telemetry</Link>
+        )}
+        {session && session.role === 'Admin' && (
           <Link to="/admin/compliance" className="symbio-link">Compliance Queue</Link>
         )}
-        {session && <Link to="/onboarding" className="symbio-link">Trust onboarding</Link>}
+        {session && session.role === 'Admin' && (
+          <Link to="/admin/safety" className="symbio-link">Safety Overrides</Link>
+        )}
+        {session && (session.role === 'SME' || session.role === 'Expert') && <Link to="/onboarding" className="symbio-link">Trust onboarding</Link>}
         {session && <Link to="/profile" className="symbio-link">Profile</Link>}
       </div>
       <div className="symbio-nav-account">
