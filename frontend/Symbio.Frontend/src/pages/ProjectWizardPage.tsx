@@ -173,11 +173,18 @@ export const ProjectWizardPage: React.FC = () => {
         <p className="symbio-role-hero-subtitle">Create a concise scope-of-work brief and publish it to the demand marketplace.</p>
       </header>
 
+      <section style={{ marginTop: '1rem', padding: '1rem 1.1rem', borderRadius: 12, border: '1px solid #d7e7ff', background: '#f4f9ff' }}>
+        <h2 style={{ margin: '0 0 0.35rem', fontSize: '1.05rem', color: '#0b4f7f' }}>Pinch payment preview</h2>
+        <p style={{ margin: 0, color: '#274a63', lineHeight: 1.6 }}>
+          This flow now highlights the Pinch-backed pre-approval step for milestone funding so the SME demo shows how escrow-ready payments are prepared before the agreement and settlement screens.
+        </p>
+      </section>
+
       {error && <div style={{ color: '#a00', marginTop: '1rem' }}>{error}</div>}
 
       {preApprovalSuccess && (
         <section style={{ marginTop: '1rem', padding: '1rem 1.1rem', borderRadius: 12, border: '1px solid #bfe6d1', background: '#eefbf3' }}>
-          <h2 style={{ margin: '0 0 0.35rem', fontSize: '1.1rem', color: '#0d6f47' }}>Pre-approval captured</h2>
+          <h2 style={{ margin: '0 0 0.35rem', fontSize: '1.1rem', color: '#0d6f47' }}>Pinch pre-approval captured</h2>
           <p style={{ margin: 0, color: '#23543f' }}>
             Project {preApprovalSuccess.projectId} is now escrow-ready for
             {' '}
@@ -187,7 +194,7 @@ export const ProjectWizardPage: React.FC = () => {
             Payment mode used: <strong>{preApprovalSuccess.modeLabel}</strong>
           </p>
           <p style={{ margin: '0.45rem 0 0', color: '#23543f' }}>
-            Next step: proceed to marketplace or open your SME dashboard to track state transitions.
+            The next demo step is to review the agreement and continue to the payment lifecycle view where the milestone debit path is shown.
           </p>
           <div style={{ marginTop: '0.8rem', display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
             <button
