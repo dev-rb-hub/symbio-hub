@@ -70,7 +70,7 @@ const sectionDescriptions: Record<AdminSection, string> = {
 };
 
 export const AdminControlPage: React.FC = () => {
-  const { session, logout } = useAuth();
+  const { session } = useAuth();
   const location = useLocation();
 
   const [telemetry, setTelemetry] = useState<TelemetryResponse | null>(null);
@@ -264,9 +264,6 @@ export const AdminControlPage: React.FC = () => {
             <h1 className="symbio-page-title symbio-page-title--dark" style={{ marginBottom: '0.25rem' }}>Admin Dashboard</h1>
             <p style={{ margin: 0, color: '#d8f4ff' }}>Welcome back, {session?.email ?? 'Admin'}.</p>
           </div>
-          <button onClick={logout} style={{ padding: '0.65rem 1rem', background: '#c72c41', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer' }}>
-            Logout
-          </button>
         </div>
 
         <div style={{ marginTop: '0.85rem', display: 'flex', gap: '0.55rem', flexWrap: 'wrap' }}>

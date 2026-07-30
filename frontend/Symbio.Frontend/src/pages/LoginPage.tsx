@@ -85,6 +85,14 @@ export const LoginPage: React.FC = () => {
       }
 
       const authenticatedRole = result.role || role;
+
+      // Prevent silent role drift when an email is already tied to a different SME/Expert role.
+      if ((authenticatedRole === 'SME' || authenticatedRole === 'Expert') && authenticatedRole !== role) {
+        setError(`This account is registered as ${authenticatedRole}. Switch the role selector to ${authenticatedRole} or use a different email.`);
+        setIsSubmitting(false);
+        return;
+      }
+
       login(result.token, authenticatedRole, email);
 
       const nextPath = canRoleAccessPath(authenticatedRole, from)

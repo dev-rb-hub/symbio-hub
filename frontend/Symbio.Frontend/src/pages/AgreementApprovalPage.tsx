@@ -448,15 +448,6 @@ export const AgreementApprovalPage: React.FC = () => {
         <Link to={`/journey?projectId=${encodeURIComponent(projectId)}&stage=agreement`} style={{ textDecoration: 'none', padding: '0.65rem 0.9rem', borderRadius: 10, border: '1px solid #d3dbe8', color: '#0a3f66', fontWeight: 700 }}>
           Back to journey
         </Link>
-        <Link to="/sme/dashboard" style={{ textDecoration: 'none', padding: '0.65rem 0.9rem', borderRadius: 10, background: '#0f9d58', color: '#fff', fontWeight: 700 }}>
-          Open SME dashboard
-        </Link>
-        <Link to="/expert/workbench" style={{ textDecoration: 'none', padding: '0.65rem 0.9rem', borderRadius: 10, border: '1px solid #d3dbe8', color: '#0a3f66', fontWeight: 700 }}>
-          Open expert workbench
-        </Link>
-        <Link to="/admin/control" style={{ textDecoration: 'none', padding: '0.65rem 0.9rem', borderRadius: 10, border: '1px solid #d3dbe8', color: '#0a3f66', fontWeight: 700 }}>
-          Open admin controls
-        </Link>
       </section>
     </main>
   );

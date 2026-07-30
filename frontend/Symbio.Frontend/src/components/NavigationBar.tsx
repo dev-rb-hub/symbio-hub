@@ -147,7 +147,7 @@ export const NavigationBar: React.FC = () => {
         {role === 'SME' && (
           <Link to="/billing/control-center" className="symbio-link symbio-link-role">Recurring Billing</Link>
         )}
-        {session && (
+        {(role === 'SME' || role === 'Expert') && (
           <Link to="/agreement" className="symbio-link symbio-link-role">Agreement</Link>
         )}
         {role === 'Admin' && (
