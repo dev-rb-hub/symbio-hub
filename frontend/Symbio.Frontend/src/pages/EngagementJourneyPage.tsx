@@ -17,7 +17,7 @@ const journeyStages: JourneyStage[] = [
   { title: 'Match', summary: 'Shortlist experts by skill and location before moving into negotiation and acceptance.', actionLabel: 'Find talent', actionHref: '/talent/discovery' },
   { title: 'Agree', summary: 'Review and explicitly approve agreement terms and debit authority before milestone settlement.', actionLabel: 'Review agreement', actionHref: '/agreement' },
   { title: 'Deliver', summary: 'Use the expert workbench to post progress, validate milestones, and keep visibility aligned.', actionLabel: 'Open workbench', actionHref: '/expert/workbench' },
-  { title: 'Settle', summary: 'Track runtime mode, escrow readiness, payment state, and closeout reporting in one place.', actionLabel: 'SME dashboard', actionHref: '/sme/dashboard' },
+  { title: 'Settle', summary: 'Track payment events and settlement progression before final closeout reporting.', actionLabel: 'Open payment timeline', actionHref: '/payments/lifecycle' },
 ];
 
 const pinchConcepts = ['Merchant', 'Payer', 'Source', 'Agreement', 'Payment', 'Attempt', 'Transfer', 'Plan', 'Subscription', 'Webhook'];
@@ -55,9 +55,9 @@ export const EngagementJourneyPage: React.FC = () => {
 
   const role = session?.role ?? 'Guest';
   const nextStep = session?.role === 'Expert'
-    ? { label: 'Open escrow onboarding', href: '/escrow/onboarding' }
+    ? { label: 'Open payment timeline', href: '/payments/lifecycle' }
     : session?.role === 'Admin'
-      ? { label: 'Open agreement review', href: '/agreement' }
+      ? { label: 'Open closeout command view', href: '/closeout' }
       : projectId
         ? { label: 'Review agreement', href: `/agreement?projectId=${encodeURIComponent(projectId)}&milestoneId=Kickoff` }
         : { label: 'Start project brief', href: '/project/new' };
