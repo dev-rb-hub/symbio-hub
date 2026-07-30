@@ -61,6 +61,13 @@ type SafetySetting = {
 
 type AdminSection = 'overview' | 'telemetry' | 'compliance' | 'safety';
 
+const sectionDescriptions: Record<AdminSection, string> = {
+  overview: 'Cross-section snapshot for telemetry, compliance workload, and safety overrides.',
+  telemetry: 'Platform health indicators and identity/onboarding completion rates.',
+  compliance: 'Pending compliance reviews and open project flags requiring action.',
+  safety: 'Operational safety settings and override controls.',
+};
+
 export const AdminControlPage: React.FC = () => {
   const { session, logout } = useAuth();
   const location = useLocation();
@@ -91,6 +98,9 @@ export const AdminControlPage: React.FC = () => {
     }
     return 'overview';
   }, [location.pathname]);
+
+  const complianceSignal = queue ? queue.pendingReviewCount + queue.openFlagCount : 0;
+  const safetySignal = settings.length;
 
   const loadTelemetry = async () => {
     if (!session) {
@@ -252,8 +262,22 @@ export const AdminControlPage: React.FC = () => {
       <nav style={{ marginTop: '1rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
         <Link to="/admin/control" style={navLinkStyle('overview')}>Overview</Link>
         <Link to="/admin/telemetry" style={navLinkStyle('telemetry')}>Telemetry</Link>
-        <Link to="/admin/compliance" style={navLinkStyle('compliance')}>Compliance Queue</Link>
-        <Link to="/admin/safety" style={navLinkStyle('safety')}>Safety Overrides</Link>
+        <Link to="/admin/compliance" style={navLinkStyle('compliance')}>
+          Compliance Queue
+          {complianceSignal > 0 && (
+            <span style={{ marginLeft: '0.4rem', background: '#d44d3f', color: '#fff', borderRadius: 999, padding: '0.05rem 0.45rem', fontSize: '0.78rem', fontWeight: 700 }}>
+              {complianceSignal}
+            </span>
+          )}
+        </Link>
+        <Link to="/admin/safety" style={navLinkStyle('safety')}>
+          Safety Overrides
+          {safetySignal > 0 && (
+            <span style={{ marginLeft: '0.4rem', background: '#475569', color: '#fff', borderRadius: 999, padding: '0.05rem 0.45rem', fontSize: '0.78rem', fontWeight: 700 }}>
+              {safetySignal}
+            </span>
+          )}
+        </Link>
         <button
           type="button"
           onClick={() => void refreshActiveSection()}
@@ -263,6 +287,35 @@ export const AdminControlPage: React.FC = () => {
           {isSectionBusy ? 'Refreshing...' : 'Refresh section'}
         </button>
       </nav>
+
+      <section style={{ marginTop: '1rem', border: '1px solid #d7dde8', borderRadius: 12, padding: '0.95rem 1rem', background: '#f8fbff' }}>
+        <p style={{ margin: 0, color: '#0f5ea8', fontWeight: 700, textTransform: 'capitalize' }}>Active section: {activeSection}</p>
+        <p style={{ margin: '0.4rem 0 0', color: '#425168' }}>{sectionDescriptions[activeSection]}</p>
+      </section>
+
+      {activeSection === 'overview' && (
+        <section style={{ marginTop: '1rem', display: 'grid', gap: '0.75rem', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
+          <article style={{ border: '1px solid #d7dde8', borderRadius: 10, padding: '0.9rem', background: '#fff' }}>
+            <h2 style={{ margin: 0, fontSize: '1rem' }}>Telemetry focus</h2>
+            <p style={{ margin: '0.45rem 0 0', color: '#5f6a7d' }}>Inspect user health metrics and onboarding conversion trend.</p>
+            <Link to="/admin/telemetry" style={{ display: 'inline-block', marginTop: '0.6rem' }}>Open telemetry section</Link>
+          </article>
+
+          <article style={{ border: '1px solid #d7dde8', borderRadius: 10, padding: '0.9rem', background: '#fff' }}>
+            <h2 style={{ margin: 0, fontSize: '1rem' }}>Compliance focus</h2>
+            <p style={{ margin: '0.45rem 0 0', color: '#5f6a7d' }}>
+              Pending items: {queue?.pendingReviewCount ?? 0} reviews, {queue?.openFlagCount ?? 0} flags.
+            </p>
+            <Link to="/admin/compliance" style={{ display: 'inline-block', marginTop: '0.6rem' }}>Open compliance queue</Link>
+          </article>
+
+          <article style={{ border: '1px solid #d7dde8', borderRadius: 10, padding: '0.9rem', background: '#fff' }}>
+            <h2 style={{ margin: 0, fontSize: '1rem' }}>Safety focus</h2>
+            <p style={{ margin: '0.45rem 0 0', color: '#5f6a7d' }}>Configured overrides: {settings.length}</p>
+            <Link to="/admin/safety" style={{ display: 'inline-block', marginTop: '0.6rem' }}>Open safety overrides</Link>
+          </article>
+        </section>
+      )}
 
       {(activeSection === 'overview' || activeSection === 'telemetry') && isTelemetryLoading && (
         <div style={{ marginTop: '1rem', padding: '0.85rem 1rem', background: '#f3f6fa', borderRadius: 10, color: '#3a4a5c' }}>
@@ -274,8 +327,18 @@ export const AdminControlPage: React.FC = () => {
         <div style={{ marginTop: '1rem', color: '#a00' }}>{telemetryError}</div>
       )}
 
+      {(activeSection === 'overview' || activeSection === 'telemetry') && !isTelemetryLoading && !telemetryError && !telemetry && (
+        <article style={{ marginTop: '1rem', border: '1px solid #d7dde8', borderRadius: 10, padding: '0.9rem', background: '#fff', color: '#5f6a7d' }}>
+          No telemetry data available yet. Use Refresh section to request the latest platform metrics.
+        </article>
+      )}
+
       {(activeSection === 'overview' || activeSection === 'telemetry') && telemetry && (
         <section style={{ marginTop: '1rem', display: 'grid', gap: '0.75rem', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+          <article style={{ border: '1px solid #d7dde8', borderRadius: 10, padding: '1rem', background: '#fff' }}>
+            <div style={{ color: '#5f6a7d' }}>Snapshot generated</div>
+            <strong style={{ fontSize: '1rem' }}>{new Date(telemetry.generatedAtUtc).toLocaleString()}</strong>
+          </article>
           <article style={{ border: '1px solid #d7dde8', borderRadius: 10, padding: '1rem', background: '#fff' }}>
             <div style={{ color: '#5f6a7d' }}>Total users</div>
             <strong style={{ fontSize: '1.2rem' }}>{telemetry.userProfileHealth.totalUsers}</strong>
@@ -303,6 +366,12 @@ export const AdminControlPage: React.FC = () => {
 
       {(activeSection === 'overview' || activeSection === 'compliance') && queueError && (
         <div style={{ marginTop: '1rem', color: '#a00' }}>{queueError}</div>
+      )}
+
+      {(activeSection === 'overview' || activeSection === 'compliance') && !isQueueLoading && !queueError && !queue && (
+        <article style={{ marginTop: '1rem', border: '1px solid #d7dde8', borderRadius: 10, padding: '0.9rem', background: '#fff', color: '#5f6a7d' }}>
+          No compliance queue data is currently loaded. Use Refresh section to retry.
+        </article>
       )}
 
       {(activeSection === 'overview' || activeSection === 'compliance') && queue && (
