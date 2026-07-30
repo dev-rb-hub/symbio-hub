@@ -205,14 +205,31 @@ export const ExpertWorkbenchPage: React.FC = () => {
   const escrowVerified = escrowStatus?.status?.toLowerCase() === 'verified';
 
   return (
-    <main style={{ padding: '2rem', fontFamily: 'Arial, sans-serif', maxWidth: 1180, margin: '0 auto' }}>
-      <header style={{ display: 'grid', gap: '0.75rem' }}>
-        <p style={{ color: '#0072ce', fontWeight: 700, margin: 0 }}>Expert delivery workspace</p>
-        <h1 style={{ margin: 0 }}>Delivery Workbench</h1>
-        <p style={{ maxWidth: 780, lineHeight: 1.7, color: '#444', margin: 0 }}>
-          Track active delivery assignments, post live status notes, and watch your workbench update in real time through SignalR.
+    <main style={{ padding: '2rem', fontFamily: 'Arial, sans-serif', maxWidth: 1220, margin: '0 auto' }}>
+      <section style={{ borderRadius: 18, padding: '1.3rem 1.4rem', background: 'linear-gradient(130deg, #041b2f 0%, #0c4f7d 52%, #16c6d5 100%)', color: '#f7fdff', boxShadow: '0 18px 46px rgba(3, 22, 40, 0.28)' }}>
+        <p style={{ margin: 0, color: '#d8f4ff', fontWeight: 700 }}>Expert Delivery Workspace</p>
+        <h1 style={{ margin: '0.35rem 0 0.45rem', fontSize: '1.8rem' }}>Delivery Workbench</h1>
+        <p style={{ margin: 0, maxWidth: 820, lineHeight: 1.65, color: '#d8f4ff' }}>
+          Track active assignments, post progress logs, and keep client visibility synchronized in real time.
         </p>
-      </header>
+
+        <div style={{ marginTop: '0.9rem', display: 'flex', gap: '0.55rem', flexWrap: 'wrap' }}>
+          <span style={{ borderRadius: 999, background: connection ? '#0f9d58' : '#8a2f2f', color: '#fff', padding: '0.25rem 0.65rem', fontSize: '0.86rem', fontWeight: 700 }}>
+            Stream: {connection ? 'Connected' : 'Connecting'}
+          </span>
+          <span style={{ borderRadius: 999, background: escrowVerified ? '#0f9d58' : '#a65700', color: '#fff', padding: '0.25rem 0.65rem', fontSize: '0.86rem', fontWeight: 700 }}>
+            Escrow: {escrowVerified ? 'Verified' : 'Pending'}
+          </span>
+          <span style={{ borderRadius: 999, background: 'rgba(255,255,255,0.2)', color: '#fff', padding: '0.25rem 0.65rem', fontSize: '0.86rem', fontWeight: 700 }}>
+            Assignments: {assignments.length}
+          </span>
+        </div>
+
+        <div style={{ marginTop: '1rem', display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+          <Link to="/escrow/onboarding" style={{ textDecoration: 'none', padding: '0.5rem 0.8rem', borderRadius: 10, background: '#fff', color: '#0a3f66', fontWeight: 700 }}>Escrow onboarding</Link>
+          <Link to="/profile" style={{ textDecoration: 'none', padding: '0.5rem 0.8rem', borderRadius: 10, border: '1px solid rgba(255,255,255,0.55)', color: '#fff', fontWeight: 700 }}>Profile</Link>
+        </div>
+      </section>
 
       {error && <div style={{ marginTop: '1rem', color: '#a00' }}>{error}</div>}
 
@@ -228,15 +245,15 @@ export const ExpertWorkbenchPage: React.FC = () => {
       {!isLoaded && !error && <div style={{ marginTop: '1rem', color: '#555' }}>Loading delivery workbench...</div>}
 
       <section style={{ marginTop: '1.5rem', display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
-        <article style={{ padding: '1.25rem', background: '#fff', border: '1px solid #e2e6ed', borderRadius: 16 }}>
+        <article style={{ padding: '1.25rem', background: '#fff', border: '1px solid #e2e6ed', borderRadius: 16, boxShadow: '0 10px 24px rgba(11, 31, 56, 0.06)' }}>
           <div style={{ color: '#555' }}>Signed in as</div>
           <strong style={{ fontSize: '1.05rem' }}>{expertName}</strong>
         </article>
-        <article style={{ padding: '1.25rem', background: '#fff', border: '1px solid #e2e6ed', borderRadius: 16 }}>
+        <article style={{ padding: '1.25rem', background: '#fff', border: '1px solid #e2e6ed', borderRadius: 16, boxShadow: '0 10px 24px rgba(11, 31, 56, 0.06)' }}>
           <div style={{ color: '#555' }}>Assignments</div>
           <strong style={{ fontSize: '1.05rem' }}>{assignments.length}</strong>
         </article>
-        <article style={{ padding: '1.25rem', background: '#fff', border: '1px solid #e2e6ed', borderRadius: 16 }}>
+        <article style={{ padding: '1.25rem', background: '#fff', border: '1px solid #e2e6ed', borderRadius: 16, boxShadow: '0 10px 24px rgba(11, 31, 56, 0.06)' }}>
           <div style={{ color: '#555' }}>Live stream</div>
           <strong style={{ fontSize: '1.05rem', color: connection ? '#0a6' : '#a00' }}>{connection ? 'Connected' : 'Connecting'}</strong>
         </article>

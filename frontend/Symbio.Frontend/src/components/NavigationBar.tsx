@@ -16,6 +16,15 @@ export const NavigationBar: React.FC = () => {
         <Link to="/jobs" className="symbio-link">Public jobs</Link>
         <Link to="/marketplace" className="symbio-link">Marketplace</Link>
         {session && session.role === 'SME' && (
+          <Link to="/sme/dashboard" className="symbio-link">SME Dashboard</Link>
+        )}
+        {session && session.role === 'Expert' && (
+          <Link to="/expert/workbench" className="symbio-link">Expert Dashboard</Link>
+        )}
+        {session && session.role === 'Admin' && (
+          <Link to="/admin/control" className="symbio-link">Admin Dashboard</Link>
+        )}
+        {session && session.role === 'SME' && (
           <Link to="/talent/discovery" className="symbio-link">Talent discovery</Link>
         )}
         {session && session.role === 'Expert' && (

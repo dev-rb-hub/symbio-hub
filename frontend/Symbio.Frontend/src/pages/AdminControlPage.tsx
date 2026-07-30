@@ -249,14 +249,29 @@ export const AdminControlPage: React.FC = () => {
 
   return (
     <main style={{ padding: '2rem', fontFamily: 'Arial, sans-serif', maxWidth: 1100, margin: '0 auto' }}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
-        <div>
-          <h1 style={{ marginBottom: '0.25rem' }}>Platform Operations Command Hub</h1>
-          <p style={{ margin: 0, color: '#566074' }}>Welcome back, {session?.email ?? 'Admin'}.</p>
+      <header style={{ borderRadius: 18, padding: '1.2rem 1.3rem', background: 'linear-gradient(130deg, #041a2f 0%, #0f5ea8 55%, #1dcad3 100%)', color: '#f7fdff', boxShadow: '0 18px 46px rgba(3, 22, 40, 0.28)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <div>
+            <p style={{ margin: 0, color: '#d8f4ff', fontWeight: 700 }}>Platform Operations</p>
+            <h1 style={{ margin: '0.35rem 0 0.25rem' }}>Admin Dashboard</h1>
+            <p style={{ margin: 0, color: '#d8f4ff' }}>Welcome back, {session?.email ?? 'Admin'}.</p>
+          </div>
+          <button onClick={logout} style={{ padding: '0.65rem 1rem', background: '#c72c41', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer' }}>
+            Logout
+          </button>
         </div>
-        <button onClick={logout} style={{ padding: '0.65rem 1rem', background: '#c72c41', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer' }}>
-          Logout
-        </button>
+
+        <div style={{ marginTop: '0.85rem', display: 'flex', gap: '0.55rem', flexWrap: 'wrap' }}>
+          <span style={{ borderRadius: 999, background: 'rgba(255,255,255,0.2)', color: '#fff', padding: '0.25rem 0.65rem', fontSize: '0.86rem', fontWeight: 700 }}>
+            Pending reviews: {queue?.pendingReviewCount ?? 0}
+          </span>
+          <span style={{ borderRadius: 999, background: 'rgba(255,255,255,0.2)', color: '#fff', padding: '0.25rem 0.65rem', fontSize: '0.86rem', fontWeight: 700 }}>
+            Open flags: {queue?.openFlagCount ?? 0}
+          </span>
+          <span style={{ borderRadius: 999, background: 'rgba(255,255,255,0.2)', color: '#fff', padding: '0.25rem 0.65rem', fontSize: '0.86rem', fontWeight: 700 }}>
+            Safety overrides: {settings.length}
+          </span>
+        </div>
       </header>
 
       <nav style={{ marginTop: '1rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
