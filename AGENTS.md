@@ -1,29 +1,30 @@
 # Symbio Hub Agent Instructions
 
-## Purpose
-This is the root instruction file for AI coding agents working in Symbio Hub. Use it as the entry point, then read the narrower instructions for the area you are touching.
+This is the entry point for AI coding agents working in Symbio Hub. Start here, then read the narrower instructions for the area you are editing.
 
-## Read First
-- [README.md](README.md) for the product and repository overview.
-- [CONTRIBUTING.md](CONTRIBUTING.md) for branch, commit, and validation conventions.
-- [docker-compose.yml](docker-compose.yml) for local orchestration.
-- [.github/workflows/ci.yml](.github/workflows/ci.yml) for repository validation shape.
-- [backend/.instructions.md](backend/.instructions.md) for backend-specific work.
-- [frontend/Symbio.Frontend/.instructions.md](frontend/Symbio.Frontend/.instructions.md) for frontend-specific work.
+## Read first
+- [README.md](README.md) for the product overview and architecture.
+- [CONTRIBUTING.md](CONTRIBUTING.md) for contribution and validation expectations.
+- [docker-compose.yml](docker-compose.yml) for local orchestration and service ports.
+- [.github/workflows/ci.yml](.github/workflows/ci.yml) for the CI shape.
+- [backend/.instructions.md](backend/.instructions.md) for backend changes.
+- [frontend/Symbio.Frontend/.instructions.md](frontend/Symbio.Frontend/.instructions.md) for frontend changes.
 
 ## Boundaries
-- Keep `backend/`, `frontend/`, and `infrastructure/` isolated.
-- Do not leak backend database structures or internal API details into frontend code.
-- Preserve the existing architecture and keep changes minimal.
-- Prefer linking to existing docs instead of repeating them here.
+- Keep backend, frontend, and infrastructure work isolated.
+- Do not leak backend data structures or internal API details into frontend code.
+- Preserve the existing architecture and prefer small, localized changes.
+- Link to existing docs instead of duplicating product or API details.
 
-## Workflows
-- Prefer repository-native or containerized commands when possible.
+## Repo-specific workflow
+- Prefer repository-native or containerized commands over ad hoc scripts.
 - Local orchestration: `docker compose up --build -d`, `docker compose logs -f`, `docker compose down`.
-- Backend validation: `dotnet test`; local entry point: `dotnet run --project backend/Symbio.API`.
-- Frontend validation: `cd frontend/Symbio.Frontend && npm run lint`, `npm run build`, `npm run dev`.
+- Backend validation: `dotnet test` and `dotnet run --project backend/Symbio.API`.
+- Frontend validation: `cd frontend/Symbio.Frontend && npm run lint`, `npm run build`, and `npm run dev`.
+- If a bug spans layers, trace it through the API, service, and repository flow before editing.
 
 ## Conventions
 - Use branch prefixes `feature/`, `bugfix/`, `chore/`, and `docs/`.
-- Follow Conventional Commits for PRs, for example `feat(payments): add pre-approval initialization`.
-- Keep infrastructure changes in `infrastructure/bicep/main.bicep` and related IaC files.
+- Follow Conventional Commits for pull requests.
+- Keep infrastructure changes in `infrastructure/bicep/main.bicep` and nearby Bicep files.
+- When adding a new capability, match the existing patterns in the surrounding layer rather than introducing a new abstraction.

@@ -5,7 +5,6 @@
       "name": "Debug Backend API (.NET)",
       "type": "dotnet",
       "request": "launch",
-      "preLaunchTask": "Stop Backend API Debug Process",
       "projectPath": "${workspaceFolder}/backend/Symbio.API/Symbio.API.csproj"
     },
     {

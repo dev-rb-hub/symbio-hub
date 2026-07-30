@@ -1,18 +1,4 @@
 {
   "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "Stop Backend API Debug Process",
-      "type": "shell",
-      "command": "powershell",
-      "args": [
-        "-NoProfile",
-        "-ExecutionPolicy",
-        "Bypass",
-        "-Command",
-        "Stop-Process -Name Symbio.API -Force -ErrorAction SilentlyContinue; exit 0"
-      ],
-      "problemMatcher": []
-    }
-  ]
+  "tasks": []
 }
