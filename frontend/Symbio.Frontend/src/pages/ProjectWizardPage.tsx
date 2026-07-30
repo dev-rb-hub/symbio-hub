@@ -210,6 +210,16 @@ export const ProjectWizardPage: React.FC = () => {
             >
               Open SME dashboard
             </button>
+            <button
+              type="button"
+              style={{ padding: '0.7rem 0.95rem', borderRadius: 8, border: '1px solid #9fd5b6', background: '#fff', color: '#155f3e', cursor: 'pointer' }}
+              onClick={() => {
+                setPreApprovalSuccess(null);
+                navigate(`/payments/lifecycle?projectId=${encodeURIComponent(preApprovalSuccess.projectId)}&milestoneId=${encodeURIComponent(milestones[0]?.title || 'Kickoff')}`);
+              }}
+            >
+              View payment timeline demo
+            </button>
           </div>
         </section>
       )}
