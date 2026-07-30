@@ -29,12 +29,17 @@ export const LandingPage: React.FC = () => (
           <h2>Talent discovery</h2>
           <p>SMEs can search verified expert profiles by skill, location, and summary to shortlist local delivery partners faster.</p>
         </article>
+        <article className="symbio-card symbio-card-b">
+          <h2>Engagement journey</h2>
+          <p>Follow one flow from onboarding and project brief through delivery, payment, transfer, and closeout without losing context.</p>
+        </article>
       </div>
 
       <nav className="symbio-cta-nav">
         <Link to="/jobs" className="symbio-cta symbio-cta-primary">Browse public jobs</Link>
         <Link to="/marketplace" className="symbio-cta symbio-cta-secondary">Explore marketplace</Link>
         <Link to="/talent/discovery" className="symbio-cta symbio-cta-success">Find talent</Link>
+        <Link to="/journey" className="symbio-cta symbio-cta-secondary">View journey</Link>
         <Link to="/login" className="symbio-cta symbio-cta-secondary">Log in</Link>
         <Link to="/onboarding" className="symbio-cta symbio-cta-success">Start trust onboarding</Link>
       </nav>
