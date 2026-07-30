@@ -16,35 +16,13 @@ Symbio Hub is a cross-platform, containerised open-source platform connecting re
 
 ---
 
-## ⭐ 5-Minute Demo Start
-
-From the repository root:
-
-```powershell
-docker compose up --build -d
-```
-
-Open:
-
-- Frontend SPA: `http://localhost:5173`
-- Backend Swagger: `http://localhost:5001/swagger`
-
-Demo flow (judge-friendly):
-
-1. Guest: open landing page and public jobs feed.
-2. SME: sign in, post a project, trigger payment pre-approval flow.
-3. Expert: review onboarding and escrow readiness flow.
-4. Admin: open operations hub and inspect compliance/telemetry sections.
-
----
-
 ## 🔗 Quick Links
 
 - [Getting Started](docs/getting-started.md)
 - [User Guide](docs/user-guide.md)
-- [API Reference](docs/api-reference.md)
-- [Competitor Landscape](docs/competitor-landscape.md)
 - [Hackathon Pitch](docs/pinch-pitch.md)
+- [Competitor Landscape](docs/competitor-landscape.md)
+- [API Reference](docs/api-reference.md)
 - [Contributing](CONTRIBUTING.md)
 
 ---
@@ -110,26 +88,26 @@ dev-rb-hub/symbio-hub/
 
 ---
 
-## 🚀 Getting Started & Orchestration Engines
+## 🚀 Getting Started
 
-Detailed setup and runtime instructions now live in docs:
+### ⭐ 5-Minute Demo Start
 
-- [Getting Started](docs/getting-started.md)
-- [API Reference](docs/api-reference.md)
-
-Configuration highlights:
-
-- Local database and developer config defaults are documented in [Getting Started](docs/getting-started.md#database-setup-local).
-- Pinch sandbox portal and credential setup are documented in [Getting Started](docs/getting-started.md#developer-configuration-defaults).
-
-Quick start:
+From the repository root, run:
 
 ```powershell
 docker compose up --build -d
 ```
 
+Open:
+
 - Frontend SPA: `http://localhost:5173`
 - Backend Swagger: `http://localhost:5001/swagger`
+
+For detailed setup, environment configuration, and role-by-role demo walkthroughs, use:
+
+- [Getting Started](docs/getting-started.md)
+- [User Guide](docs/user-guide.md)
+- [API Reference](docs/api-reference.md)
 
 ---
 
