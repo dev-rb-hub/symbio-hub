@@ -14,7 +14,8 @@ This guide gives a practical walkthrough of the Symbio Hub demo flows for each r
 1. Open the frontend at `http://localhost:5173`.
 2. Review the landing page messaging.
 3. Open public jobs and marketplace views.
-4. Continue to login when ready to test role workflows.
+4. If either public page fails initial load, use `Retry`; if a page is empty, use `Refresh`.
+5. Continue to login when ready to test role workflows.
 
 ## SME Flow
 
@@ -54,6 +55,7 @@ This guide gives a practical walkthrough of the Symbio Hub demo flows for each r
 - In Mock mode, payment and settlement responses are simulated.
 - Live financial behavior requires configured Pinch credentials.
 - If runtime mode cannot be loaded, pages show a non-blocking warning so demo flow can continue.
+- Webhook endpoints now return authenticity outcome fields (`trustState`, `trustReason`) so operators can confirm signature validation status in responses.
 
 ## Troubleshooting
 

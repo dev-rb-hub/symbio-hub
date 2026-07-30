@@ -16,10 +16,16 @@ interface ProjectScope {
 export const MarketplacePage: React.FC = () => {
   const [projects, setProjects] = useState<ProjectScope[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRetrying, setIsRetrying] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const loadProjects = async () => {
-    setIsLoading(true);
+  const loadProjects = async (isRetry = false) => {
+    if (isRetry) {
+      setIsRetrying(true);
+    } else {
+      setIsLoading(true);
+    }
+
     setError(null);
 
     try {
@@ -27,6 +33,11 @@ export const MarketplacePage: React.FC = () => {
       setProjects(data);
     } catch {
       setError('Could not load public project scopes.');
+    }
+
+    if (isRetry) {
+      setIsRetrying(false);
+      return;
     }
 
     setIsLoading(false);
@@ -43,9 +54,15 @@ export const MarketplacePage: React.FC = () => {
         <p>Browse published scope-of-work briefs created by regional SMEs and discover matched demand-generating opportunities.</p>
       </header>
 
-      {isLoading && (
+      {isLoading && projects.length === 0 && (
         <div style={{ marginTop: '1rem', padding: '1rem 1.1rem', borderRadius: 12, background: '#f3f6fa', color: '#3a4a5c' }}>
           Loading marketplace projects...
+        </div>
+      )}
+
+      {isRetrying && (
+        <div style={{ marginTop: '1rem', padding: '0.85rem 1rem', borderRadius: 12, background: '#eef7ff', color: '#17456f' }}>
+          Refreshing marketplace projects...
         </div>
       )}
 
@@ -53,8 +70,13 @@ export const MarketplacePage: React.FC = () => {
         <div style={{ marginTop: '1rem', color: '#a00' }}>
           {error}
           <div style={{ marginTop: '0.75rem' }}>
-            <button type="button" onClick={() => void loadProjects()} style={{ padding: '0.55rem 0.85rem', border: '1px solid #ccd5e3', background: '#fff', borderRadius: 8, cursor: 'pointer' }}>
-              Retry
+            <button
+              type="button"
+              onClick={() => void loadProjects(true)}
+              disabled={isLoading || isRetrying}
+              style={{ padding: '0.55rem 0.85rem', border: '1px solid #ccd5e3', background: '#fff', borderRadius: 8, cursor: 'pointer' }}
+            >
+              {isRetrying ? 'Retrying...' : 'Retry'}
             </button>
           </div>
         </div>
@@ -64,6 +86,14 @@ export const MarketplacePage: React.FC = () => {
         {projects.length === 0 && !error && !isLoading ? (
           <div style={{ padding: '1.5rem', background: '#f7f8fb', borderRadius: 16 }}>
             <p>No marketplace projects are available yet. Log in as an SME to post the first scoped offering.</p>
+            <button
+              type="button"
+              onClick={() => void loadProjects(true)}
+              disabled={isLoading || isRetrying}
+              style={{ marginTop: '0.85rem', padding: '0.55rem 0.85rem', border: '1px solid #ccd5e3', background: '#fff', borderRadius: 8, cursor: 'pointer' }}
+            >
+              Refresh
+            </button>
           </div>
         ) : (
           projects.map(project => (

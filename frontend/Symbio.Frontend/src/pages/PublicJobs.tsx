@@ -15,10 +15,16 @@ interface PublicJob {
 export const PublicJobs: React.FC = () => {
   const [jobs, setJobs] = useState<PublicJob[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRetrying, setIsRetrying] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const loadJobs = async () => {
-    setIsLoading(true);
+  const loadJobs = async (isRetry = false) => {
+    if (isRetry) {
+      setIsRetrying(true);
+    } else {
+      setIsLoading(true);
+    }
+
     setError(null);
 
     try {
@@ -26,6 +32,11 @@ export const PublicJobs: React.FC = () => {
       setJobs(data);
     } catch {
       setError('Failed to fetch public jobs.');
+    }
+
+    if (isRetry) {
+      setIsRetrying(false);
+      return;
     }
 
     setIsLoading(false);
@@ -42,9 +53,15 @@ export const PublicJobs: React.FC = () => {
         <p>Read-only, masked job listings for unauthenticated visitors, with all sensitive budget and contact details hidden.</p>
       </header>
 
-      {isLoading && (
+      {isLoading && jobs.length === 0 && (
         <div style={{ marginBottom: '1rem', padding: '1rem 1.1rem', borderRadius: 12, background: '#f3f6fa', color: '#3a4a5c' }}>
           Loading public jobs feed...
+        </div>
+      )}
+
+      {isRetrying && (
+        <div style={{ marginBottom: '1rem', padding: '0.85rem 1rem', borderRadius: 12, background: '#eef7ff', color: '#17456f' }}>
+          Refreshing public jobs...
         </div>
       )}
 
@@ -52,8 +69,13 @@ export const PublicJobs: React.FC = () => {
         <div style={{ color: '#a00', marginBottom: '1rem' }}>
           {error}
           <div style={{ marginTop: '0.75rem' }}>
-            <button type="button" onClick={() => void loadJobs()} style={{ padding: '0.55rem 0.85rem', border: '1px solid #ccd5e3', background: '#fff', borderRadius: 8, cursor: 'pointer' }}>
-              Retry
+            <button
+              type="button"
+              onClick={() => void loadJobs(true)}
+              disabled={isLoading || isRetrying}
+              style={{ padding: '0.55rem 0.85rem', border: '1px solid #ccd5e3', background: '#fff', borderRadius: 8, cursor: 'pointer' }}
+            >
+              {isRetrying ? 'Retrying...' : 'Retry'}
             </button>
           </div>
         </div>
@@ -63,6 +85,14 @@ export const PublicJobs: React.FC = () => {
         {!isLoading && !error && jobs.length === 0 && (
           <article style={{ border: '1px solid #d6d9dd', padding: '1.5rem', borderRadius: 16, background: '#fff' }}>
             <p style={{ margin: 0 }}>No public jobs are available yet. Check back shortly for new openings.</p>
+            <button
+              type="button"
+              onClick={() => void loadJobs(true)}
+              disabled={isLoading || isRetrying}
+              style={{ marginTop: '0.85rem', padding: '0.55rem 0.85rem', border: '1px solid #ccd5e3', background: '#fff', borderRadius: 8, cursor: 'pointer' }}
+            >
+              Refresh
+            </button>
           </article>
         )}
 
