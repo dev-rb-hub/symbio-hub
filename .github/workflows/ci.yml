@@ -21,8 +21,8 @@ jobs:
       - name: Restore backend dependencies
         run: dotnet restore backend/Symbio.API.Tests/Symbio.API.Tests.csproj
 
-      - name: Build backend
-        run: dotnet build backend/Symbio.API/Symbio.API.csproj --configuration Release --no-restore
+      - name: Build backend and tests
+        run: dotnet build backend/Symbio.API.Tests/Symbio.API.Tests.csproj --configuration Release --no-restore
 
       - name: Run backend tests
         run: dotnet test backend/Symbio.API.Tests/Symbio.API.Tests.csproj --configuration Release --no-build --verbosity normal
