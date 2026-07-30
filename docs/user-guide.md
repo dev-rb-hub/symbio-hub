@@ -32,10 +32,10 @@ This guide gives a practical walkthrough of the Symbio Hub demo flows for each r
 
 1. Sign in with an Expert account from `/login`.
 2. Complete trust onboarding at `/onboarding` if required.
-3. Open escrow onboarding at `/escrow/onboarding`.
-4. Start onboarding and observe status updates.
-5. Open `/expert/workbench` to review delivery assignments and logs.
-6. Use `/profile` to verify your account details.
+3. Open `/expert/dashboard` to search and filter Projects, Milestones, Payments, and Reports.
+4. Open escrow onboarding at `/escrow/onboarding` and verify settlement readiness.
+5. Open `/expert/workbench` to post live delivery updates and progress logs.
+6. Use `/settings` for role-specific account settings.
 
 ## Admin Flow
 
@@ -44,7 +44,7 @@ This guide gives a practical walkthrough of the Symbio Hub demo flows for each r
 3. Navigate to `/admin/telemetry` for runtime and activity visibility.
 4. Navigate to `/admin/compliance` for review queue operations.
 5. Navigate to `/admin/safety` for safety override controls.
-6. Use `/profile` to verify your admin account details.
+6. Use `/settings` to verify your admin account details.
 7. Use `Refresh section` to reload only the current admin section.
 
 ## Demo Notes

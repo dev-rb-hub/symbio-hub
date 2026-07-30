@@ -6,8 +6,8 @@ export const UnauthorizedPage: React.FC = () => {
   const reason = (location.state as { reason?: string } | null)?.reason;
 
   return (
-    <main style={{ padding: '2rem', fontFamily: 'Arial, sans-serif', textAlign: 'center' }}>
-      <h1>Unauthorized</h1>
+    <main className="symbio-page-main" style={{ textAlign: 'center' }}>
+      <h1 className="symbio-page-title">Unauthorized</h1>
       <p>{reason ?? 'You do not have permission to access this page.'}</p>
       <p>
         <Link to="/" style={{ color: '#0072ce' }}>

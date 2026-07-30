@@ -26,7 +26,12 @@ body {
 }
 
 .symbio-nav {
-  background: var(--symbio-surface);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--symbio-border);
   padding: 0.9rem 1rem;
   display: flex;
@@ -34,6 +39,7 @@ body {
   align-items: center;
   gap: 1rem;
   flex-wrap: wrap;
+  box-shadow: 0 8px 18px rgba(12, 33, 58, 0.06);
 }
 
 .symbio-nav-links {
@@ -52,6 +58,115 @@ body {
   gap: 0.6rem;
 }
 
+.symbio-brand-menu-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.symbio-menu-toggle {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.2rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--symbio-border);
+  background: var(--symbio-surface);
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease;
+}
+
+.symbio-menu-toggle-bar {
+  width: 16px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--symbio-primary);
+  transform-origin: center;
+  transition: transform 180ms ease, opacity 140ms ease;
+}
+
+.symbio-menu-toggle.is-open {
+  background: var(--symbio-cta-light);
+  border-color: #8fb5d9;
+}
+
+.symbio-menu-toggle.is-open .symbio-menu-toggle-bar:nth-child(1) {
+  transform: translateY(4px) rotate(45deg);
+}
+
+.symbio-menu-toggle.is-open .symbio-menu-toggle-bar:nth-child(2) {
+  opacity: 0;
+}
+
+.symbio-menu-toggle.is-open .symbio-menu-toggle-bar:nth-child(3) {
+  transform: translateY(-4px) rotate(-45deg);
+}
+
+.symbio-dashboard-submenu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  z-index: 20;
+  min-width: 180px;
+  padding: 0.45rem;
+  border: 1px solid var(--symbio-border);
+  border-radius: 10px;
+  background: var(--symbio-surface);
+  box-shadow: 0 10px 26px rgba(8, 29, 51, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  animation: symbioSubmenuEnter 140ms ease-out;
+}
+
+@keyframes symbioSubmenuEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.symbio-dashboard-submenu-link {
+  color: #214566;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.94rem;
+  border-radius: 8px;
+  padding: 0.46rem 0.56rem;
+  border-left: 3px solid transparent;
+  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+
+.symbio-dashboard-submenu-link:hover {
+  background: #eaf4ff;
+  color: #0f5ea8;
+  border-left-color: #0f5ea8;
+}
+
+.symbio-dashboard-submenu-link--active {
+  background: #dceeff;
+  color: #0f5ea8;
+  border-left-color: #0f5ea8;
+}
+
+.symbio-dashboard-submenu-title {
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #5f6f82;
+  font-weight: 700;
+  padding: 0.2rem 0.56rem 0.35rem;
+}
+
 .symbio-brand-logo {
   width: 34px;
   height: 34px;
@@ -63,12 +178,42 @@ body {
   color: var(--symbio-text);
   text-decoration: none;
   font-weight: 500;
+  border-radius: 8px;
+  padding: 0.28rem 0.5rem;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.symbio-link:hover {
+  background: var(--symbio-cta-light);
+  color: var(--symbio-primary);
+}
+
+.symbio-role-spacer {
+  width: 72px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(15, 94, 168, 0) 0%, rgba(15, 94, 168, 0.45) 48%, rgba(15, 94, 168, 0) 100%);
+  margin: 0 0.15rem;
+}
+
+.symbio-link-role {
+  background: #f3f9ff;
+  border: 1px solid #cfe0f1;
+  color: #0f5ea8;
+  font-weight: 600;
+}
+
+.symbio-link-role:hover {
+  background: #e4f2ff;
+  border-color: #a9cae7;
+  color: #0d4f8b;
 }
 
 .symbio-link-login {
   color: var(--symbio-primary);
   text-decoration: none;
   font-weight: 600;
+  border-radius: 8px;
+  padding: 0.28rem 0.5rem;
 }
 
 .symbio-nav-account {
@@ -91,6 +236,24 @@ body {
   cursor: pointer;
   color: var(--symbio-text);
   font-weight: 600;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.symbio-logout-button:hover {
+  background: #ecf2f8;
+  border-color: #bfd1e2;
+}
+
+#dashboard,
+#projects,
+#milestones,
+#payments,
+#reports {
+  scroll-margin-top: 6.3rem;
+}
+
+.symbio-anchor-target {
+  scroll-margin-top: 6.3rem;
 }
 
 .symbio-main {
@@ -99,8 +262,67 @@ body {
   background: linear-gradient(180deg, var(--symbio-hero-bg-top) 0%, var(--symbio-hero-bg-bottom) 100%);
 }
 
+.symbio-page-main {
+  padding: 2rem;
+  width: 100%;
+  max-width: 1220px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+}
+
+.symbio-page-title {
+  margin: 0.35rem 0 0.45rem;
+  font-size: 1.8rem;
+  line-height: 1.2;
+  color: #0c4f7d;
+}
+
+.symbio-page-title--dark {
+  color: #f7fdff;
+}
+
+.symbio-page-header {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.symbio-page-kicker {
+  margin: 0;
+  color: #0f5ea8;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.symbio-page-subtitle {
+  margin: 0;
+  max-width: 760px;
+  line-height: 1.68;
+  color: #4f5b6c;
+}
+
+.symbio-role-hero {
+  border-radius: 18px;
+  padding: 1.2rem 1.3rem;
+  background: linear-gradient(130deg, #041a2f 0%, #0f5ea8 55%, #1dcad3 100%);
+  color: #f7fdff;
+  box-shadow: 0 18px 46px rgba(3, 22, 40, 0.28);
+}
+
+.symbio-role-hero-kicker {
+  margin: 0;
+  color: #d8f4ff;
+  font-weight: 700;
+}
+
+.symbio-role-hero-subtitle {
+  margin: 0;
+  max-width: 760px;
+  color: #d8f4ff;
+  line-height: 1.65;
+}
+
 .symbio-container {
-  max-width: 900px;
+  max-width: 1220px;
   margin: 0 auto;
 }
 
@@ -199,6 +421,10 @@ body {
     padding: 1.2rem;
   }
 
+  .symbio-page-main {
+    padding: 1.2rem;
+  }
+
   .symbio-nav {
     align-items: flex-start;
   }
@@ -209,7 +435,27 @@ body {
     margin-left: 0;
   }
 
+  .symbio-dashboard-submenu {
+    position: static;
+    margin-top: 0.45rem;
+    min-width: 100%;
+  }
+
+  .symbio-role-spacer {
+    width: 100%;
+    margin: 0.2rem 0;
+  }
+
+  .symbio-menu-toggle {
+    width: 36px;
+    height: 36px;
+  }
+
   .symbio-heading {
     font-size: clamp(1.8rem, 7vw, 2.6rem);
+  }
+
+  .symbio-page-title {
+    font-size: 1.55rem;
   }
 }

@@ -37,9 +37,9 @@ export const MarketplacePage: React.FC = () => {
   }, []);
 
   return (
-    <main style={{ padding: '2rem', fontFamily: 'Arial, sans-serif', maxWidth: 960, margin: '0 auto' }}>
+    <main className="symbio-page-main">
       <header>
-        <h1>Demand Marketplace</h1>
+        <h1 className="symbio-page-title">Demand Marketplace</h1>
         <p>Browse published scope-of-work briefs created by regional SMEs and discover matched demand-generating opportunities.</p>
       </header>
 

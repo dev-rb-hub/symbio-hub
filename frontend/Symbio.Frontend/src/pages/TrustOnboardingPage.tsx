@@ -77,18 +77,19 @@ export const TrustOnboardingPage: React.FC = () => {
 
   if (!session) {
     return (
-      <main style={{ padding: '2rem', fontFamily: 'Arial, sans-serif', textAlign: 'center' }}>
-        <h1>Trust onboarding</h1>
+      <main className="symbio-page-main" style={{ textAlign: 'center' }}>
+        <h1 className="symbio-page-title">Trust onboarding</h1>
         <p>Please log in before completing your trust profile.</p>
       </main>
     );
   }
 
   return (
-    <main style={{ padding: '2rem', fontFamily: 'Arial, sans-serif', maxWidth: 700, margin: '0 auto' }}>
-      <header>
-        <h1>Trust Onboarding</h1>
-        <p>Complete your verified profile so Symbio Hub can match you with the right work and service partners.</p>
+    <main className="symbio-page-main">
+      <header className="symbio-role-hero">
+        <p className="symbio-role-hero-kicker">Trust and identity</p>
+        <h1 className="symbio-page-title symbio-page-title--dark">Trust Onboarding</h1>
+        <p className="symbio-role-hero-subtitle">Complete your verified profile so Symbio Hub can match you with the right work and service partners.</p>
       </header>
 
       {error && <div style={{ color: '#a00', marginTop: '1rem' }}>{error}</div>}
