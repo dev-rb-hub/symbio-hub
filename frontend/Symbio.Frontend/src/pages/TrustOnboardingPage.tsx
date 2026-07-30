@@ -86,9 +86,10 @@ export const TrustOnboardingPage: React.FC = () => {
 
   return (
     <main className="symbio-page-main">
-      <header>
-        <h1 className="symbio-page-title">Trust Onboarding</h1>
-        <p>Complete your verified profile so Symbio Hub can match you with the right work and service partners.</p>
+      <header className="symbio-role-hero">
+        <p className="symbio-role-hero-kicker">Trust and identity</p>
+        <h1 className="symbio-page-title symbio-page-title--dark">Trust Onboarding</h1>
+        <p className="symbio-role-hero-subtitle">Complete your verified profile so Symbio Hub can match you with the right work and service partners.</p>
       </header>
 
       {error && <div style={{ color: '#a00', marginTop: '1rem' }}>{error}</div>}

@@ -11,7 +11,7 @@ export const UserProfilePage: React.FC = () => {
 
   const roleGuidance = session.role === 'SME'
     ? {
-        heading: 'SME settings',
+        heading: 'SME Settings',
         summary: 'Manage account identity, onboarding details, and payment workflow destinations.',
         actions: [
           { label: 'Trust onboarding', to: '/onboarding' },
@@ -21,7 +21,7 @@ export const UserProfilePage: React.FC = () => {
       }
     : session.role === 'Expert'
       ? {
-          heading: 'Expert settings',
+          heading: 'Expert Settings',
           summary: 'Manage account identity and links to onboarding, dashboard, and workbench operations.',
           actions: [
             { label: 'Trust onboarding', to: '/onboarding' },
@@ -30,7 +30,7 @@ export const UserProfilePage: React.FC = () => {
           ],
         }
       : {
-          heading: 'Admin settings',
+          heading: 'Admin Settings',
           summary: 'Manage account identity and operational dashboard access points.',
           actions: [
             { label: 'Admin dashboard', to: '/admin/control' },
@@ -41,8 +41,11 @@ export const UserProfilePage: React.FC = () => {
 
   return (
     <main className="symbio-page-main">
-      <h1 className="symbio-page-title">{roleGuidance.heading}</h1>
-      <p>{roleGuidance.summary}</p>
+      <header className="symbio-role-hero">
+        <p className="symbio-role-hero-kicker">Role settings</p>
+        <h1 className="symbio-page-title symbio-page-title--dark">{roleGuidance.heading}</h1>
+        <p className="symbio-role-hero-subtitle">{roleGuidance.summary}</p>
+      </header>
       <dl style={{ display: 'grid', gap: '0.75rem', marginTop: '1.5rem' }}>
         <div><strong>Email:</strong> {session.email}</div>
         <div><strong>Role:</strong> {session.role}</div>

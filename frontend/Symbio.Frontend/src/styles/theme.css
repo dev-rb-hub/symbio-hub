@@ -136,17 +136,35 @@ body {
 }
 
 .symbio-dashboard-submenu-link {
-  color: var(--symbio-text);
+  color: #214566;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.94rem;
   border-radius: 8px;
   padding: 0.46rem 0.56rem;
+  border-left: 3px solid transparent;
+  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
 }
 
 .symbio-dashboard-submenu-link:hover {
-  background: var(--symbio-cta-light);
-  color: var(--symbio-primary);
+  background: #eaf4ff;
+  color: #0f5ea8;
+  border-left-color: #0f5ea8;
+}
+
+.symbio-dashboard-submenu-link--active {
+  background: #dceeff;
+  color: #0f5ea8;
+  border-left-color: #0f5ea8;
+}
+
+.symbio-dashboard-submenu-title {
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #5f6f82;
+  font-weight: 700;
+  padding: 0.2rem 0.56rem 0.35rem;
 }
 
 .symbio-brand-logo {
@@ -168,6 +186,26 @@ body {
 .symbio-link:hover {
   background: var(--symbio-cta-light);
   color: var(--symbio-primary);
+}
+
+.symbio-role-spacer {
+  width: 72px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(15, 94, 168, 0) 0%, rgba(15, 94, 168, 0.45) 48%, rgba(15, 94, 168, 0) 100%);
+  margin: 0 0.15rem;
+}
+
+.symbio-link-role {
+  background: #f3f9ff;
+  border: 1px solid #cfe0f1;
+  color: #0f5ea8;
+  font-weight: 600;
+}
+
+.symbio-link-role:hover {
+  background: #e4f2ff;
+  border-color: #a9cae7;
+  color: #0d4f8b;
 }
 
 .symbio-link-login {
@@ -214,6 +252,10 @@ body {
   scroll-margin-top: 6.3rem;
 }
 
+.symbio-anchor-target {
+  scroll-margin-top: 6.3rem;
+}
+
 .symbio-main {
   padding: 2rem;
   min-height: 100vh;
@@ -237,6 +279,46 @@ body {
 
 .symbio-page-title--dark {
   color: #f7fdff;
+}
+
+.symbio-page-header {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.symbio-page-kicker {
+  margin: 0;
+  color: #0f5ea8;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.symbio-page-subtitle {
+  margin: 0;
+  max-width: 760px;
+  line-height: 1.68;
+  color: #4f5b6c;
+}
+
+.symbio-role-hero {
+  border-radius: 18px;
+  padding: 1.2rem 1.3rem;
+  background: linear-gradient(130deg, #041a2f 0%, #0f5ea8 55%, #1dcad3 100%);
+  color: #f7fdff;
+  box-shadow: 0 18px 46px rgba(3, 22, 40, 0.28);
+}
+
+.symbio-role-hero-kicker {
+  margin: 0;
+  color: #d8f4ff;
+  font-weight: 700;
+}
+
+.symbio-role-hero-subtitle {
+  margin: 0;
+  max-width: 760px;
+  color: #d8f4ff;
+  line-height: 1.65;
 }
 
 .symbio-container {
@@ -357,6 +439,11 @@ body {
     position: static;
     margin-top: 0.45rem;
     min-width: 100%;
+  }
+
+  .symbio-role-spacer {
+    width: 100%;
+    margin: 0.2rem 0;
   }
 
   .symbio-menu-toggle {

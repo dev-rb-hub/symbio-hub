@@ -128,7 +128,7 @@ export const SmeDashboardPage: React.FC = () => {
 
   return (
     <main className="symbio-page-main">
-      <section style={{ borderRadius: 18, padding: '1.3rem 1.4rem', background: 'linear-gradient(130deg, #031b2f 0%, #0b4f7f 55%, #12bfd6 100%)', color: '#f8fdff', boxShadow: '0 18px 46px rgba(3, 22, 40, 0.28)' }}>
+      <section id="sme-dashboard" className="symbio-anchor-target" style={{ borderRadius: 18, padding: '1.3rem 1.4rem', background: 'linear-gradient(130deg, #031b2f 0%, #0b4f7f 55%, #12bfd6 100%)', color: '#f8fdff', boxShadow: '0 18px 46px rgba(3, 22, 40, 0.28)' }}>
         <p style={{ margin: 0, opacity: 0.9, fontWeight: 700 }}>SME Financial Command</p>
         <h1 className="symbio-page-title symbio-page-title--dark">SME Dashboard</h1>
         <p style={{ margin: 0, maxWidth: 760, lineHeight: 1.6, color: '#d8f4ff' }}>
@@ -145,17 +145,21 @@ export const SmeDashboardPage: React.FC = () => {
         </div>
 
         <div style={{ marginTop: '1rem', display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
+          <Link to="/talent/discovery" style={{ textDecoration: 'none', padding: '0.5rem 0.8rem', borderRadius: 10, border: '1px solid rgba(255,255,255,0.55)', color: '#fff', fontWeight: 700 }}>Talent discovery</Link>
           <Link to="/project/new" style={{ textDecoration: 'none', padding: '0.5rem 0.8rem', borderRadius: 10, background: '#fff', color: '#0a3f66', fontWeight: 700 }}>Post new project</Link>
           <Link to="/billing/control-center" style={{ textDecoration: 'none', padding: '0.5rem 0.8rem', borderRadius: 10, border: '1px solid rgba(255,255,255,0.55)', color: '#fff', fontWeight: 700 }}>Recurring billing</Link>
-          <Link to="/talent/discovery" style={{ textDecoration: 'none', padding: '0.5rem 0.8rem', borderRadius: 10, border: '1px solid rgba(255,255,255,0.55)', color: '#fff', fontWeight: 700 }}>Talent discovery</Link>
         </div>
       </section>
 
-      <PinchRuntimeModePanel runtimeMode={runtimeMode} isLoading={isRuntimeModeLoading} hasError={hasRuntimeModeError} />
+      <section id="sme-runtime" className="symbio-anchor-target" style={{ marginTop: '1.2rem' }}>
+        <h2 style={{ margin: '0 0 0.75rem', color: '#0b4f7f' }}>Runtime</h2>
+        <PinchRuntimeModePanel runtimeMode={runtimeMode} isLoading={isRuntimeModeLoading} hasError={hasRuntimeModeError} />
+      </section>
 
       {error && <div style={{ marginTop: '1rem', color: '#a00' }}>{error}</div>}
 
-      <section style={{ marginTop: '1.2rem', display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+      <section id="sme-summary" className="symbio-anchor-target" style={{ marginTop: '1.2rem', display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+        <h2 style={{ margin: 0, color: '#0b4f7f', gridColumn: '1 / -1' }}>Summary</h2>
         <article style={{ background: '#fff', border: '1px solid #dde3ee', borderRadius: 14, padding: '1rem', boxShadow: '0 10px 24px rgba(11, 31, 56, 0.06)' }}>
           <div style={{ color: '#586375' }}>Invoices synced</div>
           <strong style={{ fontSize: '1.35rem' }}>{invoices.length}</strong>
@@ -170,7 +174,8 @@ export const SmeDashboardPage: React.FC = () => {
         </article>
       </section>
 
-      <section style={{ marginTop: '1.5rem', display: 'grid', gap: '0.8rem' }}>
+      <section id="sme-invoices" className="symbio-anchor-target" style={{ marginTop: '1.5rem', display: 'grid', gap: '0.8rem' }}>
+        <h2 style={{ margin: '0 0 0.35rem', color: '#0b4f7f' }}>Invoices</h2>
         {invoices.length === 0 && (
           <article style={{ background: '#fff', border: '1px solid #dde3ee', borderRadius: 12, padding: '1rem' }}>
             No accounting invoices synced yet.

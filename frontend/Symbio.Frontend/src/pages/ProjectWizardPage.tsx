@@ -165,9 +165,10 @@ export const ProjectWizardPage: React.FC = () => {
 
   return (
     <main className="symbio-page-main">
-      <header>
-        <h1 className="symbio-page-title">Post a New Project</h1>
-        <p>Create a concise scope-of-work brief and publish it to the demand marketplace.</p>
+      <header className="symbio-role-hero">
+        <p className="symbio-role-hero-kicker">SME workspace</p>
+        <h1 className="symbio-page-title symbio-page-title--dark">Post a New Project</h1>
+        <p className="symbio-role-hero-subtitle">Create a concise scope-of-work brief and publish it to the demand marketplace.</p>
       </header>
 
       {error && <div style={{ color: '#a00', marginTop: '1rem' }}>{error}</div>}

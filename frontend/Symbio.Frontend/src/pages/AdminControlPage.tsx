@@ -249,7 +249,7 @@ export const AdminControlPage: React.FC = () => {
 
   return (
     <main className="symbio-page-main">
-      <header style={{ borderRadius: 18, padding: '1.2rem 1.3rem', background: 'linear-gradient(130deg, #041a2f 0%, #0f5ea8 55%, #1dcad3 100%)', color: '#f7fdff', boxShadow: '0 18px 46px rgba(3, 22, 40, 0.28)' }}>
+      <header id="admin-dashboard" className="symbio-anchor-target" style={{ borderRadius: 18, padding: '1.2rem 1.3rem', background: 'linear-gradient(130deg, #041a2f 0%, #0f5ea8 55%, #1dcad3 100%)', color: '#f7fdff', boxShadow: '0 18px 46px rgba(3, 22, 40, 0.28)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem' }}>
           <div>
             <p style={{ margin: 0, color: '#d8f4ff', fontWeight: 700 }}>Platform Operations</p>
@@ -309,7 +309,7 @@ export const AdminControlPage: React.FC = () => {
       </section>
 
       {activeSection === 'overview' && (
-        <section style={{ marginTop: '1rem', display: 'grid', gap: '0.75rem', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
+        <section id="admin-overview" className="symbio-anchor-target" style={{ marginTop: '1rem', display: 'grid', gap: '0.75rem', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
           <article style={{ border: '1px solid #d7dde8', borderRadius: 10, padding: '0.9rem', background: '#fff' }}>
             <h2 style={{ margin: 0, fontSize: '1rem' }}>Telemetry focus</h2>
             <p style={{ margin: '0.45rem 0 0', color: '#5f6a7d' }}>Inspect user health metrics and onboarding conversion trend.</p>
@@ -349,7 +349,7 @@ export const AdminControlPage: React.FC = () => {
       )}
 
       {(activeSection === 'overview' || activeSection === 'telemetry') && telemetry && (
-        <section style={{ marginTop: '1rem', display: 'grid', gap: '0.75rem', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+        <section id="admin-telemetry" className="symbio-anchor-target" style={{ marginTop: '1rem', display: 'grid', gap: '0.75rem', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
           <article style={{ border: '1px solid #d7dde8', borderRadius: 10, padding: '1rem', background: '#fff' }}>
             <div style={{ color: '#5f6a7d' }}>Snapshot generated</div>
             <strong style={{ fontSize: '1rem' }}>{new Date(telemetry.generatedAtUtc).toLocaleString()}</strong>
@@ -390,7 +390,7 @@ export const AdminControlPage: React.FC = () => {
       )}
 
       {(activeSection === 'overview' || activeSection === 'compliance') && queue && (
-        <section style={{ marginTop: '1.2rem', display: 'grid', gap: '0.8rem' }}>
+        <section id="admin-compliance" className="symbio-anchor-target" style={{ marginTop: '1.2rem', display: 'grid', gap: '0.8rem' }}>
           <h2 style={{ marginBottom: 0 }}>Pending Compliance Reviews</h2>
           {queue.pendingReviews.length === 0 && (
             <article style={{ border: '1px solid #d7dde8', borderRadius: 10, padding: '1rem', background: '#fff', color: '#5f6a7d' }}>
@@ -437,7 +437,7 @@ export const AdminControlPage: React.FC = () => {
       )}
 
       {(activeSection === 'overview' || activeSection === 'safety') && (
-        <section style={{ marginTop: '1.2rem' }}>
+        <section id="admin-safety" className="symbio-anchor-target" style={{ marginTop: '1.2rem' }}>
           <h2>Safety Overrides</h2>
           <form onSubmit={upsertSetting} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '0.5rem', alignItems: 'center' }}>
             <input value={settingKey} onChange={event => setSettingKey(event.target.value)} placeholder="setting key" style={{ padding: '0.55rem' }} />

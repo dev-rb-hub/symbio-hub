@@ -72,10 +72,10 @@ export const TalentDiscoveryPage: React.FC = () => {
 
   return (
     <main className="symbio-page-main">
-      <header>
-        <p style={{ color: '#0072ce', fontWeight: 700, marginBottom: 0 }}>SME workspace</p>
-        <h1 className="symbio-page-title">Talent Discovery</h1>
-        <p style={{ maxWidth: 760, lineHeight: 1.7, color: '#444' }}>
+      <header className="symbio-role-hero">
+        <p className="symbio-role-hero-kicker">SME workspace</p>
+        <h1 className="symbio-page-title symbio-page-title--dark">Talent Discovery</h1>
+        <p className="symbio-role-hero-subtitle">
           Search verified expert profiles by keyword, skill, or location to shortlist the right delivery partner for regional work.
         </p>
       </header>
