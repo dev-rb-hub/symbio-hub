@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 using Symbio.API.Data;
 using Symbio.API.Endpoints;
 using Symbio.API.Hubs;
@@ -11,6 +12,11 @@ using Symbio.API.Services;
 using Symbio.API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, services, loggerConfiguration) => loggerConfiguration
+    .ReadFrom.Configuration(context.Configuration)
+    .ReadFrom.Services(services)
+    .Enrich.FromLogContext());
 
 builder.Services.AddDbContext<SymbioDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=SymbioHub.db"));
@@ -43,6 +49,7 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
+app.UseSerilogRequestLogging();
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -57,6 +64,13 @@ app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.Run();
+try
+{
+    app.Run();
+}
+finally
+{
+    Log.CloseAndFlush();
+}
 
 public partial class Program { }

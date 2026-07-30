@@ -57,10 +57,40 @@ public class PaymentsController : ControllerBase
             runtimeMode.Environment,
             runtimeMode.CredentialsConfigured,
             runtimeMode.UsesMockResponses,
-            runtimeMode.PortalUrl,
+            runtimeMode.BaseUri,
+            runtimeMode.AuthUri,
+            runtimeMode.IsLive,
             guidance = runtimeMode.UsesMockResponses
                 ? "Mock mode active: settlement and pre-approval responses are simulated until Pinch credentials are configured."
                 : "Pinch integration credentials are configured for this environment."
+        });
+    }
+
+    [HttpGet("pinch/sandbox-verification")]
+    [Authorize(Roles = "SME,Expert,Admin")]
+    public async Task<IActionResult> VerifyPinchSandboxConnection()
+    {
+        var verification = await _pinchDebitService.VerifySandboxConnectionAsync();
+
+        return Ok(new
+        {
+            verification.ModeLabel,
+            verification.Environment,
+            verification.CredentialsConfigured,
+            verification.Connected,
+            verification.MerchantReadSucceeded,
+            verification.PayerListReadSucceeded,
+            verification.BaseUri,
+            verification.AuthUri,
+            verification.IsLive,
+            verification.Message,
+            verification.MerchantName,
+            verification.FailureReason,
+            verification.MerchantReadErrorCode,
+            verification.MerchantReadErrorMessage,
+            verification.PayerListErrorCode,
+            verification.PayerListErrorMessage,
+            verification.PayerListErrorCount
         });
     }
 

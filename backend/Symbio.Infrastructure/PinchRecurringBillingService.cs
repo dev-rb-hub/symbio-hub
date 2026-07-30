@@ -124,13 +124,16 @@ public sealed class PinchRecurringBillingService : IRecurringBillingService
 
     private bool HasCredentials()
     {
-        return !string.IsNullOrWhiteSpace(_settings.ApplicationId) && !string.IsNullOrWhiteSpace(_settings.SecretKey);
+        return !string.IsNullOrWhiteSpace(_settings.MerchantId) && !string.IsNullOrWhiteSpace(_settings.SecretKey);
     }
 
     private PinchApi CreatePinchApi()
     {
-        var isLive = _settings.Environment.Equals("Live", StringComparison.OrdinalIgnoreCase);
-        return new PinchApi(_settings.ApplicationId, _settings.SecretKey, isLive);
+        return new PinchApi(_settings.MerchantId, _settings.SecretKey, new PinchApiOptions(
+            isLive: _settings.IsLive,
+            baseUri: _settings.BaseUri,
+            authUri: _settings.AuthUri,
+            applicationId: _settings.ApplicationId));
     }
 
     private static long ToCents(decimal amount)

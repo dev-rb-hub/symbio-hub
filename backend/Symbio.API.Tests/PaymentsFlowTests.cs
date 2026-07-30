@@ -69,4 +69,21 @@ public class PaymentsFlowTests : IClassFixture<ApiTestFactory>
         using var body = JsonDocument.Parse(await signOff.Content.ReadAsStringAsync());
         Assert.Equal("Pending", body.RootElement.GetProperty("status").GetString());
     }
+
+    [Fact]
+    public async Task SandboxVerification_Reports_Configured_Pinch_Settings()
+    {
+        using var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Add("X-Test-Email", "expert@example.com");
+        client.DefaultRequestHeaders.Add("X-Test-Role", "Expert");
+
+        var response = await client.GetAsync("/api/payments/pinch/sandbox-verification");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        using var body = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        Assert.True(body.RootElement.GetProperty("credentialsConfigured").GetBoolean());
+        Assert.False(string.IsNullOrWhiteSpace(body.RootElement.GetProperty("baseUri").GetString()));
+        Assert.False(string.IsNullOrWhiteSpace(body.RootElement.GetProperty("authUri").GetString()));
+    }
 }
