@@ -10,6 +10,7 @@ type Props = {
   runtimeModeGuidance?: string;
   usesMockResponses?: boolean;
   isSubmitting: boolean;
+  submissionError?: string | null;
   onCancel: () => void;
   onSubmit: (payload: { accountName: string; bsb: string; accountNumber: string }) => void;
 };
@@ -37,17 +38,19 @@ export const PaymentCollectionModal: React.FC<Props> = ({
   runtimeModeGuidance,
   usesMockResponses,
   isSubmitting,
+  submissionError,
   onCancel,
   onSubmit,
 }) => {
   const [accountName, setAccountName] = useState('');
   const [bsb, setBsb] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
+  const [hasAuthority, setHasAuthority] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const isValid = useMemo(() => {
-    return accountName.trim().length > 1 && /^\d{3}-\d{3}$/.test(bsb) && /^\d{3,9}$/.test(accountNumber);
-  }, [accountName, bsb, accountNumber]);
+    return hasAuthority && accountName.trim().length > 1 && /^\d{3}-\d{3}$/.test(bsb) && /^\d{3,9}$/.test(accountNumber);
+  }, [accountName, bsb, accountNumber, hasAuthority]);
 
   if (!isOpen) {
     return null;
@@ -55,7 +58,7 @@ export const PaymentCollectionModal: React.FC<Props> = ({
 
   const submit = () => {
     if (!isValid) {
-      setError('Enter a valid account name, BSB, and account number.');
+      setError('Confirm debit authority and enter a valid account name, BSB, and account number.');
       return;
     }
 
@@ -119,13 +122,40 @@ export const PaymentCollectionModal: React.FC<Props> = ({
             This creates a one-time pre-approval token through Pinch so direct debit can be pulled on deployment sign-off without card rails.
           </p>
 
+          <div style={{ margin: 0, padding: '0.75rem 0.9rem', borderRadius: 10, border: '1px solid #d9e4f1', background: '#f7faff', color: '#234567', fontSize: '0.92rem' }}>
+            <strong>What happens next:</strong>
+            <ol style={{ margin: '0.45rem 0 0.1rem 1.1rem', padding: 0 }}>
+              <li>Pinch validates account details and authorization.</li>
+              <li>This project is marked escrow-ready for kickoff settlement.</li>
+              <li>You can continue to the marketplace or dashboard after confirmation.</li>
+            </ol>
+          </div>
+
+          <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start', fontSize: '0.92rem', color: '#32475b' }}>
+            <input
+              type="checkbox"
+              checked={hasAuthority}
+              onChange={event => setHasAuthority(event.target.checked)}
+              disabled={isSubmitting}
+              style={{ marginTop: '0.2rem' }}
+            />
+            I am authorized to approve direct debit from this account for this project.
+          </label>
+
           {runtimeModeGuidance && (
             <div style={{ margin: 0, padding: '0.75rem 0.9rem', borderRadius: 10, border: `1px solid ${usesMockResponses ? '#f1c089' : '#b9d8f6'}`, background: usesMockResponses ? '#fff6ec' : '#eef7ff', color: usesMockResponses ? '#7e4700' : '#1f4f7a', fontSize: '0.92rem' }}>
               {runtimeModeGuidance}
             </div>
           )}
 
+          {isSubmitting && (
+            <div style={{ margin: 0, padding: '0.75rem 0.9rem', borderRadius: 10, border: '1px solid #cfe2cf', background: '#f3fbf3', color: '#246b36', fontWeight: 600, fontSize: '0.92rem' }}>
+              Capturing pre-approval with Pinch. Please keep this window open.
+            </div>
+          )}
+
           {error && <div style={{ color: '#a80000', fontWeight: 600 }}>{error}</div>}
+          {submissionError && <div style={{ color: '#a80000', fontWeight: 600 }}>{submissionError}</div>}
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
             <button

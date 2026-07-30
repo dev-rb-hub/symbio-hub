@@ -41,7 +41,8 @@ export const ProjectWizardPage: React.FC = () => {
   const [isPreApprovalSubmitting, setIsPreApprovalSubmitting] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [pendingProject, setPendingProject] = useState<CreatedProject | null>(null);
-  const [preApprovalSuccess, setPreApprovalSuccess] = useState<{ projectId: string; amount: number } | null>(null);
+  const [preApprovalSuccess, setPreApprovalSuccess] = useState<{ projectId: string; amount: number; modeLabel: string } | null>(null);
+  const [preApprovalError, setPreApprovalError] = useState<string | null>(null);
   const [runtimeMode, setRuntimeMode] = useState<PaymentRuntimeMode | null>(null);
 
   useEffect(() => {
@@ -99,6 +100,7 @@ export const ProjectWizardPage: React.FC = () => {
 
       if (budget >= 5000) {
         setPendingProject(createdProject);
+        setPreApprovalError(null);
         setShowPaymentModal(true);
         setIsSubmitting(false);
         return;
@@ -123,6 +125,7 @@ export const ProjectWizardPage: React.FC = () => {
 
     setIsPreApprovalSubmitting(true);
     setError(null);
+    setPreApprovalError(null);
 
     try
     {
@@ -143,13 +146,19 @@ export const ProjectWizardPage: React.FC = () => {
     catch
     {
       setIsPreApprovalSubmitting(false);
-      setError('Project published, but pre-approval failed. Re-open this project and capture bank pre-approval before kickoff.');
+      const message = 'Project published, but pre-approval failed. Check details and retry. You can also reopen this project later to complete pre-approval before kickoff.';
+      setError(message);
+      setPreApprovalError(message);
       return;
     }
 
     setIsPreApprovalSubmitting(false);
     setShowPaymentModal(false);
-    setPreApprovalSuccess({ projectId: pendingProject.id, amount: pendingProject.budget });
+    setPreApprovalSuccess({
+      projectId: pendingProject.id,
+      amount: pendingProject.budget,
+      modeLabel: runtimeMode?.modeLabel ?? 'Unknown mode'
+    });
     setPendingProject(null);
   };
 
@@ -170,16 +179,40 @@ export const ProjectWizardPage: React.FC = () => {
             {' '}
             {preApprovalSuccess.amount.toLocaleString('en-AU', { style: 'currency', currency: 'AUD' })}.
           </p>
-          <button
-            type="button"
-            style={{ marginTop: '0.8rem', padding: '0.7rem 0.95rem', borderRadius: 8, border: 'none', background: '#0f9d58', color: '#fff', cursor: 'pointer' }}
-            onClick={() => {
-              setPreApprovalSuccess(null);
-              navigate('/marketplace');
-            }}
-          >
-            Continue to marketplace
-          </button>
+          <p style={{ margin: '0.6rem 0 0', color: '#23543f' }}>
+            Payment mode used: <strong>{preApprovalSuccess.modeLabel}</strong>
+          </p>
+          <p style={{ margin: '0.45rem 0 0', color: '#23543f' }}>
+            Next step: proceed to marketplace or open your SME dashboard to track state transitions.
+          </p>
+          <div style={{ marginTop: '0.8rem', display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              style={{ padding: '0.7rem 0.95rem', borderRadius: 8, border: 'none', background: '#0f9d58', color: '#fff', cursor: 'pointer' }}
+              onClick={() => {
+                setPreApprovalSuccess(null);
+                navigate('/marketplace');
+              }}
+            >
+              Continue to marketplace
+            </button>
+            <button
+              type="button"
+              style={{ padding: '0.7rem 0.95rem', borderRadius: 8, border: '1px solid #9fd5b6', background: '#fff', color: '#155f3e', cursor: 'pointer' }}
+              onClick={() => {
+                setPreApprovalSuccess(null);
+                navigate('/sme/dashboard');
+              }}
+            >
+              Open SME dashboard
+            </button>
+          </div>
+        </section>
+      )}
+
+      {budget >= 5000 && (
+        <section style={{ marginTop: '1rem', padding: '0.9rem 1rem', borderRadius: 12, border: '1px solid #d8e3f4', background: '#f7fbff', color: '#254564' }}>
+          Projects at or above {Number(5000).toLocaleString('en-AU', { style: 'currency', currency: 'AUD' })} require a pre-approval capture step before milestone kickoff.
         </section>
       )}
 
@@ -247,6 +280,7 @@ export const ProjectWizardPage: React.FC = () => {
         runtimeModeGuidance={runtimeMode?.guidance}
         usesMockResponses={runtimeMode?.usesMockResponses}
         isSubmitting={isPreApprovalSubmitting}
+        submissionError={preApprovalError}
         onCancel={() => {
           setShowPaymentModal(false);
           setPendingProject(null);
