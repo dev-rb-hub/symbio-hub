@@ -15,6 +15,45 @@ interface AuthContextType {
   logout: () => void;
 }
 
+const TOKEN_STORAGE_KEY = 'symbio_auth_token';
+const EMAIL_STORAGE_KEY = 'symbio_auth_email';
+const LEGACY_ROLE_STORAGE_KEY = 'symbio_auth_role';
+
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  const parts = token.split('.');
+  if (parts.length < 2) {
+    return null;
+  }
+
+  try {
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const decoded = atob(base64);
+    const payload = JSON.parse(decoded) as Record<string, unknown>;
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+export function decodeRoleFromToken(token: string): UserRole | null {
+  const payload = decodeJwtPayload(token);
+  if (!payload) {
+    return null;
+  }
+
+  const roleFromShortClaim = payload.role;
+  if (roleFromShortClaim === 'SME' || roleFromShortClaim === 'Expert' || roleFromShortClaim === 'Admin') {
+    return roleFromShortClaim;
+  }
+
+  const roleFromDotnetClaim = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+  if (roleFromDotnetClaim === 'SME' || roleFromDotnetClaim === 'Expert' || roleFromDotnetClaim === 'Admin') {
+    return roleFromDotnetClaim;
+  }
+
+  return null;
+}
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -22,27 +61,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('symbio_auth_token');
-    const storedRole = localStorage.getItem('symbio_auth_role') as UserRole;
-    const storedEmail = localStorage.getItem('symbio_auth_email');
+    const storedToken = localStorage.getItem(TOKEN_STORAGE_KEY);
+    const storedEmail = localStorage.getItem(EMAIL_STORAGE_KEY);
 
-    if (storedToken && storedRole && storedEmail) {
-      setSession({ token: storedToken, role: storedRole, email: storedEmail });
+    if (storedToken && storedEmail) {
+      const tokenRole = decodeRoleFromToken(storedToken);
+      if (tokenRole) {
+        setSession({ token: storedToken, role: tokenRole, email: storedEmail });
+      }
     }
+
+    // Cleanup legacy role cache to avoid role drift from local storage tampering.
+    localStorage.removeItem(LEGACY_ROLE_STORAGE_KEY);
     setIsLoading(false);
   }, []);
 
   const login = (token: string, role: UserRole, email: string) => {
-    localStorage.setItem('symbio_auth_token', token);
-    localStorage.setItem('symbio_auth_role', role);
-    localStorage.setItem('symbio_auth_email', email);
-    setSession({ token, role, email });
+    const tokenRole = decodeRoleFromToken(token);
+    if (!tokenRole || tokenRole !== role) {
+      throw new Error('Session token role verification failed.');
+    }
+
+    localStorage.setItem(TOKEN_STORAGE_KEY, token);
+    localStorage.setItem(EMAIL_STORAGE_KEY, email);
+    localStorage.removeItem(LEGACY_ROLE_STORAGE_KEY);
+    setSession({ token, role: tokenRole, email });
   };
 
   const logout = () => {
-    localStorage.removeItem('symbio_auth_token');
-    localStorage.removeItem('symbio_auth_role');
-    localStorage.removeItem('symbio_auth_email');
+    localStorage.removeItem(TOKEN_STORAGE_KEY);
+    localStorage.removeItem(EMAIL_STORAGE_KEY);
+    localStorage.removeItem(LEGACY_ROLE_STORAGE_KEY);
     setSession(null);
   };
 

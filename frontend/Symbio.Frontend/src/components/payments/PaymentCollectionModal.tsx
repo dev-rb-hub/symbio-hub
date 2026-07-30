@@ -3,6 +3,8 @@ import React, { useMemo, useState } from 'react';
 type Props = {
   isOpen: boolean;
   amount: number;
+  projectTitle: string;
+  milestoneCount: number;
   milestoneId: string;
   isSubmitting: boolean;
   onCancel: () => void;
@@ -25,6 +27,8 @@ function formatAccountNumber(input: string): string {
 export const PaymentCollectionModal: React.FC<Props> = ({
   isOpen,
   amount,
+  projectTitle,
+  milestoneCount,
   milestoneId,
   isSubmitting,
   onCancel,
@@ -61,6 +65,9 @@ export const PaymentCollectionModal: React.FC<Props> = ({
           <h2 style={{ margin: '0.35rem 0 0.2rem', fontSize: '1.3rem' }}>Authorise BECS debit for milestone kickoff</h2>
           <p style={{ margin: 0, color: '#4f5b6c' }}>
             Milestone {milestoneId} · {amount.toLocaleString('en-AU', { style: 'currency', currency: 'AUD' })}
+          </p>
+          <p style={{ margin: '0.4rem 0 0', color: '#4f5b6c' }}>
+            Project {projectTitle || 'Untitled project'} · {milestoneCount} milestone{milestoneCount === 1 ? '' : 's'}
           </p>
         </header>
 

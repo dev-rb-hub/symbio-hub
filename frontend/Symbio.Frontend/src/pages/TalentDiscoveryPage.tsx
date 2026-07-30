@@ -59,7 +59,6 @@ export const TalentDiscoveryPage: React.FC = () => {
 
   useEffect(() => {
     void loadProfiles('', '', '');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {

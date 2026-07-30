@@ -15,11 +15,18 @@ export const EscrowOnboardingPage: React.FC = () => {
   const { session } = useAuth();
   const [status, setStatus] = useState<EscrowStatus | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isLoadingStatus, setIsLoadingStatus] = useState(true);
   const [isWorking, setIsWorking] = useState(false);
+  const [isPolling, setIsPolling] = useState(false);
+  const [pollAttempt, setPollAttempt] = useState(0);
 
-  const loadStatus = async () => {
+  const loadStatus = async (showLoading = false) => {
     if (!session) {
       return;
+    }
+
+    if (showLoading) {
+      setIsLoadingStatus(true);
     }
 
     try
@@ -34,13 +41,49 @@ export const EscrowOnboardingPage: React.FC = () => {
     catch
     {
       setError('Failed to load escrow onboarding status.');
+      if (showLoading) {
+        setIsLoadingStatus(false);
+      }
       return;
+    }
+
+    if (showLoading) {
+      setIsLoadingStatus(false);
     }
   };
 
+  const wait = (milliseconds: number) => new Promise(resolve => {
+    window.setTimeout(resolve, milliseconds);
+  });
+
+  const pollForVerification = async () => {
+    if (!session || isPolling) {
+      return;
+    }
+
+    setIsPolling(true);
+    setPollAttempt(0);
+
+    for (let attempt = 1; attempt <= 15; attempt += 1) {
+      await wait(2000);
+      setPollAttempt(attempt);
+
+      const statusResult = await apiRequest<EscrowStatus>('/api/payments/onboarding/status', {
+        token: session.token,
+      });
+
+      setStatus(statusResult);
+      const normalizedStatus = statusResult.status.toLowerCase();
+      if (normalizedStatus === 'verified') {
+        break;
+      }
+    }
+
+    setIsPolling(false);
+  };
+
   useEffect(() => {
-    void loadStatus();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    void loadStatus(true);
   }, [session]);
 
   const runAction = async (path: 'start' | 'refresh' | 'simulate-complete') => {
@@ -58,6 +101,10 @@ export const EscrowOnboardingPage: React.FC = () => {
 
       setStatus(data);
       setError(null);
+
+      if (path !== 'simulate-complete' && data.status.toLowerCase() !== 'verified') {
+        void pollForVerification();
+      }
     }
     catch
     {
@@ -88,6 +135,26 @@ export const EscrowOnboardingPage: React.FC = () => {
 
       {error && <div style={{ marginTop: '1rem', color: '#a00' }}>{error}</div>}
 
+      {isLoadingStatus && (
+        <div style={{ marginTop: '1rem', padding: '1rem 1.1rem', borderRadius: 12, background: '#f3f6fa', color: '#3a4a5c' }}>
+          Loading escrow onboarding status...
+        </div>
+      )}
+
+      {error && (
+        <div style={{ marginTop: '0.75rem' }}>
+          <button type="button" onClick={() => void loadStatus(true)} style={{ padding: '0.55rem 0.85rem', border: '1px solid #ccd5e3', background: '#fff', borderRadius: 8, cursor: 'pointer' }}>
+            Retry
+          </button>
+        </div>
+      )}
+
+      {isPolling && (
+        <div style={{ marginTop: '1rem', padding: '0.9rem 1rem', borderRadius: 12, background: '#eef7ff', color: '#134774' }}>
+          Awaiting provider verification update... check {pollAttempt}/15.
+        </div>
+      )}
+
       <section style={{ marginTop: '1.5rem', display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
         <article style={{ padding: '1.2rem', border: '1px solid #e2e6ed', borderRadius: 16, background: '#fff' }}>
           <div style={{ color: '#555' }}>Current status</div>
@@ -102,13 +169,13 @@ export const EscrowOnboardingPage: React.FC = () => {
       <section style={{ marginTop: '1.25rem', padding: '1.2rem', border: '1px solid #e2e6ed', borderRadius: 16, background: '#fff' }}>
         <h2 style={{ marginTop: 0 }}>Onboarding actions</h2>
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-          <button type="button" disabled={isWorking} onClick={() => void runAction('start')} style={{ padding: '0.8rem 1.1rem', border: 'none', borderRadius: 8, background: '#0072ce', color: '#fff', cursor: 'pointer' }}>
+          <button type="button" disabled={isWorking || isPolling} onClick={() => void runAction('start')} style={{ padding: '0.8rem 1.1rem', border: 'none', borderRadius: 8, background: '#0072ce', color: '#fff', cursor: 'pointer' }}>
             Start onboarding
           </button>
-          <button type="button" disabled={isWorking} onClick={() => void runAction('refresh')} style={{ padding: '0.8rem 1.1rem', border: '1px solid #d6d9dd', borderRadius: 8, background: '#f1f3f6', color: '#111', cursor: 'pointer' }}>
+          <button type="button" disabled={isWorking || isPolling} onClick={() => void runAction('refresh')} style={{ padding: '0.8rem 1.1rem', border: '1px solid #d6d9dd', borderRadius: 8, background: '#f1f3f6', color: '#111', cursor: 'pointer' }}>
             Refresh status
           </button>
-          <button type="button" disabled={isWorking} onClick={() => void runAction('simulate-complete')} style={{ padding: '0.8rem 1.1rem', border: 'none', borderRadius: 8, background: '#0f9d58', color: '#fff', cursor: 'pointer' }}>
+          <button type="button" disabled={isWorking || isPolling} onClick={() => void runAction('simulate-complete')} style={{ padding: '0.8rem 1.1rem', border: 'none', borderRadius: 8, background: '#0f9d58', color: '#fff', cursor: 'pointer' }}>
             Simulate complete
           </button>
         </div>

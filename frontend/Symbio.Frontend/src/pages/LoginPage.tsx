@@ -8,6 +8,7 @@ export const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('password123');
   const [role, setRole] = useState<UserRole>('SME');
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -16,6 +17,7 @@ export const LoginPage: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
+    setIsSubmitting(true);
 
     try
     {
@@ -27,11 +29,19 @@ export const LoginPage: React.FC = () => {
       login(result.token, result.role || role, email);
       navigate(from, { replace: true });
     }
-    catch
+    catch (requestError)
     {
-      setError('Unable to sign in or register.');
+      if (requestError instanceof Error && requestError.message.includes('403')) {
+        setError('Admin accounts cannot self-register. Use a seeded admin account for operations access.');
+      } else {
+        setError('Unable to sign in or register.');
+      }
+
+      setIsSubmitting(false);
       return;
     }
+
+    setIsSubmitting(false);
   };
 
   return (
@@ -52,11 +62,15 @@ export const LoginPage: React.FC = () => {
           <select value={role} onChange={e => setRole(e.target.value as UserRole)} style={{ width: '100%', marginTop: '0.5rem', padding: '0.85rem' }}>
             <option value="SME">SME</option>
             <option value="Expert">Expert</option>
-            <option value="Admin">Admin</option>
           </select>
         </label>
+        <p style={{ margin: 0, color: '#555', fontSize: '0.95rem' }}>
+          Admin operations users are seeded by the platform and do not self-register via this form.
+        </p>
         {error && <div style={{ color: '#a00' }}>{error}</div>}
-        <button type="submit" style={{ padding: '0.85rem 1.25rem', background: '#0072ce', color: '#fff', border: 'none', borderRadius: 8 }}>Continue</button>
+        <button type="submit" disabled={isSubmitting} style={{ padding: '0.85rem 1.25rem', background: '#0072ce', color: '#fff', border: 'none', borderRadius: 8 }}>
+          {isSubmitting ? 'Signing in...' : 'Continue'}
+        </button>
       </form>
     </main>
   );

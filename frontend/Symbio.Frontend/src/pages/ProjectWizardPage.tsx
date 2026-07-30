@@ -32,6 +32,7 @@ export const ProjectWizardPage: React.FC = () => {
   const [isPreApprovalSubmitting, setIsPreApprovalSubmitting] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [pendingProject, setPendingProject] = useState<CreatedProject | null>(null);
+  const [preApprovalSuccess, setPreApprovalSuccess] = useState<{ projectId: string; amount: number } | null>(null);
 
   const updateMilestone = (index: number, field: 'title' | 'description', value: string) => {
     const next = [...milestones];
@@ -124,8 +125,8 @@ export const ProjectWizardPage: React.FC = () => {
 
     setIsPreApprovalSubmitting(false);
     setShowPaymentModal(false);
+    setPreApprovalSuccess({ projectId: pendingProject.id, amount: pendingProject.budget });
     setPendingProject(null);
-    navigate('/marketplace');
   };
 
   return (
@@ -136,6 +137,27 @@ export const ProjectWizardPage: React.FC = () => {
       </header>
 
       {error && <div style={{ color: '#a00', marginTop: '1rem' }}>{error}</div>}
+
+      {preApprovalSuccess && (
+        <section style={{ marginTop: '1rem', padding: '1rem 1.1rem', borderRadius: 12, border: '1px solid #bfe6d1', background: '#eefbf3' }}>
+          <h2 style={{ margin: '0 0 0.35rem', fontSize: '1.1rem', color: '#0d6f47' }}>Pre-approval captured</h2>
+          <p style={{ margin: 0, color: '#23543f' }}>
+            Project {preApprovalSuccess.projectId} is now escrow-ready for
+            {' '}
+            {preApprovalSuccess.amount.toLocaleString('en-AU', { style: 'currency', currency: 'AUD' })}.
+          </p>
+          <button
+            type="button"
+            style={{ marginTop: '0.8rem', padding: '0.7rem 0.95rem', borderRadius: 8, border: 'none', background: '#0f9d58', color: '#fff', cursor: 'pointer' }}
+            onClick={() => {
+              setPreApprovalSuccess(null);
+              navigate('/marketplace');
+            }}
+          >
+            Continue to marketplace
+          </button>
+        </section>
+      )}
 
       <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '1rem', marginTop: '1.5rem' }}>
         <label>
@@ -194,6 +216,8 @@ export const ProjectWizardPage: React.FC = () => {
       <PaymentCollectionModal
         isOpen={showPaymentModal && pendingProject !== null}
         amount={pendingProject?.budget ?? budget}
+        projectTitle={title.trim() || 'Untitled project'}
+        milestoneCount={milestones.length}
         milestoneId={milestones[0]?.title || 'Kickoff'}
         isSubmitting={isPreApprovalSubmitting}
         onCancel={() => {
