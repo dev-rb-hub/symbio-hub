@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Symbio.Infrastructure;
+using System.Collections.Concurrent;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
@@ -21,6 +22,7 @@ public sealed class PinchSignatureValidationFilter : IAsyncResourceFilter
         if (!_pinchApiSettings.ValidateWebhookSignature)
         {
             context.HttpContext.Items[PinchWebhookTrustContext.ItemKey] = PinchWebhookTrustContext.BypassedState;
+            context.HttpContext.Items[PinchWebhookTrustContext.ReasonItemKey] = PinchSignatureValidationStatus.SignatureValidationBypassed.ToString();
             await next();
             return;
         }
@@ -39,6 +41,7 @@ public sealed class PinchSignatureValidationFilter : IAsyncResourceFilter
         if (!request.Headers.TryGetValue(_pinchApiSettings.WebhookSignatureHeader, out var headerValue))
         {
             context.HttpContext.Items[PinchWebhookTrustContext.ItemKey] = PinchWebhookTrustContext.RejectedState;
+            context.HttpContext.Items[PinchWebhookTrustContext.ReasonItemKey] = PinchSignatureValidationStatus.MissingSignatureHeader.ToString();
             context.Result = new UnauthorizedObjectResult(new
             {
                 message = "Invalid webhook signature.",
@@ -58,6 +61,7 @@ public sealed class PinchSignatureValidationFilter : IAsyncResourceFilter
         if (validationStatus != PinchSignatureValidationStatus.Valid)
         {
             context.HttpContext.Items[PinchWebhookTrustContext.ItemKey] = PinchWebhookTrustContext.RejectedState;
+            context.HttpContext.Items[PinchWebhookTrustContext.ReasonItemKey] = validationStatus.ToString();
             context.Result = new UnauthorizedObjectResult(new
             {
                 message = "Invalid webhook signature.",
@@ -67,7 +71,21 @@ public sealed class PinchSignatureValidationFilter : IAsyncResourceFilter
             return;
         }
 
+        if (PinchSignatureReplayGuard.IsReplay(headerValue.ToString(), _pinchApiSettings.WebhookToleranceSeconds))
+        {
+            context.HttpContext.Items[PinchWebhookTrustContext.ItemKey] = PinchWebhookTrustContext.RejectedState;
+            context.HttpContext.Items[PinchWebhookTrustContext.ReasonItemKey] = PinchSignatureValidationStatus.ReplayDetected.ToString();
+            context.Result = new UnauthorizedObjectResult(new
+            {
+                message = "Rejected webhook signature replay.",
+                trustState = PinchWebhookTrustContext.RejectedState,
+                reason = PinchSignatureValidationStatus.ReplayDetected.ToString()
+            });
+            return;
+        }
+
         context.HttpContext.Items[PinchWebhookTrustContext.ItemKey] = PinchWebhookTrustContext.VerifiedState;
+        context.HttpContext.Items[PinchWebhookTrustContext.ReasonItemKey] = PinchSignatureValidationStatus.Valid.ToString();
 
         await next();
     }
@@ -76,6 +94,7 @@ public sealed class PinchSignatureValidationFilter : IAsyncResourceFilter
 public static class PinchWebhookTrustContext
 {
     public const string ItemKey = "PinchWebhookTrustState";
+    public const string ReasonItemKey = "PinchWebhookTrustReason";
     public const string VerifiedState = "VerifiedSignature";
     public const string RejectedState = "RejectedSignature";
     public const string BypassedState = "SignatureValidationBypassed";
@@ -89,7 +108,31 @@ public enum PinchSignatureValidationStatus
     InvalidHeader,
     InvalidTimestamp,
     ToleranceExceeded,
-    SignatureMismatch
+    SignatureMismatch,
+    ReplayDetected,
+    SignatureValidationBypassed
+}
+
+public static class PinchSignatureReplayGuard
+{
+    private static readonly ConcurrentDictionary<string, DateTimeOffset> SeenSignatures = new();
+
+    public static bool IsReplay(string signatureHeader, int toleranceSeconds)
+    {
+        var now = DateTimeOffset.UtcNow;
+        var ttl = TimeSpan.FromSeconds(Math.Max(toleranceSeconds, 1));
+
+        foreach (var entry in SeenSignatures)
+        {
+            if (now - entry.Value > ttl)
+            {
+                SeenSignatures.TryRemove(entry.Key, out _);
+            }
+        }
+
+        var firstSeen = SeenSignatures.GetOrAdd(signatureHeader, now);
+        return firstSeen != now;
+    }
 }
 
 public static class PinchSignatureVerifier

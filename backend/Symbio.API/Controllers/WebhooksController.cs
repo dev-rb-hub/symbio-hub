@@ -47,17 +47,19 @@ namespace Symbio.API.Controllers
         public async Task<IActionResult> HandlePinchSettlements([FromBody] PinchWebhookEnvelope webhookEvent)
         {
             var trustState = ResolveTrustState();
+            var trustReason = ResolveTrustReason();
+            var authenticityOutcome = new { state = trustState, reason = trustReason };
 
             if (!PinchWebhookMapper.TryMapSettlementRequest(webhookEvent, out var request) || request == null)
             {
-                return BadRequest(new { message = "Webhook payload did not include required settlement data.", trustState });
+                return BadRequest(new { message = "Webhook payload did not include required settlement data.", trustState, trustReason, authenticityOutcome });
             }
 
             if (!request.SettlementStatus.Equals("confirmed", StringComparison.OrdinalIgnoreCase)
                 && !request.SettlementStatus.Equals("succeeded", StringComparison.OrdinalIgnoreCase)
                 && !request.SettlementStatus.Equals("escrow_locked", StringComparison.OrdinalIgnoreCase))
             {
-                return Ok(new { message = "Settlement webhook ignored for non-locking status.", trustState });
+                return Ok(new { message = "Settlement webhook ignored for non-locking status.", trustState, trustReason, authenticityOutcome });
             }
 
             var state = await _dbContext.ProjectPaymentStateRecords
@@ -65,7 +67,7 @@ namespace Symbio.API.Controllers
 
             if (state == null)
             {
-                return NotFound(new { message = "Project payment state not found.", trustState });
+                return NotFound(new { message = "Project payment state not found.", trustState, trustReason, authenticityOutcome });
             }
 
             var split = _paymentSplitCalculator.Calculate(request.Amount);
@@ -89,7 +91,9 @@ namespace Symbio.API.Controllers
                 state.Currency,
                 state.LastProviderReference,
                 state.UpdatedAtUtc,
-                trustState
+                trustState,
+                trustReason,
+                authenticityOutcome
             });
         }
 
@@ -98,10 +102,12 @@ namespace Symbio.API.Controllers
         public async Task<IActionResult> HandleAccountingInvoiceStatus([FromBody] AccountingInvoiceStatusWebhookRequest request)
         {
             var trustState = ResolveTrustState();
+            var trustReason = ResolveTrustReason();
+            var authenticityOutcome = new { state = trustState, reason = trustReason };
 
             if (request == null || string.IsNullOrWhiteSpace(request.ProviderInvoiceId) || string.IsNullOrWhiteSpace(request.Status))
             {
-                return BadRequest(new { message = "ProviderInvoiceId and Status are required.", trustState });
+                return BadRequest(new { message = "ProviderInvoiceId and Status are required.", trustState, trustReason, authenticityOutcome });
             }
 
             var invoice = await _dbContext.AccountingInvoices
@@ -114,7 +120,7 @@ namespace Symbio.API.Controllers
 
             if (invoice == null)
             {
-                return NotFound(new { message = "Invoice record not found.", trustState });
+                return NotFound(new { message = "Invoice record not found.", trustState, trustReason, authenticityOutcome });
             }
 
             invoice.Status = request.Status.Trim();
@@ -160,7 +166,9 @@ namespace Symbio.API.Controllers
                 invoice.Status,
                 paymentState = paymentState?.State ?? "Unknown",
                 invoice.UpdatedAtUtc,
-                trustState
+                trustState,
+                trustReason,
+                authenticityOutcome
             });
         }
 
@@ -169,10 +177,12 @@ namespace Symbio.API.Controllers
         public async Task<IActionResult> HandleRetainerSubscriptionStatus([FromBody] RetainerSubscriptionStatusWebhookRequest request)
         {
             var trustState = ResolveTrustState();
+            var trustReason = ResolveTrustReason();
+            var authenticityOutcome = new { state = trustState, reason = trustReason };
 
             if (request == null || string.IsNullOrWhiteSpace(request.ProviderSubscriptionId) || string.IsNullOrWhiteSpace(request.Status))
             {
-                return BadRequest(new { message = "ProviderSubscriptionId and Status are required.", trustState });
+                return BadRequest(new { message = "ProviderSubscriptionId and Status are required.", trustState, trustReason, authenticityOutcome });
             }
 
             var retainer = await _dbContext.RetainerContracts
@@ -180,7 +190,7 @@ namespace Symbio.API.Controllers
 
             if (retainer == null)
             {
-                return NotFound(new { message = "Retainer contract not found.", trustState });
+                return NotFound(new { message = "Retainer contract not found.", trustState, trustReason, authenticityOutcome });
             }
 
             retainer.Status = request.Status.Trim();
@@ -210,7 +220,9 @@ namespace Symbio.API.Controllers
                 retainer.Status,
                 retainer.NextBillingAtUtc,
                 retainer.UpdatedAtUtc,
-                trustState
+                trustState,
+                trustReason,
+                authenticityOutcome
             });
         }
 
@@ -224,6 +236,18 @@ namespace Symbio.API.Controllers
             }
 
             return PinchWebhookTrustContext.BypassedState;
+        }
+
+        private string ResolveTrustReason()
+        {
+            if (HttpContext.Items.TryGetValue(PinchWebhookTrustContext.ReasonItemKey, out var trustReason)
+                && trustReason is string trustReasonText
+                && !string.IsNullOrWhiteSpace(trustReasonText))
+            {
+                return trustReasonText;
+            }
+
+            return PinchSignatureValidationStatus.SignatureValidationBypassed.ToString();
         }
     }
 }
