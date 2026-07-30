@@ -229,6 +229,10 @@ export const ExpertWorkbenchPage: React.FC = () => {
           <Link to="/escrow/onboarding" style={{ textDecoration: 'none', padding: '0.5rem 0.8rem', borderRadius: 10, background: '#fff', color: '#0a3f66', fontWeight: 700 }}>Escrow onboarding</Link>
           <Link to="/settings" style={{ textDecoration: 'none', padding: '0.5rem 0.8rem', borderRadius: 10, border: '1px solid rgba(255,255,255,0.55)', color: '#fff', fontWeight: 700 }}>Role settings</Link>
         </div>
+
+        <div style={{ marginTop: '0.9rem', padding: '0.8rem 0.95rem', borderRadius: 12, background: 'rgba(255,255,255,0.17)', border: '1px solid rgba(255,255,255,0.24)', color: '#f7fdff' }}>
+          Progress updates are published immediately for demo visibility. No SME approval is required before the expert shares a percentage update or milestone status change.
+        </div>
       </section>
 
       {error && <div style={{ marginTop: '1rem', color: '#a00' }}>{error}</div>}
@@ -278,13 +282,14 @@ export const ExpertWorkbenchPage: React.FC = () => {
 
               <div style={{ display: 'grid', gap: '0.5rem', marginTop: '1rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: '#555' }}>
-                  <span>Progress</span>
+                  <span>Live progress</span>
                   <span>{assignment.progressPercent}%</span>
                 </div>
-                <div style={{ height: 10, background: '#eef2f7', borderRadius: 999 }}>
-                  <div style={{ width: `${assignment.progressPercent}%`, height: '100%', background: '#0f9d58', borderRadius: 999 }} />
+                <div style={{ height: 10, background: '#eef2f7', borderRadius: 999, overflow: 'hidden' }}>
+                  <div style={{ width: `${Math.min(100, Math.max(0, assignment.progressPercent))}%`, height: '100%', background: assignment.progressPercent >= 100 ? '#0f9d58' : '#0072ce', borderRadius: 999, transition: 'width 180ms ease-out' }} />
                 </div>
                 <div><strong>Current milestone:</strong> {assignment.currentMilestone}</div>
+                <div><strong>Status:</strong> {assignment.status}</div>
                 <div><strong>Due:</strong> {new Date(assignment.dueDate).toLocaleDateString()}</div>
               </div>
 
@@ -358,6 +363,9 @@ export const ExpertWorkbenchPage: React.FC = () => {
                     </div>
                     <p style={{ margin: '0.5rem 0', lineHeight: 1.6 }}>{log.message}</p>
                     <div style={{ color: '#555', fontSize: '0.95rem' }}>{log.level} · {log.status}</div>
+                    <div style={{ marginTop: '0.35rem', color: '#0b4f7f', fontSize: '0.95rem' }}>
+                      Progress {log.progressPercent ?? 0}% · {log.currentMilestone || 'Milestone update'}
+                    </div>
                   </article>
                 ))
               )}

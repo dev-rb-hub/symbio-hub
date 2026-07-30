@@ -152,8 +152,23 @@ export const SmeDashboardPage: React.FC = () => {
       </section>
 
       <section id="sme-runtime" className="symbio-anchor-target" style={{ marginTop: '1.2rem' }}>
-        <h2 style={{ margin: '0 0 0.75rem', color: '#0b4f7f' }}>Runtime</h2>
+        <h2 style={{ margin: '0 0 0.75rem', color: '#0b4f7f' }}>Pinch payment status</h2>
         <PinchRuntimeModePanel runtimeMode={runtimeMode} isLoading={isRuntimeModeLoading} hasError={hasRuntimeModeError} />
+        <div style={{ marginTop: '0.75rem', padding: '0.9rem 1rem', borderRadius: 12, border: '1px solid #d7e7ff', background: '#f7fbff', color: '#274a63' }}>
+          Demo cue: use the project wizard to create a funded project, then follow the agreement and payment lifecycle pages to see how the Pinch-backed payment path appears to an SME.
+        </div>
+      </section>
+
+      <section id="sme-milestone-handoff" className="symbio-anchor-target" style={{ marginTop: '1.2rem', background: '#fff', border: '1px solid #dde3ee', borderRadius: 14, padding: '1rem', boxShadow: '0 10px 24px rgba(11, 31, 56, 0.06)' }}>
+        <h2 style={{ margin: '0 0 0.45rem', color: '#0b4f7f' }}>Milestone handoff to payment entry</h2>
+        <p style={{ margin: '0 0 0.75rem', color: '#4f5e70', lineHeight: 1.6 }}>
+          When an expert shares a milestone update or completion signal, the SME can move straight from delivery progress to the agreement and settlement view.
+        </p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
+          <Link to="/agreement" style={{ textDecoration: 'none', padding: '0.6rem 0.9rem', borderRadius: 10, background: '#0f9d58', color: '#fff', fontWeight: 700 }}>Review agreement</Link>
+          <Link to="/payments/lifecycle" style={{ textDecoration: 'none', padding: '0.6rem 0.9rem', borderRadius: 10, border: '1px solid #cfd8e5', color: '#0a3f66', fontWeight: 700 }}>Open payment timeline</Link>
+          <Link to="/closeout" style={{ textDecoration: 'none', padding: '0.6rem 0.9rem', borderRadius: 10, border: '1px solid #cfd8e5', color: '#0a3f66', fontWeight: 700 }}>Open closeout</Link>
+        </div>
       </section>
 
       {error && <div style={{ marginTop: '1rem', color: '#a00' }}>{error}</div>}

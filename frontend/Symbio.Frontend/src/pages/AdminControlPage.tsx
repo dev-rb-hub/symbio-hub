@@ -59,6 +59,37 @@ type SafetySetting = {
   updatedAtUtc: string;
 };
 
+type PinchRuntimeModeResponse = {
+  runtimeMode: string;
+  environment: string;
+  credentialsConfigured: boolean;
+  usesMockResponses: boolean;
+  baseUri: string;
+  authUri: string;
+  isLive: boolean;
+  guidance: string;
+};
+
+type PinchSandboxVerificationResponse = {
+  modeLabel: string;
+  environment: string;
+  credentialsConfigured: boolean;
+  connected: boolean;
+  merchantReadSucceeded: boolean;
+  payerListReadSucceeded: boolean;
+  baseUri: string;
+  authUri: string;
+  isLive: boolean;
+  message: string;
+  merchantName: string | null;
+  failureReason: string | null;
+  merchantReadErrorCode: string | null;
+  merchantReadErrorMessage: string | null;
+  payerListErrorCode: string | null;
+  payerListErrorMessage: string | null;
+  payerListErrorCount: number;
+};
+
 type AdminSection = 'overview' | 'telemetry' | 'compliance' | 'agreements' | 'safety';
 
 const sectionDescriptions: Record<AdminSection, string> = {
@@ -86,6 +117,9 @@ export const AdminControlPage: React.FC = () => {
   const [isSettingsLoading, setIsSettingsLoading] = useState(false);
   const [isSavingSetting, setIsSavingSetting] = useState(false);
   const [resolvingReviewId, setResolvingReviewId] = useState<number | null>(null);
+  const [pinchDiagnosticsStatus, setPinchDiagnosticsStatus] = useState<'idle' | 'loading' | 'success' | 'warning' | 'error'>('idle');
+  const [pinchDiagnosticsSummary, setPinchDiagnosticsSummary] = useState('Pinch diagnostics have not run yet.');
+  const [pinchDiagnosticsOutput, setPinchDiagnosticsOutput] = useState<string[]>([]);
 
   const activeSection = useMemo<AdminSection>(() => {
     if (location.pathname.includes('/telemetry')) {
@@ -160,6 +194,54 @@ export const AdminControlPage: React.FC = () => {
     setIsSettingsLoading(false);
   };
 
+  const runPinchDiagnostics = async () => {
+    if (!session) {
+      return;
+    }
+
+    const timestamp = new Date().toLocaleTimeString();
+    setPinchDiagnosticsStatus('loading');
+    setPinchDiagnosticsSummary('Running Pinch diagnostics...');
+    setPinchDiagnosticsOutput([
+      `[${timestamp}] Starting Pinch runtime and sandbox checks`,
+      `[${timestamp}] Requesting runtime mode from /api/payments/runtime-mode`,
+      `[${timestamp}] Requesting sandbox verification from /api/payments/pinch/sandbox-verification`,
+    ]);
+
+    try {
+      const [runtimeMode, sandboxVerification] = await Promise.all([
+        apiRequest<PinchRuntimeModeResponse>('/api/payments/runtime-mode', { token: session.token }),
+        apiRequest<PinchSandboxVerificationResponse>('/api/payments/pinch/sandbox-verification', { token: session.token }),
+      ]);
+
+      const isConfigured = runtimeMode.credentialsConfigured && sandboxVerification.credentialsConfigured;
+      const isConnected = sandboxVerification.connected && (sandboxVerification.merchantReadSucceeded || sandboxVerification.payerListReadSucceeded);
+      const statusLine = isConfigured && !runtimeMode.usesMockResponses && isConnected
+        ? 'Pinch authentication and login checks completed successfully.'
+        : runtimeMode.usesMockResponses || !isConfigured
+          ? 'Pinch is running in mock or partially configured mode.'
+          : 'Pinch sandbox checks failed.';
+
+      const nextOutput = [
+        `[${new Date().toLocaleTimeString()}] Runtime mode: ${runtimeMode.runtimeMode ?? 'Unknown'}`,
+        `[${new Date().toLocaleTimeString()}] Environment: ${runtimeMode.environment ?? sandboxVerification.environment ?? 'Unknown'}`,
+        `[${new Date().toLocaleTimeString()}] Credentials configured: ${isConfigured ? 'yes' : 'no'}`,
+        `[${new Date().toLocaleTimeString()}] Connection status: ${isConnected ? 'connected' : 'failed'}`,
+        `[${new Date().toLocaleTimeString()}] Merchant read: ${sandboxVerification.merchantReadSucceeded ? 'succeeded' : 'failed'}`,
+        `[${new Date().toLocaleTimeString()}] Payer list read: ${sandboxVerification.payerListReadSucceeded ? 'succeeded' : 'failed'}`,
+        `[${new Date().toLocaleTimeString()}] ${statusLine}`,
+      ];
+
+      setPinchDiagnosticsOutput([...pinchDiagnosticsOutput, ...nextOutput]);
+      setPinchDiagnosticsSummary(statusLine);
+      setPinchDiagnosticsStatus(isConfigured && !runtimeMode.usesMockResponses && isConnected ? 'success' : runtimeMode.usesMockResponses || !isConfigured ? 'warning' : 'error');
+    } catch {
+      setPinchDiagnosticsOutput(prev => [...prev, `[${new Date().toLocaleTimeString()}] ERROR: Pinch diagnostics could not be completed.`]);
+      setPinchDiagnosticsSummary('Pinch diagnostics failed. Verify the admin token and API availability.');
+      setPinchDiagnosticsStatus('error');
+    }
+  };
+
   const refreshActiveSection = async () => {
     if (activeSection === 'overview') {
       await Promise.all([loadTelemetry(), loadQueue(), loadSettings()]);
@@ -185,6 +267,7 @@ export const AdminControlPage: React.FC = () => {
 
   useEffect(() => {
     void refreshActiveSection();
+    void runPinchDiagnostics();
   }, [session, activeSection]);
 
   const navLinkStyle = (section: AdminSection): React.CSSProperties => ({
@@ -474,6 +557,7 @@ export const AdminControlPage: React.FC = () => {
           </div>
         </section>
       )}
+
     </main>
   );
 };
