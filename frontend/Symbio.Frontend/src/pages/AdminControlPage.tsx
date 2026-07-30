@@ -59,6 +59,8 @@ type SafetySetting = {
   updatedAtUtc: string;
 };
 
+type AdminSection = 'overview' | 'telemetry' | 'compliance' | 'safety';
+
 export const AdminControlPage: React.FC = () => {
   const { session, logout } = useAuth();
   const location = useLocation();
@@ -68,9 +70,16 @@ export const AdminControlPage: React.FC = () => {
   const [settings, setSettings] = useState<SafetySetting[]>([]);
   const [settingKey, setSettingKey] = useState('');
   const [settingValue, setSettingValue] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [telemetryError, setTelemetryError] = useState<string | null>(null);
+  const [queueError, setQueueError] = useState<string | null>(null);
+  const [settingsError, setSettingsError] = useState<string | null>(null);
+  const [isTelemetryLoading, setIsTelemetryLoading] = useState(false);
+  const [isQueueLoading, setIsQueueLoading] = useState(false);
+  const [isSettingsLoading, setIsSettingsLoading] = useState(false);
+  const [isSavingSetting, setIsSavingSetting] = useState(false);
+  const [resolvingReviewId, setResolvingReviewId] = useState<number | null>(null);
 
-  const activeSection = useMemo(() => {
+  const activeSection = useMemo<AdminSection>(() => {
     if (location.pathname.includes('/telemetry')) {
       return 'telemetry';
     }
@@ -83,36 +92,106 @@ export const AdminControlPage: React.FC = () => {
     return 'overview';
   }, [location.pathname]);
 
-  const load = async () => {
+  const loadTelemetry = async () => {
     if (!session) {
       return;
     }
 
-    try {
-      const [telemetryData, queueData, settingsData] = await Promise.all([
-        apiRequest<TelemetryResponse>('/api/admin/telemetry/global', { token: session.token }),
-        apiRequest<ComplianceQueueResponse>('/api/admin/compliance/queue', { token: session.token }),
-        apiRequest<SafetySetting[]>('/api/admin/overrides/safety-settings', { token: session.token }),
-      ]);
+    setIsTelemetryLoading(true);
+    setTelemetryError(null);
 
+    try {
+      const telemetryData = await apiRequest<TelemetryResponse>('/api/admin/telemetry/global', { token: session.token });
       setTelemetry(telemetryData);
-      setQueue(queueData);
-      setSettings(settingsData);
-      setError(null);
     } catch {
-      setError('Admin command hub is unavailable. Ensure your account has the admin master claim.');
+      setTelemetryError('Telemetry is currently unavailable. Verify your admin claim and try again.');
     }
+
+    setIsTelemetryLoading(false);
+  };
+
+  const loadQueue = async () => {
+    if (!session) {
+      return;
+    }
+
+    setIsQueueLoading(true);
+    setQueueError(null);
+
+    try {
+      const queueData = await apiRequest<ComplianceQueueResponse>('/api/admin/compliance/queue', { token: session.token });
+      setQueue(queueData);
+    } catch {
+      setQueueError('Compliance queue is unavailable. Try refreshing this section.');
+    }
+
+    setIsQueueLoading(false);
+  };
+
+  const loadSettings = async () => {
+    if (!session) {
+      return;
+    }
+
+    setIsSettingsLoading(true);
+    setSettingsError(null);
+
+    try {
+      const settingsData = await apiRequest<SafetySetting[]>('/api/admin/overrides/safety-settings', { token: session.token });
+      setSettings(settingsData);
+    } catch {
+      setSettingsError('Safety settings are unavailable. Try refreshing this section.');
+    }
+
+    setIsSettingsLoading(false);
+  };
+
+  const refreshActiveSection = async () => {
+    if (activeSection === 'overview') {
+      await Promise.all([loadTelemetry(), loadQueue(), loadSettings()]);
+      return;
+    }
+
+    if (activeSection === 'telemetry') {
+      await loadTelemetry();
+      return;
+    }
+
+    if (activeSection === 'compliance') {
+      await loadQueue();
+      return;
+    }
+
+    await loadSettings();
   };
 
   useEffect(() => {
-    void load();
-  }, [session]);
+    void refreshActiveSection();
+  }, [session, activeSection]);
+
+  const navLinkStyle = (section: AdminSection): React.CSSProperties => ({
+    textDecoration: 'none',
+    border: activeSection === section ? '1px solid #0f5ea8' : '1px solid #d2d8e3',
+    background: activeSection === section ? '#e8f1fb' : '#fff',
+    color: activeSection === section ? '#0f5ea8' : '#2d3a4f',
+    borderRadius: 999,
+    padding: '0.45rem 0.75rem',
+    fontWeight: activeSection === section ? 700 : 500,
+  });
+
+  const isSectionBusy =
+    (activeSection === 'overview' && (isTelemetryLoading || isQueueLoading || isSettingsLoading))
+    || (activeSection === 'telemetry' && isTelemetryLoading)
+    || (activeSection === 'compliance' && isQueueLoading)
+    || (activeSection === 'safety' && isSettingsLoading);
 
   const upsertSetting = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!session || !settingKey.trim()) {
       return;
     }
+
+    setIsSavingSetting(true);
 
     try {
       await apiRequest('/api/admin/overrides/safety-settings', {
@@ -126,16 +205,20 @@ export const AdminControlPage: React.FC = () => {
 
       setSettingKey('');
       setSettingValue('');
-      await load();
+      await loadSettings();
     } catch {
-      setError('Failed to update safety setting.');
+      setSettingsError('Failed to update safety setting.');
     }
+
+    setIsSavingSetting(false);
   };
 
   const resolveReview = async (reviewId: number) => {
     if (!session) {
       return;
     }
+
+    setResolvingReviewId(reviewId);
 
     try {
       await apiRequest(`/api/admin/compliance/reviews/${reviewId}/resolve`, {
@@ -146,10 +229,12 @@ export const AdminControlPage: React.FC = () => {
         },
       });
 
-      await load();
+      await loadQueue();
     } catch {
-      setError('Failed to resolve compliance review.');
+      setQueueError('Failed to resolve compliance review.');
     }
+
+    setResolvingReviewId(null);
   };
 
   return (
@@ -165,13 +250,29 @@ export const AdminControlPage: React.FC = () => {
       </header>
 
       <nav style={{ marginTop: '1rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-        <Link to="/admin/control" style={{ textDecoration: activeSection === 'overview' ? 'underline' : 'none' }}>Overview</Link>
-        <Link to="/admin/telemetry" style={{ textDecoration: activeSection === 'telemetry' ? 'underline' : 'none' }}>Telemetry</Link>
-        <Link to="/admin/compliance" style={{ textDecoration: activeSection === 'compliance' ? 'underline' : 'none' }}>Compliance Queue</Link>
-        <Link to="/admin/safety" style={{ textDecoration: activeSection === 'safety' ? 'underline' : 'none' }}>Safety Overrides</Link>
+        <Link to="/admin/control" style={navLinkStyle('overview')}>Overview</Link>
+        <Link to="/admin/telemetry" style={navLinkStyle('telemetry')}>Telemetry</Link>
+        <Link to="/admin/compliance" style={navLinkStyle('compliance')}>Compliance Queue</Link>
+        <Link to="/admin/safety" style={navLinkStyle('safety')}>Safety Overrides</Link>
+        <button
+          type="button"
+          onClick={() => void refreshActiveSection()}
+          disabled={isSectionBusy}
+          style={{ border: '1px solid #bcc6d8', borderRadius: 999, background: '#fff', padding: '0.45rem 0.75rem', cursor: 'pointer' }}
+        >
+          {isSectionBusy ? 'Refreshing...' : 'Refresh section'}
+        </button>
       </nav>
 
-      {error && <div style={{ marginTop: '1rem', color: '#a00' }}>{error}</div>}
+      {(activeSection === 'overview' || activeSection === 'telemetry') && isTelemetryLoading && (
+        <div style={{ marginTop: '1rem', padding: '0.85rem 1rem', background: '#f3f6fa', borderRadius: 10, color: '#3a4a5c' }}>
+          Loading telemetry...
+        </div>
+      )}
+
+      {(activeSection === 'overview' || activeSection === 'telemetry') && telemetryError && (
+        <div style={{ marginTop: '1rem', color: '#a00' }}>{telemetryError}</div>
+      )}
 
       {(activeSection === 'overview' || activeSection === 'telemetry') && telemetry && (
         <section style={{ marginTop: '1rem', display: 'grid', gap: '0.75rem', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
@@ -194,20 +295,44 @@ export const AdminControlPage: React.FC = () => {
         </section>
       )}
 
+      {(activeSection === 'overview' || activeSection === 'compliance') && isQueueLoading && (
+        <div style={{ marginTop: '1rem', padding: '0.85rem 1rem', background: '#f3f6fa', borderRadius: 10, color: '#3a4a5c' }}>
+          Loading compliance queue...
+        </div>
+      )}
+
+      {(activeSection === 'overview' || activeSection === 'compliance') && queueError && (
+        <div style={{ marginTop: '1rem', color: '#a00' }}>{queueError}</div>
+      )}
+
       {(activeSection === 'overview' || activeSection === 'compliance') && queue && (
         <section style={{ marginTop: '1.2rem', display: 'grid', gap: '0.8rem' }}>
           <h2 style={{ marginBottom: 0 }}>Pending Compliance Reviews</h2>
+          {queue.pendingReviews.length === 0 && (
+            <article style={{ border: '1px solid #d7dde8', borderRadius: 10, padding: '1rem', background: '#fff', color: '#5f6a7d' }}>
+              No pending compliance reviews.
+            </article>
+          )}
           {queue.pendingReviews.map(review => (
             <article key={review.id} style={{ border: '1px solid #d7dde8', borderRadius: 10, padding: '1rem', background: '#fff' }}>
               <strong>{review.userEmail}</strong> · {review.userRole} · {review.riskLevel}
               <div style={{ color: '#5f6a7d', marginTop: '0.4rem' }}>{review.notes}</div>
-              <button onClick={() => void resolveReview(review.id)} style={{ marginTop: '0.65rem', padding: '0.45rem 0.75rem', borderRadius: 8, border: '1px solid #bcc6d8', cursor: 'pointer' }}>
-                Resolve Review
+              <button
+                onClick={() => void resolveReview(review.id)}
+                disabled={resolvingReviewId === review.id}
+                style={{ marginTop: '0.65rem', padding: '0.45rem 0.75rem', borderRadius: 8, border: '1px solid #bcc6d8', cursor: 'pointer' }}
+              >
+                {resolvingReviewId === review.id ? 'Resolving...' : 'Resolve Review'}
               </button>
             </article>
           ))}
 
           <h2 style={{ marginBottom: 0 }}>Open Project Flags</h2>
+          {queue.openFlags.length === 0 && (
+            <article style={{ border: '1px solid #d7dde8', borderRadius: 10, padding: '1rem', background: '#fff', color: '#5f6a7d' }}>
+              No open project flags.
+            </article>
+          )}
           {queue.openFlags.map(flag => (
             <article key={flag.id} style={{ border: '1px solid #d7dde8', borderRadius: 10, padding: '1rem', background: '#fff' }}>
               <strong>{flag.projectId}</strong> · {flag.milestoneId} · {flag.severity}
@@ -217,16 +342,33 @@ export const AdminControlPage: React.FC = () => {
         </section>
       )}
 
+      {(activeSection === 'overview' || activeSection === 'safety') && isSettingsLoading && (
+        <div style={{ marginTop: '1rem', padding: '0.85rem 1rem', background: '#f3f6fa', borderRadius: 10, color: '#3a4a5c' }}>
+          Loading safety settings...
+        </div>
+      )}
+
+      {(activeSection === 'overview' || activeSection === 'safety') && settingsError && (
+        <div style={{ marginTop: '1rem', color: '#a00' }}>{settingsError}</div>
+      )}
+
       {(activeSection === 'overview' || activeSection === 'safety') && (
         <section style={{ marginTop: '1.2rem' }}>
           <h2>Safety Overrides</h2>
           <form onSubmit={upsertSetting} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '0.5rem', alignItems: 'center' }}>
             <input value={settingKey} onChange={event => setSettingKey(event.target.value)} placeholder="setting key" style={{ padding: '0.55rem' }} />
             <input value={settingValue} onChange={event => setSettingValue(event.target.value)} placeholder="setting value" style={{ padding: '0.55rem' }} />
-            <button type="submit" style={{ padding: '0.55rem 0.85rem', border: '1px solid #bcc6d8', borderRadius: 8 }}>Save</button>
+            <button type="submit" disabled={isSavingSetting} style={{ padding: '0.55rem 0.85rem', border: '1px solid #bcc6d8', borderRadius: 8 }}>
+              {isSavingSetting ? 'Saving...' : 'Save'}
+            </button>
           </form>
 
           <div style={{ marginTop: '0.75rem', display: 'grid', gap: '0.45rem' }}>
+            {settings.length === 0 && (
+              <article style={{ border: '1px solid #d7dde8', borderRadius: 8, padding: '0.75rem', background: '#fff', color: '#5f6a7d' }}>
+                No safety overrides configured yet.
+              </article>
+            )}
             {settings.map(item => (
               <article key={item.id} style={{ border: '1px solid #d7dde8', borderRadius: 8, padding: '0.75rem', background: '#fff' }}>
                 <strong>{item.settingKey}</strong>: {item.settingValue}
