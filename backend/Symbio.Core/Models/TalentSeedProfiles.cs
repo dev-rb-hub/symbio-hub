@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Symbio.Core.Models;
 
-namespace Symbio.Infrastructure.Data
+namespace Symbio.Core.Models
 {
-    internal static class TalentSeedData
+    public static class TalentSeedProfiles
     {
         public static IReadOnlyList<TalentProfile> DefaultProfiles { get; } = new List<TalentProfile>
         {

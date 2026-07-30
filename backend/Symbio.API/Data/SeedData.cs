@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Symbio.API.Models;
 using Symbio.Core.Models;
+using Symbio.Core.Repositories;
 
 namespace Symbio.API.Data
 {
@@ -61,51 +62,112 @@ namespace Symbio.API.Data
                 db.SaveChanges();
             }
 
-            if (db.Jobs.Any())
+            var talentDiscoveryRepository = scope.ServiceProvider.GetRequiredService<ITalentDiscoveryRepository>();
+            foreach (var profile in TalentSeedProfiles.DefaultProfiles)
             {
-                // keep going so later bootstrap data can be added independently
-            }
-
-            if (!db.Jobs.Any())
-            {
-                var jobs = new[]
+                var seedProfile = new TalentProfile
                 {
-                    new Job
-                    {
-                        Title = "Regional Retail Website Refresh",
-                        Description = "Build a mobile-first homepage and checkout experience for a small NSW retail brand.",
-                        ClientName = "Harper",
-                        ClientSurname = "Bright",
-                        Budget = 9500m,
-                        ContactEmail = "contact@harperbright.com",
-                        IsPublished = true,
-                        PostedAt = DateTime.UtcNow.AddDays(-5)
-                    },
-                    new Job
-                    {
-                        Title = "Local Healthcare Data Dashboard",
-                        Description = "Create a lightweight reporting dashboard for a regional practice using anonymised patient metrics.",
-                        ClientName = "Jade",
-                        ClientSurname = "Taylor",
-                        Budget = 14500m,
-                        ContactEmail = "jade.taylor@coastalhealth.au",
-                        IsPublished = true,
-                        PostedAt = DateTime.UtcNow.AddDays(-12)
-                    },
-                    new Job
-                    {
-                        Title = "Food Delivery Loyalty Campaign",
-                        Description = "Design and build a customer loyalty landing page with signup flow and campaign analytics.",
-                        ClientName = "Miles",
-                        ClientSurname = "Kerr",
-                        Budget = 7200m,
-                        ContactEmail = "miles@harvestdeli.au",
-                        IsPublished = true,
-                        PostedAt = DateTime.UtcNow.AddDays(-2)
-                    }
+                    Id = profile.Id,
+                    Name = profile.Name,
+                    CompanyName = profile.CompanyName,
+                    Email = profile.Email,
+                    Role = profile.Role,
+                    Location = profile.Location,
+                    ProfileSummary = profile.ProfileSummary,
+                    Skills = profile.Skills.ToList(),
+                    Services = profile.Services.ToList(),
+                    HourlyRate = profile.HourlyRate,
+                    Availability = profile.Availability,
+                    IsVerified = profile.IsVerified,
+                    IsDiscoverable = profile.IsDiscoverable,
+                    FeaturedRank = profile.FeaturedRank,
+                    LastActiveAt = profile.LastActiveAt
                 };
 
-                db.Jobs.AddRange(jobs);
+                talentDiscoveryRepository.UpsertTalentProfileAsync(seedProfile).GetAwaiter().GetResult();
+            }
+
+            var seededJobs = new[]
+            {
+                new Job
+                {
+                    Title = "Regional Retail Website Refresh",
+                    Description = "Build a mobile-first homepage and checkout experience for a small NSW retail brand.",
+                    ClientName = "Harper",
+                    ClientSurname = "Bright",
+                    Budget = 9500m,
+                    ContactEmail = "contact@harperbright.com",
+                    IsPublished = true,
+                    PostedAt = DateTime.UtcNow.AddDays(-5)
+                },
+                new Job
+                {
+                    Title = "Local Healthcare Data Dashboard",
+                    Description = "Create a lightweight reporting dashboard for a regional practice using anonymised patient metrics.",
+                    ClientName = "Jade",
+                    ClientSurname = "Taylor",
+                    Budget = 14500m,
+                    ContactEmail = "jade.taylor@coastalhealth.au",
+                    IsPublished = true,
+                    PostedAt = DateTime.UtcNow.AddDays(-12)
+                },
+                new Job
+                {
+                    Title = "Food Delivery Loyalty Campaign",
+                    Description = "Design and build a customer loyalty landing page with signup flow and campaign analytics.",
+                    ClientName = "Miles",
+                    ClientSurname = "Kerr",
+                    Budget = 7200m,
+                    ContactEmail = "miles@harvestdeli.au",
+                    IsPublished = true,
+                    PostedAt = DateTime.UtcNow.AddDays(-2)
+                },
+                new Job
+                {
+                    Title = "Tourism Booking Flow Modernisation",
+                    Description = "Improve online bookings for a regional tourism operator with a conversion-focused UX refresh.",
+                    ClientName = "Elena",
+                    ClientSurname = "Morris",
+                    Budget = 11800m,
+                    ContactEmail = "elena@seacoasttours.au",
+                    IsPublished = true,
+                    PostedAt = DateTime.UtcNow.AddDays(-7)
+                },
+                new Job
+                {
+                    Title = "Trades Dispatch Automation MVP",
+                    Description = "Build an MVP to automate quote-to-dispatch workflows for a local electrical services business.",
+                    ClientName = "Noah",
+                    ClientSurname = "Bennett",
+                    Budget = 16250m,
+                    ContactEmail = "ops@bennettsparky.au",
+                    IsPublished = true,
+                    PostedAt = DateTime.UtcNow.AddDays(-9)
+                },
+                new Job
+                {
+                    Title = "NFP Volunteer Portal Upgrade",
+                    Description = "Create a lighter onboarding and rostering experience for a community not-for-profit volunteer team.",
+                    ClientName = "Priya",
+                    ClientSurname = "Singh",
+                    Budget = 6800m,
+                    ContactEmail = "hello@rivercare.org.au",
+                    IsPublished = true,
+                    PostedAt = DateTime.UtcNow.AddDays(-3)
+                }
+            };
+
+            var existingJobTitles = db.Jobs
+                .Select(job => job.Title)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            var missingJobs = seededJobs
+                .Where(job => !existingJobTitles.Contains(job.Title))
+                .ToList();
+
+            if (missingJobs.Count > 0)
+            {
+                db.Jobs.AddRange(missingJobs);
                 db.SaveChanges();
             }
 

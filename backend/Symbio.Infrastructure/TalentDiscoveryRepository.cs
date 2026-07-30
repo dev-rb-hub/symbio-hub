@@ -2,7 +2,6 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Symbio.Core.Models;
 using Symbio.Core.Repositories;
-using Symbio.Infrastructure.Data;
 
 namespace Symbio.Infrastructure
 {
@@ -61,7 +60,9 @@ namespace Symbio.Infrastructure
         {
             if (_container == null)
             {
-                return TalentSeedData.DefaultProfiles.ToList();
+                return TalentSeedProfiles.DefaultProfiles
+                    .Select(CloneProfile)
+                    .ToList();
             }
 
             var response = await _container.GetItemQueryIterator<TalentProfile>(new QueryDefinition("SELECT * FROM c WHERE c.IsDiscoverable = true")).ReadNextAsync();
@@ -69,16 +70,34 @@ namespace Symbio.Infrastructure
 
             if (!profiles.Any())
             {
-                foreach (var profile in TalentSeedData.DefaultProfiles)
-                {
-                    await _container.UpsertItemAsync(profile, new PartitionKey(profile.Role));
-                }
-
-                var seededResponse = await _container.GetItemQueryIterator<TalentProfile>(new QueryDefinition("SELECT * FROM c WHERE c.IsDiscoverable = true")).ReadNextAsync();
-                profiles = seededResponse.Resource.ToList();
+                return TalentSeedProfiles.DefaultProfiles
+                    .Select(CloneProfile)
+                    .ToList();
             }
 
             return profiles;
+        }
+
+        private static TalentProfile CloneProfile(TalentProfile profile)
+        {
+            return new TalentProfile
+            {
+                Id = profile.Id,
+                Name = profile.Name,
+                CompanyName = profile.CompanyName,
+                Email = profile.Email,
+                Role = profile.Role,
+                Location = profile.Location,
+                ProfileSummary = profile.ProfileSummary,
+                Skills = profile.Skills.ToList(),
+                Services = profile.Services.ToList(),
+                HourlyRate = profile.HourlyRate,
+                Availability = profile.Availability,
+                IsVerified = profile.IsVerified,
+                IsDiscoverable = profile.IsDiscoverable,
+                FeaturedRank = profile.FeaturedRank,
+                LastActiveAt = profile.LastActiveAt
+            };
         }
 
         private static bool MatchesText(TalentProfile profile, string? query)

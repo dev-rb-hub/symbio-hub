@@ -75,7 +75,12 @@ namespace Symbio.API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetProjects()
         {
-            var projects = await _projectRepository.GetPublishedProjectsAsync();
+            var projects = (await _projectRepository.GetPublishedProjectsAsync()).ToList();
+            if (projects.Count == 0)
+            {
+                projects = await GetPublishedJobProjectsAsync();
+            }
+
             return Ok(projects);
         }
 
@@ -83,7 +88,12 @@ namespace Symbio.API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetProject(string id)
         {
-            var projects = await _projectRepository.GetPublishedProjectsAsync();
+            var projects = (await _projectRepository.GetPublishedProjectsAsync()).ToList();
+            if (projects.Count == 0)
+            {
+                projects = await GetPublishedJobProjectsAsync();
+            }
+
             var project = projects.FirstOrDefault(p => p.Id == id);
             if (project == null)
             {
@@ -91,6 +101,47 @@ namespace Symbio.API.Controllers
             }
 
             return Ok(project);
+        }
+
+        private async Task<List<ProjectScope>> GetPublishedJobProjectsAsync()
+        {
+            var jobs = await _dbContext.Jobs
+                .Where(job => job.IsPublished)
+                .OrderByDescending(job => job.PostedAt)
+                .Take(20)
+                .ToListAsync();
+
+            return jobs.Select(job => new ProjectScope
+            {
+                Id = $"job-{job.Id}",
+                Title = job.Title,
+                Description = job.Description,
+                Category = "Regional Opportunity",
+                Location = "Regional NSW",
+                Budget = job.Budget,
+                ClientEmail = job.ContactEmail,
+                IsPublished = true,
+                PaymentState = "AwaitingPayment",
+                PostedAt = job.PostedAt,
+                Milestones = new List<ProjectMilestone>
+                {
+                    new ProjectMilestone
+                    {
+                        Title = "Discovery",
+                        Description = "Confirm scope and success metrics with the SME."
+                    },
+                    new ProjectMilestone
+                    {
+                        Title = "Delivery",
+                        Description = "Build and demo the agreed solution increment."
+                    },
+                    new ProjectMilestone
+                    {
+                        Title = "Handover",
+                        Description = "Finalize outcomes and transition to support."
+                    }
+                }
+            }).ToList();
         }
     }
 }
