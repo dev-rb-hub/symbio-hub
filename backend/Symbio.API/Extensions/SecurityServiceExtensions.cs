@@ -15,7 +15,13 @@ namespace Symbio.API.Extensions
             var audience = jwtSection["Audience"];
             var secret = jwtSection["Key"];
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret ?? string.Empty));
+            var hasSigningSecret = !string.IsNullOrWhiteSpace(secret);
+            SymmetricSecurityKey? key = null;
+
+            if (hasSigningSecret)
+            {
+                key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret!));
+            }
 
             services.AddAuthentication(options =>
             {
@@ -32,7 +38,7 @@ namespace Symbio.API.Extensions
                     ValidIssuer = issuer,
                     ValidateAudience = !string.IsNullOrEmpty(audience),
                     ValidAudience = audience,
-                    ValidateIssuerSigningKey = !string.IsNullOrEmpty(secret),
+                    ValidateIssuerSigningKey = hasSigningSecret,
                     IssuerSigningKey = key,
                     ValidateLifetime = true,
                     ClockSkew = System.TimeSpan.FromMinutes(5)
