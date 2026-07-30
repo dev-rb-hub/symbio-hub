@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL, apiRequest } from '../lib/apiClient';
+import { PinchRuntimeModePanel, PinchRuntimeModeView } from '../components/payments/PinchRuntimeModePanel';
 
 interface AccountingInvoiceView {
   projectId: string;
@@ -28,6 +29,9 @@ export const SmeDashboardPage: React.FC = () => {
   const [invoices, setInvoices] = useState<AccountingInvoiceView[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [connection, setConnection] = useState<HubConnection | null>(null);
+  const [runtimeMode, setRuntimeMode] = useState<PinchRuntimeModeView | null>(null);
+  const [isRuntimeModeLoading, setIsRuntimeModeLoading] = useState(false);
+  const [hasRuntimeModeError, setHasRuntimeModeError] = useState(false);
 
   const paidCount = useMemo(() => invoices.filter(item => item.invoiceStatus.toLowerCase() === 'paid').length, [invoices]);
 
@@ -37,6 +41,29 @@ export const SmeDashboardPage: React.FC = () => {
     }
 
     let active = true;
+
+    setIsRuntimeModeLoading(true);
+    setHasRuntimeModeError(false);
+
+    apiRequest<PinchRuntimeModeView>('/api/payments/runtime-mode', {
+      token: session.token,
+    })
+      .then(mode => {
+        if (active) {
+          setRuntimeMode(mode);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setRuntimeMode(null);
+          setHasRuntimeModeError(true);
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setIsRuntimeModeLoading(false);
+        }
+      });
 
     const load = async () => {
       try
@@ -101,6 +128,8 @@ export const SmeDashboardPage: React.FC = () => {
       <h1>SME Dashboard</h1>
       <p>Welcome back, {session?.email ?? 'SME user'}.</p>
       <p>Automated accounting engine feed for milestone settlement and invoicing.</p>
+
+      <PinchRuntimeModePanel runtimeMode={runtimeMode} isLoading={isRuntimeModeLoading} hasError={hasRuntimeModeError} />
 
       {error && <div style={{ marginTop: '1rem', color: '#a00' }}>{error}</div>}
 

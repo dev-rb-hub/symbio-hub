@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { apiRequest } from '../lib/apiClient';
 import { PaymentCollectionModal } from '../components/payments/PaymentCollectionModal';
+import { PinchRuntimeModePanel, PinchRuntimeModeView } from '../components/payments/PinchRuntimeModePanel';
 
 interface Milestone {
   title: string;
@@ -12,15 +13,6 @@ interface Milestone {
 interface CreatedProject {
   id: string;
   budget: number;
-}
-
-interface PaymentRuntimeMode {
-  modeLabel: string;
-  environment: string;
-  credentialsConfigured: boolean;
-  usesMockResponses: boolean;
-  portalUrl: string;
-  guidance: string;
 }
 
 export const ProjectWizardPage: React.FC = () => {
@@ -43,19 +35,28 @@ export const ProjectWizardPage: React.FC = () => {
   const [pendingProject, setPendingProject] = useState<CreatedProject | null>(null);
   const [preApprovalSuccess, setPreApprovalSuccess] = useState<{ projectId: string; amount: number; modeLabel: string } | null>(null);
   const [preApprovalError, setPreApprovalError] = useState<string | null>(null);
-  const [runtimeMode, setRuntimeMode] = useState<PaymentRuntimeMode | null>(null);
+  const [runtimeMode, setRuntimeMode] = useState<PinchRuntimeModeView | null>(null);
+  const [isRuntimeModeLoading, setIsRuntimeModeLoading] = useState(false);
+  const [hasRuntimeModeError, setHasRuntimeModeError] = useState(false);
 
   useEffect(() => {
     if (!session) {
       return;
     }
 
-    apiRequest<PaymentRuntimeMode>('/api/payments/runtime-mode', {
+    setIsRuntimeModeLoading(true);
+    setHasRuntimeModeError(false);
+
+    apiRequest<PinchRuntimeModeView>('/api/payments/runtime-mode', {
       token: session.token,
     })
       .then(mode => setRuntimeMode(mode))
       .catch(() => {
         setRuntimeMode(null);
+        setHasRuntimeModeError(true);
+      })
+      .finally(() => {
+        setIsRuntimeModeLoading(false);
       });
   }, [session]);
 
@@ -215,6 +216,8 @@ export const ProjectWizardPage: React.FC = () => {
           Projects at or above {Number(5000).toLocaleString('en-AU', { style: 'currency', currency: 'AUD' })} require a pre-approval capture step before milestone kickoff.
         </section>
       )}
+
+      <PinchRuntimeModePanel runtimeMode={runtimeMode} isLoading={isRuntimeModeLoading} hasError={hasRuntimeModeError} />
 
       <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '1rem', marginTop: '1.5rem' }}>
         <label>
