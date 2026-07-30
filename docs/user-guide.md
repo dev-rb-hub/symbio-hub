@@ -22,10 +22,11 @@ This guide gives a practical walkthrough of the Symbio Hub demo flows for each r
 2. Complete trust onboarding at `/onboarding` if your session is newly seeded.
 3. Open `/project/new` and complete the scope form.
 4. Publish the project and complete payment pre-approval when prompted.
-5. Open `/billing/control-center` to review recurring billing controls.
-6. Open `/sme/dashboard` to review invoice and payment state updates.
-7. Visit `/talent/discovery` to inspect available experts.
-8. Use `/profile` to verify role and account details.
+5. Check the Pinch runtime mode panel (Mock, Sandbox, or Live) on the project flow before confirming payment actions.
+6. Open `/billing/control-center` to review recurring billing controls and confirm the same runtime mode context.
+7. Open `/sme/dashboard` to review invoice/payment state updates and verify runtime mode visibility there.
+8. Visit `/talent/discovery` to inspect available experts.
+9. Use `/profile` to verify role and account details.
 
 ## Expert Flow
 
@@ -48,9 +49,11 @@ This guide gives a practical walkthrough of the Symbio Hub demo flows for each r
 
 ## Demo Notes
 
-- Payment mode is shown in pre-approval flows as Mock, Sandbox, or Live.
+- Pinch runtime mode is visible on key SME payment surfaces: project pre-approval, recurring billing control center, and SME dashboard.
+- Modes are shown as Mock, Sandbox, or Live, with credential status and response type context.
 - In Mock mode, payment and settlement responses are simulated.
 - Live financial behavior requires configured Pinch credentials.
+- If runtime mode cannot be loaded, pages show a non-blocking warning so demo flow can continue.
 
 ## Troubleshooting
 
