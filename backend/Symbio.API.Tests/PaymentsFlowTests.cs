@@ -86,4 +86,23 @@ public class PaymentsFlowTests : IClassFixture<ApiTestFactory>
         Assert.False(string.IsNullOrWhiteSpace(body.RootElement.GetProperty("baseUri").GetString()));
         Assert.False(string.IsNullOrWhiteSpace(body.RootElement.GetProperty("authUri").GetString()));
     }
+
+    [Fact]
+    public async Task RuntimeMode_Reports_Test_Mode_And_Visibility_Fields()
+    {
+        using var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Add("X-Test-Email", "expert@example.com");
+        client.DefaultRequestHeaders.Add("X-Test-Role", "Expert");
+
+        var response = await client.GetAsync("/api/payments/runtime-mode");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        using var body = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        Assert.Equal("Test", body.RootElement.GetProperty("modeLabel").GetString());
+        Assert.False(body.RootElement.GetProperty("isLive").GetBoolean());
+        Assert.False(body.RootElement.GetProperty("usesMockResponses").GetBoolean());
+        Assert.True(body.RootElement.GetProperty("credentialsConfigured").GetBoolean());
+        Assert.False(string.IsNullOrWhiteSpace(body.RootElement.GetProperty("guidance").GetString()));
+    }
 }
