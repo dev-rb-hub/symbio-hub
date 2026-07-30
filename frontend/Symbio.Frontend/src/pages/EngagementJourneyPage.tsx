@@ -15,6 +15,7 @@ const journeyStages: JourneyStage[] = [
   { title: 'Onboard', summary: 'Complete trust profile, confirm identity, and establish who is allowed to operate in the workspace.', actionLabel: 'Trust onboarding', actionHref: '/onboarding' },
   { title: 'Scope', summary: 'Write the project brief, set milestones, and publish a clear engagement boundary.', actionLabel: 'Post project', actionHref: '/project/new' },
   { title: 'Match', summary: 'Shortlist experts by skill and location before moving into negotiation and acceptance.', actionLabel: 'Find talent', actionHref: '/talent/discovery' },
+  { title: 'Agree', summary: 'Review and explicitly approve agreement terms and debit authority before milestone settlement.', actionLabel: 'Review agreement', actionHref: '/agreement' },
   { title: 'Deliver', summary: 'Use the expert workbench to post progress, validate milestones, and keep visibility aligned.', actionLabel: 'Open workbench', actionHref: '/expert/workbench' },
   { title: 'Settle', summary: 'Track runtime mode, escrow readiness, payment state, and closeout reporting in one place.', actionLabel: 'SME dashboard', actionHref: '/sme/dashboard' },
 ];
@@ -56,8 +57,10 @@ export const EngagementJourneyPage: React.FC = () => {
   const nextStep = session?.role === 'Expert'
     ? { label: 'Open escrow onboarding', href: '/escrow/onboarding' }
     : session?.role === 'Admin'
-      ? { label: 'Open control center', href: '/admin/control' }
-      : { label: 'Start project brief', href: '/project/new' };
+      ? { label: 'Open agreement review', href: '/agreement' }
+      : projectId
+        ? { label: 'Review agreement', href: `/agreement?projectId=${encodeURIComponent(projectId)}&milestoneId=Kickoff` }
+        : { label: 'Start project brief', href: '/project/new' };
 
   return (
     <main className="symbio-page-main">
@@ -148,6 +151,7 @@ export const EngagementJourneyPage: React.FC = () => {
           <div style={{ display: 'flex', gap: '0.55rem', flexWrap: 'wrap' }}>
             <Link to="/project/new" style={{ textDecoration: 'none', padding: '0.5rem 0.75rem', borderRadius: 10, background: '#0f9d58', color: '#fff', fontWeight: 700 }}>Project wizard</Link>
             <Link to="/talent/discovery" style={{ textDecoration: 'none', padding: '0.5rem 0.75rem', borderRadius: 10, border: '1px solid #cfd9e6', color: '#0a3f66', fontWeight: 700 }}>Talent discovery</Link>
+            <Link to={projectId ? `/agreement?projectId=${encodeURIComponent(projectId)}&milestoneId=Kickoff` : '/agreement'} style={{ textDecoration: 'none', padding: '0.5rem 0.75rem', borderRadius: 10, border: '1px solid #cfd9e6', color: '#0a3f66', fontWeight: 700 }}>Agreement</Link>
           </div>
         </article>
 

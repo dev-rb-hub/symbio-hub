@@ -45,7 +45,7 @@ interface EscrowStatus {
 }
 
 export const ExpertWorkbenchPage: React.FC = () => {
-  const { session, logout } = useAuth();
+  const { session } = useAuth();
   const [overview, setOverview] = useState<WorkbenchOverview | null>(null);
   const [selectedAssignmentId, setSelectedAssignmentId] = useState<number | ''>('');
   const [updateMessage, setUpdateMessage] = useState('');
@@ -365,10 +365,6 @@ export const ExpertWorkbenchPage: React.FC = () => {
           </section>
         </aside>
       </section>
-
-      <button onClick={logout} style={{ marginTop: '1.5rem', padding: '0.85rem 1.25rem', background: '#c72c41', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer' }}>
-        Logout
-      </button>
     </main>
   );
 };

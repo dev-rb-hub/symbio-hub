@@ -22,9 +22,31 @@ namespace Symbio.API.Data
         public DbSet<RetainerContractRecord> RetainerContracts { get; set; } = null!;
         public DbSet<RetainerUsageRecord> RetainerUsages { get; set; } = null!;
         public DbSet<RetainerChargeRecord> RetainerCharges { get; set; } = null!;
+        public DbSet<AgreementRecord> Agreements { get; set; } = null!;
         public DbSet<AdminProjectFlagRecord> AdminProjectFlagRecords { get; set; } = null!;
         public DbSet<AdminUserComplianceRecord> AdminUserComplianceRecords { get; set; } = null!;
         public DbSet<AdminSafetySettingRecord> AdminSafetySettings { get; set; } = null!;
         public DbSet<AdminAuditLogRecord> AdminAuditLogs { get; set; } = null!;
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<AgreementRecord>()
+                .HasIndex(item => item.ProjectId)
+                .IsUnique();
+
+            modelBuilder.Entity<AgreementRecord>()
+                .HasOne(item => item.SmeUser)
+                .WithMany()
+                .HasForeignKey(item => item.SmeUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AgreementRecord>()
+                .HasOne(item => item.ExpertUser)
+                .WithMany()
+                .HasForeignKey(item => item.ExpertUserId)
+                .OnDelete(DeleteBehavior.SetNull);
+        }
     }
 }

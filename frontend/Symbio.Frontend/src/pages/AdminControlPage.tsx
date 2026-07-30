@@ -59,17 +59,18 @@ type SafetySetting = {
   updatedAtUtc: string;
 };
 
-type AdminSection = 'overview' | 'telemetry' | 'compliance' | 'safety';
+type AdminSection = 'overview' | 'telemetry' | 'compliance' | 'agreements' | 'safety';
 
 const sectionDescriptions: Record<AdminSection, string> = {
   overview: 'Cross-section snapshot for telemetry, compliance workload, and safety overrides.',
   telemetry: 'Platform health indicators and identity/onboarding completion rates.',
   compliance: 'Pending compliance reviews and open project flags requiring action.',
+  agreements: 'Global agreement records for relationship correction and status governance.',
   safety: 'Operational safety settings and override controls.',
 };
 
 export const AdminControlPage: React.FC = () => {
-  const { session, logout } = useAuth();
+  const { session } = useAuth();
   const location = useLocation();
 
   const [telemetry, setTelemetry] = useState<TelemetryResponse | null>(null);
@@ -92,6 +93,9 @@ export const AdminControlPage: React.FC = () => {
     }
     if (location.pathname.includes('/compliance')) {
       return 'compliance';
+    }
+    if (location.pathname.includes('/agreements')) {
+      return 'agreements';
     }
     if (location.pathname.includes('/safety')) {
       return 'safety';
@@ -169,6 +173,10 @@ export const AdminControlPage: React.FC = () => {
 
     if (activeSection === 'compliance') {
       await loadQueue();
+      return;
+    }
+
+    if (activeSection === 'agreements') {
       return;
     }
 
@@ -256,9 +264,6 @@ export const AdminControlPage: React.FC = () => {
             <h1 className="symbio-page-title symbio-page-title--dark" style={{ marginBottom: '0.25rem' }}>Admin Dashboard</h1>
             <p style={{ margin: 0, color: '#d8f4ff' }}>Welcome back, {session?.email ?? 'Admin'}.</p>
           </div>
-          <button onClick={logout} style={{ padding: '0.65rem 1rem', background: '#c72c41', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer' }}>
-            Logout
-          </button>
         </div>
 
         <div style={{ marginTop: '0.85rem', display: 'flex', gap: '0.55rem', flexWrap: 'wrap' }}>
@@ -285,6 +290,7 @@ export const AdminControlPage: React.FC = () => {
             </span>
           )}
         </Link>
+        <Link to="/admin/agreements" style={navLinkStyle('agreements')}>Agreements</Link>
         <Link to="/admin/safety" style={navLinkStyle('safety')}>
           Safety Overrides
           {safetySignal > 0 && (
@@ -328,6 +334,12 @@ export const AdminControlPage: React.FC = () => {
             <h2 style={{ margin: 0, fontSize: '1rem' }}>Safety focus</h2>
             <p style={{ margin: '0.45rem 0 0', color: '#5f6a7d' }}>Configured overrides: {settings.length}</p>
             <Link to="/admin/safety" style={{ display: 'inline-block', marginTop: '0.6rem' }}>Open safety overrides</Link>
+          </article>
+
+          <article style={{ border: '1px solid #d7dde8', borderRadius: 10, padding: '0.9rem', background: '#fff' }}>
+            <h2 style={{ margin: 0, fontSize: '1rem' }}>Agreement focus</h2>
+            <p style={{ margin: '0.45rem 0 0', color: '#5f6a7d' }}>Manage project-level agreement status and party relationships.</p>
+            <Link to="/admin/agreements" style={{ display: 'inline-block', marginTop: '0.6rem' }}>Open agreements manager</Link>
           </article>
         </section>
       )}

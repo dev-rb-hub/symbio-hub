@@ -26,7 +26,7 @@ interface AccountingInvoiceFeed {
 }
 
 export const SmeDashboardPage: React.FC = () => {
-  const { session, logout } = useAuth();
+  const { session } = useAuth();
   const [invoices, setInvoices] = useState<AccountingInvoiceView[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [connection, setConnection] = useState<HubConnection | null>(null);
@@ -207,10 +207,6 @@ export const SmeDashboardPage: React.FC = () => {
           );
         })}
       </section>
-
-      <button onClick={logout} style={{ marginTop: '1.4rem', padding: '0.85rem 1.25rem', background: '#c72c41', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer' }}>
-        Logout
-      </button>
     </main>
   );
 };

@@ -14,7 +14,7 @@ interface ProfileData {
 }
 
 export const TrustOnboardingPage: React.FC = () => {
-  const { session, logout } = useAuth();
+  const { session } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [companyName, setCompanyName] = useState('');
@@ -126,10 +126,6 @@ export const TrustOnboardingPage: React.FC = () => {
           <p><strong>Onboarded:</strong> {profile.onboardedAt ?? 'Pending'}</p>
         </section>
       )}
-
-      <button onClick={logout} style={{ marginTop: '1.5rem', padding: '0.85rem 1.25rem', background: '#f1f3f6', color: '#111', border: '1px solid #d6d9dd', borderRadius: 8 }}>
-        Log out
-      </button>
     </main>
   );
 };

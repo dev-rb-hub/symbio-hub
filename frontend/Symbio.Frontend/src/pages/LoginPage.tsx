@@ -3,6 +3,51 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth, UserRole } from '../context/AuthContext';
 import { apiRequest } from '../lib/apiClient';
 
+const getDefaultRouteForRole = (role: UserRole): string => {
+  switch (role) {
+    case 'SME':
+      return '/sme/dashboard';
+    case 'Expert':
+      return '/expert/dashboard';
+    case 'Admin':
+      return '/admin/control';
+    default:
+      return '/';
+  }
+};
+
+const canRoleAccessPath = (role: UserRole, path: string): boolean => {
+  if (!path || path === '/') {
+    return true;
+  }
+
+  if (path.startsWith('/sme/')) {
+    return role === 'SME';
+  }
+
+  if (path.startsWith('/expert/')) {
+    return role === 'Expert';
+  }
+
+  if (path.startsWith('/admin/')) {
+    return role === 'Admin';
+  }
+
+  if (path === '/talent/discovery' || path === '/project/new' || path === '/billing/control-center') {
+    return role === 'SME';
+  }
+
+  if (path === '/escrow/onboarding') {
+    return role === 'Expert';
+  }
+
+  if (path === '/onboarding' || path === '/profile' || path === '/agreement') {
+    return role === 'SME' || role === 'Expert' || role === 'Admin';
+  }
+
+  return true;
+};
+
 export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('password123');
@@ -21,18 +66,47 @@ export const LoginPage: React.FC = () => {
 
     try
     {
-      const result = await apiRequest<{ token: string; role?: UserRole }>('/api/auth/register', {
-        method: 'POST',
-        body: { email, password, role },
-      });
+      let result: { token: string; role?: UserRole };
 
-      login(result.token, result.role || role, email);
-      navigate(from, { replace: true });
+      try {
+        result = await apiRequest<{ token: string; role?: UserRole }>('/api/auth/login', {
+          method: 'POST',
+          body: { email, password },
+        });
+      } catch (loginError) {
+        if (!(loginError instanceof Error) || !loginError.message.includes('401')) {
+          throw loginError;
+        }
+
+        result = await apiRequest<{ token: string; role?: UserRole }>('/api/auth/register', {
+          method: 'POST',
+          body: { email, password, role },
+        });
+      }
+
+      const authenticatedRole = result.role || role;
+
+      // Prevent silent role drift when an email is already tied to a different SME/Expert role.
+      if ((authenticatedRole === 'SME' || authenticatedRole === 'Expert') && authenticatedRole !== role) {
+        setError(`This account is registered as ${authenticatedRole}. Switch the role selector to ${authenticatedRole} or use a different email.`);
+        setIsSubmitting(false);
+        return;
+      }
+
+      login(result.token, authenticatedRole, email);
+
+      const nextPath = canRoleAccessPath(authenticatedRole, from)
+        ? from
+        : getDefaultRouteForRole(authenticatedRole);
+
+      navigate(nextPath, { replace: true });
     }
     catch (requestError)
     {
       if (requestError instanceof Error && requestError.message.includes('403')) {
         setError('Admin accounts cannot self-register. Use a seeded admin account for operations access.');
+      } else if (requestError instanceof Error && requestError.message.includes('409')) {
+        setError('This email is already tied to a different role. Use the correct role for this account or register with a different email.');
       } else {
         setError('Unable to sign in or register.');
       }
