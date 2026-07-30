@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -18,6 +19,22 @@ public class ApiTestFactory : WebApplicationFactory<Program>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Development");
+
+        builder.ConfigureAppConfiguration((_, configBuilder) =>
+        {
+            var testSettings = new Dictionary<string, string?>
+            {
+                ["Jwt:Key"] = "test-jwt-signing-key-1234567890",
+                ["Pinch:MerchantId"] = string.Empty,
+                ["Pinch:ApplicationId"] = string.Empty,
+                ["Pinch:SecretKey"] = string.Empty,
+                ["Pinch:ApiKey"] = string.Empty,
+                ["Pinch:ApiSecret"] = string.Empty,
+                ["Pinch:ValidateWebhookSignature"] = "false"
+            };
+
+            configBuilder.AddInMemoryCollection(testSettings);
+        });
 
         builder.ConfigureServices(services =>
         {
