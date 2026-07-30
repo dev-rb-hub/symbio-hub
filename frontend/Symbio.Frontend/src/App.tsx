@@ -9,6 +9,7 @@ import { SmeDashboardPage } from './pages/SmeDashboardPage';
 import { ExpertDashboardPage } from './pages/ExpertDashboardPage';
 import { ExpertWorkbenchPage } from './pages/ExpertWorkbenchPage';
 import { AdminControlPage } from './pages/AdminControlPage';
+import { AdminAgreementsPage } from './pages/AdminAgreementsPage';
 import { TrustOnboardingPage } from './pages/TrustOnboardingPage';
 import { UserProfilePage } from './pages/UserProfilePage';
 import { ProjectWizardPage } from './pages/ProjectWizardPage';
@@ -17,6 +18,7 @@ import { TalentDiscoveryPage } from './pages/TalentDiscoveryPage';
 import { EscrowOnboardingPage } from './pages/EscrowOnboardingPage';
 import { RecurringBillingControlCenterPage } from './pages/RecurringBillingControlCenterPage';
 import { EngagementJourneyPage } from './pages/EngagementJourneyPage';
+import { AgreementApprovalPage } from './pages/AgreementApprovalPage';
 import { PublicRouteGuard } from './components/routing/PublicRouteGuard';
 import { ProtectedRoute } from './components/routing/ProtectedRoute';
 import { RoleGuard } from './components/routing/RoleGuard';
@@ -30,6 +32,7 @@ const App: React.FC = () => (
       <Route path="/jobs" element={<PublicJobs />} />
       <Route path="/marketplace" element={<MarketplacePage />} />
       <Route path="/journey" element={<EngagementJourneyPage />} />
+      <Route path="/agreement" element={<ProtectedRoute allowedRoles={['SME', 'Expert', 'Admin']}><AgreementApprovalPage /></ProtectedRoute>} />
       <Route path="/talent/discovery" element={<ProtectedRoute allowedRoles={['SME']}><TalentDiscoveryPage /></ProtectedRoute>} />
       <Route path="/project/new" element={<ProtectedRoute allowedRoles={['SME']}><ProjectWizardPage /></ProtectedRoute>} />
       <Route path="/billing/control-center" element={<ProtectedRoute allowedRoles={['SME']}><RecurringBillingControlCenterPage /></ProtectedRoute>} />
@@ -42,6 +45,7 @@ const App: React.FC = () => (
       <Route path="/expert/dashboard" element={<RoleGuard role="Expert"><ExpertDashboardPage /></RoleGuard>} />
       <Route path="/expert/workbench" element={<RoleGuard role="Expert"><ExpertWorkbenchPage /></RoleGuard>} />
       <Route path="/admin/control" element={<RoleGuard role="Admin"><AdminControlPage /></RoleGuard>} />
+      <Route path="/admin/agreements" element={<RoleGuard role="Admin"><AdminAgreementsPage /></RoleGuard>} />
       <Route path="/admin/telemetry" element={<RoleGuard role="Admin"><AdminControlPage /></RoleGuard>} />
       <Route path="/admin/compliance" element={<RoleGuard role="Admin"><AdminControlPage /></RoleGuard>} />
       <Route path="/admin/safety" element={<RoleGuard role="Admin"><AdminControlPage /></RoleGuard>} />

@@ -51,6 +51,15 @@ namespace Symbio.API.Controllers
                     return Unauthorized();
                 }
 
+                if (!string.Equals(user.Role, request.Role, StringComparison.OrdinalIgnoreCase))
+                {
+                    return Conflict(new
+                    {
+                        message = $"This email is already registered as {user.Role}. Sign in with the existing role account or use a different email for {request.Role}.",
+                        existingRole = user.Role
+                    });
+                }
+
                 return Ok(new { token = GenerateJwtToken(user), role = user.Role });
             }
 

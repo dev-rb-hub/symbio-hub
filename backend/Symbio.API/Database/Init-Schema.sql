@@ -207,11 +207,39 @@ CREATE TABLE IF NOT EXISTS AdminAuditLogs (
     CreatedAtUtc TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS Agreements (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ProjectId TEXT NOT NULL UNIQUE,
+    ProjectTitle TEXT NOT NULL,
+    MilestoneId TEXT NOT NULL,
+    SmeUserId INTEGER NOT NULL,
+    ExpertUserId INTEGER NULL,
+    SmeEmail TEXT NOT NULL,
+    ExpertEmail TEXT,
+    Amount REAL NOT NULL,
+    Currency TEXT NOT NULL,
+    Status TEXT NOT NULL,
+    SmeApprovedAtUtc TEXT,
+    ExpertApprovedAtUtc TEXT,
+    ClosedAtUtc TEXT,
+    LastUpdatedByUserId INTEGER,
+    UpdatedAtUtc TEXT NOT NULL,
+    FOREIGN KEY (SmeUserId) REFERENCES Users(Id),
+    FOREIGN KEY (ExpertUserId) REFERENCES Users(Id)
+);
+
+CREATE INDEX IF NOT EXISTS IX_Agreements_SmeUserId ON Agreements (SmeUserId);
+CREATE INDEX IF NOT EXISTS IX_Agreements_ExpertUserId ON Agreements (ExpertUserId);
+CREATE INDEX IF NOT EXISTS IX_Agreements_Status ON Agreements (Status);
+
 INSERT INTO Jobs (Title, Description, ClientName, ClientSurname, Budget, ContactEmail, IsPublished, PostedAt)
 VALUES
 ('Regional Retail Website Refresh', 'Build a mobile-first homepage and checkout experience for a small NSW retail brand.', 'Harper', 'Bright', 9500.00, 'contact@harperbright.com', 1, '2026-07-19T00:00:00Z'),
 ('Local Healthcare Data Dashboard', 'Create a lightweight reporting dashboard for a regional practice using anonymised patient metrics.', 'Jade', 'Taylor', 14500.00, 'jade.taylor@coastalhealth.au', 1, '2026-07-12T00:00:00Z'),
-('Food Delivery Loyalty Campaign', 'Design and build a customer loyalty landing page with signup flow and campaign analytics.', 'Miles', 'Kerr', 7200.00, 'miles@harvestdeli.au', 1, '2026-07-22T00:00:00Z');
+('Food Delivery Loyalty Campaign', 'Design and build a customer loyalty landing page with signup flow and campaign analytics.', 'Miles', 'Kerr', 7200.00, 'miles@harvestdeli.au', 1, '2026-07-22T00:00:00Z'),
+('Tourism Booking Flow Modernisation', 'Improve online bookings for a regional tourism operator with a conversion-focused UX refresh.', 'Elena', 'Morris', 11800.00, 'elena@seacoasttours.au', 1, '2026-07-17T00:00:00Z'),
+('Trades Dispatch Automation MVP', 'Build an MVP to automate quote-to-dispatch workflows for a local electrical services business.', 'Noah', 'Bennett', 16250.00, 'ops@bennettsparky.au', 1, '2026-07-15T00:00:00Z'),
+('NFP Volunteer Portal Upgrade', 'Create a lighter onboarding and rostering experience for a community not-for-profit volunteer team.', 'Priya', 'Singh', 6800.00, 'hello@rivercare.org.au', 1, '2026-07-21T00:00:00Z');
 
 INSERT INTO DeliveryAssignments (ExpertEmail, ProjectTitle, ClientName, Category, ScopeSummary, CurrentMilestone, Status, ProgressPercent, Priority, DueDate, IsActive, UpdatedAt)
 VALUES
@@ -252,3 +280,7 @@ INSERT INTO AdminSafetySettings (SettingKey, SettingValue, UpdatedByEmail, Updat
 VALUES
 ('payments.settlement.autoReleaseEnabled', 'false', 'admin@example.com', '2026-07-24T20:00:00Z'),
 ('compliance.maxOpenFlagsBeforeEscalation', '5', 'admin@example.com', '2026-07-25T00:00:00Z');
+
+INSERT INTO Agreements (ProjectId, ProjectTitle, MilestoneId, SmeUserId, ExpertUserId, SmeEmail, ExpertEmail, Amount, Currency, Status, SmeApprovedAtUtc, ExpertApprovedAtUtc, ClosedAtUtc, LastUpdatedByUserId, UpdatedAtUtc)
+VALUES
+('demo-project-epic7-1', 'Regional Retail Website Refresh', 'Kickoff', 1, 2, 'sme@example.com', 'expert@example.com', 9500.00, 'AUD', 'PendingApproval', NULL, NULL, NULL, 3, '2026-07-25T08:00:00Z');

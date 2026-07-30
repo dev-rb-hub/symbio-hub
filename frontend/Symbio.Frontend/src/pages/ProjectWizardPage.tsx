@@ -118,7 +118,7 @@ export const ProjectWizardPage: React.FC = () => {
     setIsSubmitting(false);
 
     if (createdProject) {
-      navigate(`/journey?projectId=${encodeURIComponent(createdProject.id)}&stage=published`);
+      navigate(`/agreement?projectId=${encodeURIComponent(createdProject.id)}&projectTitle=${encodeURIComponent(title.trim() || 'New project')}&milestoneId=${encodeURIComponent(milestones[0]?.title || 'Kickoff')}&amount=${encodeURIComponent(String(budget))}&currency=AUD`);
     }
   };
 
@@ -195,10 +195,10 @@ export const ProjectWizardPage: React.FC = () => {
               style={{ padding: '0.7rem 0.95rem', borderRadius: 8, border: 'none', background: '#0f9d58', color: '#fff', cursor: 'pointer' }}
               onClick={() => {
                 setPreApprovalSuccess(null);
-                navigate(`/journey?projectId=${encodeURIComponent(preApprovalSuccess.projectId)}&stage=pre-approved`);
+                navigate(`/agreement?projectId=${encodeURIComponent(preApprovalSuccess.projectId)}&projectTitle=${encodeURIComponent(title.trim() || 'New project')}&milestoneId=${encodeURIComponent(milestones[0]?.title || 'Kickoff')}&amount=${encodeURIComponent(String(preApprovalSuccess.amount))}&currency=AUD`);
               }}
             >
-              Open engagement journey
+              Review agreement
             </button>
             <button
               type="button"

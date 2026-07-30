@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { decodeRoleFromToken, useAuth } from '../context/AuthContext';
 import symbioLogo from '../assets/images/Symbio-hub.png';
 
 type DashboardMenuItem = {
@@ -24,13 +24,16 @@ const isDashboardMenuItemActive = (href: string, pathname: string, hash: string)
 export const NavigationBar: React.FC = () => {
   const { session, logout } = useAuth();
   const location = useLocation();
-  const isExpertDashboard = session?.role === 'Expert' && location.pathname === '/expert/dashboard';
-  const isSmeDashboard = session?.role === 'SME' && location.pathname === '/sme/dashboard';
-  const isAdminDashboard = session?.role === 'Admin'
+  const navigate = useNavigate();
+  const role = session?.token ? decodeRoleFromToken(session.token) ?? session.role : session?.role;
+  const isExpertDashboard = role === 'Expert' && location.pathname === '/expert/dashboard';
+  const isSmeDashboard = role === 'SME' && location.pathname === '/sme/dashboard';
+  const isAdminDashboard = role === 'Admin'
     && (
       location.pathname === '/admin/control'
       || location.pathname === '/admin/telemetry'
       || location.pathname === '/admin/compliance'
+      || location.pathname === '/admin/agreements'
       || location.pathname === '/admin/safety'
     );
 
@@ -57,6 +60,7 @@ export const NavigationBar: React.FC = () => {
             { label: 'Overview', href: '/admin/control#admin-overview' },
             { label: 'Telemetry', href: '/admin/telemetry#admin-telemetry' },
             { label: 'Compliance', href: '/admin/compliance#admin-compliance' },
+            { label: 'Agreements', href: '/admin/agreements#admin-agreements' },
             { label: 'Safety', href: '/admin/safety#admin-safety' },
           ]
         : [];
@@ -71,6 +75,11 @@ export const NavigationBar: React.FC = () => {
 
     setIsDashboardMenuOpen(true);
   }, [showDashboardMenu]);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login', { replace: true });
+  };
 
   return (
     <nav className="symbio-nav">
@@ -114,47 +123,70 @@ export const NavigationBar: React.FC = () => {
         <Link to="/marketplace" className="symbio-link">Marketplace</Link>
         <Link to="/journey" className="symbio-link">Journey</Link>
         {session && <span className="symbio-role-spacer" aria-hidden="true" />}
-        {session && session.role === 'SME' && (
+        {role === 'SME' && (
           <Link to="/sme/dashboard" className="symbio-link symbio-link-role">SME Dashboard</Link>
         )}
-        {session && session.role === 'Expert' && (
+        {role === 'Expert' && (
           <Link to="/expert/dashboard" className="symbio-link symbio-link-role">Expert Dashboard</Link>
         )}
-        {session && session.role === 'Admin' && (
+        {role === 'Admin' && (
           <Link to="/admin/control" className="symbio-link symbio-link-role">Admin Dashboard</Link>
         )}
-        {session && session.role === 'SME' && (
+        {role === 'SME' && (
           <Link to="/talent/discovery" className="symbio-link symbio-link-role">Talent discovery</Link>
         )}
-        {session && session.role === 'Expert' && (
+        {role === 'Expert' && (
           <Link to="/expert/workbench" className="symbio-link symbio-link-role">Workbench</Link>
         )}
-        {session && session.role === 'Expert' && (
+        {role === 'Expert' && (
           <Link to="/escrow/onboarding" className="symbio-link symbio-link-role">Escrow onboarding</Link>
         )}
-        {session && session.role === 'SME' && (
+        {role === 'SME' && (
           <Link to="/project/new" className="symbio-link symbio-link-role">Post a Project</Link>
         )}
-        {session && session.role === 'SME' && (
+        {role === 'SME' && (
           <Link to="/billing/control-center" className="symbio-link symbio-link-role">Recurring Billing</Link>
         )}
-        {session && session.role === 'Admin' && (
+        {session && (
+          <Link to="/agreement" className="symbio-link symbio-link-role">Agreement</Link>
+        )}
+        {role === 'Admin' && (
           <Link to="/admin/telemetry" className="symbio-link symbio-link-role">Telemetry</Link>
         )}
-        {session && session.role === 'Admin' && (
+        {role === 'Admin' && (
           <Link to="/admin/compliance" className="symbio-link symbio-link-role">Compliance Queue</Link>
         )}
-        {session && session.role === 'Admin' && (
+        {role === 'Admin' && (
+          <Link to="/admin/agreements" className="symbio-link symbio-link-role">Agreements</Link>
+        )}
+        {role === 'Admin' && (
           <Link to="/admin/safety" className="symbio-link symbio-link-role">Safety Overrides</Link>
         )}
-        {session && (session.role === 'SME' || session.role === 'Expert') && <Link to="/onboarding" className="symbio-link symbio-link-role">Trust onboarding</Link>}
-        {session && <Link to="/settings" className="symbio-link symbio-link-role">Settings</Link>}
+        {(role === 'SME' || role === 'Expert') && <Link to="/onboarding" className="symbio-link symbio-link-role">Trust onboarding</Link>}
+        {(role === 'SME' || role === 'Expert') && <Link to="/profile" className="symbio-link symbio-link-role">Profile</Link>}
+        {role === 'Admin' && <Link to="/settings" className="symbio-link symbio-link-role">Settings</Link>}
       </div>
       <div className="symbio-nav-account">
         {session ? (
           <>
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '0.25rem 0.55rem',
+                borderRadius: 999,
+                background: role === 'Admin' ? '#1f3b57' : role === 'Expert' ? '#0b6e4f' : '#0f5ea8',
+                color: '#fff',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                letterSpacing: '0.02em',
+                textTransform: 'uppercase'
+              }}
+            >
+              Role: {role ?? 'Unknown'}
+            </span>
             <span className="symbio-user-email">{session.email}</span>
-            <button onClick={logout} className="symbio-logout-button">
+            <button onClick={handleLogout} className="symbio-logout-button">
               Log out
             </button>
           </>

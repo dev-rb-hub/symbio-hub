@@ -63,6 +63,26 @@ public class ApiTestFactory : WebApplicationFactory<Program>
                 db.Users.AddRange(
                     new User
                     {
+                        Email = "sme@example.com",
+                        PasswordHash = SeedData.HashPassword("password123"),
+                        Role = "SME",
+                        IsActive = true,
+                        CreatedAt = DateTime.UtcNow,
+                        OnboardingCompleted = true,
+                        OnboardedAt = DateTime.UtcNow
+                    },
+                    new User
+                    {
+                        Email = "sme-two@example.com",
+                        PasswordHash = SeedData.HashPassword("password123"),
+                        Role = "SME",
+                        IsActive = true,
+                        CreatedAt = DateTime.UtcNow,
+                        OnboardingCompleted = true,
+                        OnboardedAt = DateTime.UtcNow
+                    },
+                    new User
+                    {
                         Email = "expert@example.com",
                         PasswordHash = SeedData.HashPassword("password123"),
                         Role = "Expert",

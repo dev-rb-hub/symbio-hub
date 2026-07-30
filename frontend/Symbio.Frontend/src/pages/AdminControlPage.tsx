@@ -59,12 +59,13 @@ type SafetySetting = {
   updatedAtUtc: string;
 };
 
-type AdminSection = 'overview' | 'telemetry' | 'compliance' | 'safety';
+type AdminSection = 'overview' | 'telemetry' | 'compliance' | 'agreements' | 'safety';
 
 const sectionDescriptions: Record<AdminSection, string> = {
   overview: 'Cross-section snapshot for telemetry, compliance workload, and safety overrides.',
   telemetry: 'Platform health indicators and identity/onboarding completion rates.',
   compliance: 'Pending compliance reviews and open project flags requiring action.',
+  agreements: 'Global agreement records for relationship correction and status governance.',
   safety: 'Operational safety settings and override controls.',
 };
 
@@ -92,6 +93,9 @@ export const AdminControlPage: React.FC = () => {
     }
     if (location.pathname.includes('/compliance')) {
       return 'compliance';
+    }
+    if (location.pathname.includes('/agreements')) {
+      return 'agreements';
     }
     if (location.pathname.includes('/safety')) {
       return 'safety';
@@ -169,6 +173,10 @@ export const AdminControlPage: React.FC = () => {
 
     if (activeSection === 'compliance') {
       await loadQueue();
+      return;
+    }
+
+    if (activeSection === 'agreements') {
       return;
     }
 
@@ -285,6 +293,7 @@ export const AdminControlPage: React.FC = () => {
             </span>
           )}
         </Link>
+        <Link to="/admin/agreements" style={navLinkStyle('agreements')}>Agreements</Link>
         <Link to="/admin/safety" style={navLinkStyle('safety')}>
           Safety Overrides
           {safetySignal > 0 && (
@@ -328,6 +337,12 @@ export const AdminControlPage: React.FC = () => {
             <h2 style={{ margin: 0, fontSize: '1rem' }}>Safety focus</h2>
             <p style={{ margin: '0.45rem 0 0', color: '#5f6a7d' }}>Configured overrides: {settings.length}</p>
             <Link to="/admin/safety" style={{ display: 'inline-block', marginTop: '0.6rem' }}>Open safety overrides</Link>
+          </article>
+
+          <article style={{ border: '1px solid #d7dde8', borderRadius: 10, padding: '0.9rem', background: '#fff' }}>
+            <h2 style={{ margin: 0, fontSize: '1rem' }}>Agreement focus</h2>
+            <p style={{ margin: '0.45rem 0 0', color: '#5f6a7d' }}>Manage project-level agreement status and party relationships.</p>
+            <Link to="/admin/agreements" style={{ display: 'inline-block', marginTop: '0.6rem' }}>Open agreements manager</Link>
           </article>
         </section>
       )}

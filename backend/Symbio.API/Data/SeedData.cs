@@ -353,6 +353,69 @@ CREATE TABLE IF NOT EXISTS AdminAuditLogs (
     DetailJson TEXT NOT NULL,
     CreatedAtUtc TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS Agreements (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ProjectId TEXT NOT NULL UNIQUE,
+    ProjectTitle TEXT NOT NULL,
+    MilestoneId TEXT NOT NULL,
+    SmeUserId INTEGER NOT NULL,
+    ExpertUserId INTEGER NULL,
+    SmeEmail TEXT NOT NULL,
+    ExpertEmail TEXT,
+    Amount REAL NOT NULL,
+    Currency TEXT NOT NULL,
+    Status TEXT NOT NULL,
+    SmeApprovedAtUtc TEXT,
+    ExpertApprovedAtUtc TEXT,
+    ClosedAtUtc TEXT,
+    LastUpdatedByUserId INTEGER,
+    UpdatedAtUtc TEXT NOT NULL,
+    FOREIGN KEY (SmeUserId) REFERENCES Users(Id),
+    FOREIGN KEY (ExpertUserId) REFERENCES Users(Id)
+);
+
+CREATE INDEX IF NOT EXISTS IX_Agreements_SmeUserId ON Agreements (SmeUserId);
+CREATE INDEX IF NOT EXISTS IX_Agreements_ExpertUserId ON Agreements (ExpertUserId);
+CREATE INDEX IF NOT EXISTS IX_Agreements_Status ON Agreements (Status);
+
+INSERT INTO Agreements
+(
+    ProjectId,
+    ProjectTitle,
+    MilestoneId,
+    SmeUserId,
+    ExpertUserId,
+    SmeEmail,
+    ExpertEmail,
+    Amount,
+    Currency,
+    Status,
+    SmeApprovedAtUtc,
+    ExpertApprovedAtUtc,
+    ClosedAtUtc,
+    LastUpdatedByUserId,
+    UpdatedAtUtc
+)
+SELECT
+    'demo-project-epic7-1',
+    'Regional Retail Website Refresh',
+    'Kickoff',
+    (SELECT Id FROM Users WHERE Email = 'sme@example.com' LIMIT 1),
+    (SELECT Id FROM Users WHERE Email = 'expert@example.com' LIMIT 1),
+    'sme@example.com',
+    'expert@example.com',
+    9500,
+    'AUD',
+    'PendingApproval',
+    NULL,
+    NULL,
+    NULL,
+    (SELECT Id FROM Users WHERE Email = 'admin@example.com' LIMIT 1),
+    CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM Agreements WHERE ProjectId = 'demo-project-epic7-1')
+  AND EXISTS (SELECT 1 FROM Users WHERE Email = 'sme@example.com')
+  AND EXISTS (SELECT 1 FROM Users WHERE Email = 'expert@example.com');
 ");
             }
 
