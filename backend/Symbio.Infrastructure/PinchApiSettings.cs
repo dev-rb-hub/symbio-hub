@@ -4,8 +4,10 @@ namespace Symbio.Infrastructure;
 
 public class PinchApiSettings
 {
-    public string Environment { get; set; } = "Sandbox";
-    public string PortalUrl { get; set; } = "https://sandbox.getpinch.com.au";
+    public string BaseUri { get; set; } = "https://api.getpinch.com.au";
+    public string AuthUri { get; set; } = "https://auth.getpinch.com.au";
+    public bool IsLive { get; set; }
+    public string MerchantId { get; set; } = string.Empty;
     public string ApplicationId { get; set; } = string.Empty;
     public string SecretKey { get; set; } = string.Empty;
     public string ApiKey { get; set; } = string.Empty;
@@ -24,16 +26,26 @@ public class PinchApiSettings
             tolerance = parsedTolerance;
         }
 
+        var merchantId = configuration["Pinch:MerchantId"] ?? string.Empty;
         var applicationId = configuration["Pinch:ApplicationId"] ?? string.Empty;
         var secretKey = configuration["Pinch:SecretKey"] ?? string.Empty;
         var apiKey = configuration["Pinch:ApiKey"] ?? string.Empty;
         var apiSecret = configuration["Pinch:ApiSecret"] ?? string.Empty;
 
+        var resolvedMerchantId = !string.IsNullOrWhiteSpace(merchantId)
+            ? merchantId
+            : (!string.IsNullOrWhiteSpace(applicationId) ? applicationId : apiKey);
+        var resolvedApplicationId = !string.IsNullOrWhiteSpace(applicationId)
+            ? applicationId
+            : (!string.IsNullOrWhiteSpace(merchantId) ? merchantId : apiKey);
+
         return new PinchApiSettings
         {
-            Environment = configuration["Pinch:Environment"] ?? "Sandbox",
-            PortalUrl = configuration["Pinch:PortalUrl"] ?? "https://sandbox.getpinch.com.au",
-            ApplicationId = string.IsNullOrWhiteSpace(applicationId) ? apiKey : applicationId,
+            BaseUri = configuration["Pinch:BaseUri"] ?? "https://api.getpinch.com.au",
+            AuthUri = configuration["Pinch:AuthUri"] ?? "https://auth.getpinch.com.au",
+            IsLive = bool.TryParse(configuration["Pinch:IsLive"], out var isLive) && isLive,
+            MerchantId = resolvedMerchantId,
+            ApplicationId = resolvedApplicationId,
             SecretKey = string.IsNullOrWhiteSpace(secretKey) ? apiSecret : secretKey,
             ApiKey = apiKey,
             ApiSecret = apiSecret,
