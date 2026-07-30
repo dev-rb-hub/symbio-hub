@@ -19,24 +19,32 @@ This guide gives a practical walkthrough of the Symbio Hub demo flows for each r
 ## SME Flow
 
 1. Sign in with an SME account from `/login`.
-2. Open `Project New` and complete the scope form.
-3. Publish the project and complete payment pre-approval when prompted.
-4. Open the SME dashboard to review invoice and payment state updates.
-5. Visit talent discovery to inspect available experts.
+2. Complete trust onboarding at `/onboarding` if your session is newly seeded.
+3. Open `/project/new` and complete the scope form.
+4. Publish the project and complete payment pre-approval when prompted.
+5. Open `/billing/control-center` to review recurring billing controls.
+6. Open `/sme/dashboard` to review invoice and payment state updates.
+7. Visit `/talent/discovery` to inspect available experts.
+8. Use `/profile` to verify role and account details.
 
 ## Expert Flow
 
 1. Sign in with an Expert account from `/login`.
-2. Open escrow onboarding at `/escrow/onboarding`.
-3. Start onboarding and observe status updates.
-4. Open the workbench to review delivery assignments and logs.
+2. Complete trust onboarding at `/onboarding` if required.
+3. Open escrow onboarding at `/escrow/onboarding`.
+4. Start onboarding and observe status updates.
+5. Open `/expert/workbench` to review delivery assignments and logs.
+6. Use `/profile` to verify your account details.
 
 ## Admin Flow
 
 1. Sign in using a seeded admin account.
 2. Open `/admin/control` for an overview.
-3. Navigate to telemetry, compliance queue, and safety overrides.
-4. Use `Refresh section` to reload only the current admin section.
+3. Navigate to `/admin/telemetry` for runtime and activity visibility.
+4. Navigate to `/admin/compliance` for review queue operations.
+5. Navigate to `/admin/safety` for safety override controls.
+6. Use `/profile` to verify your admin account details.
+7. Use `Refresh section` to reload only the current admin section.
 
 ## Demo Notes
 
