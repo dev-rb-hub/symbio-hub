@@ -20,6 +20,7 @@ Symbio Hub is a cross-platform, containerised open-source platform connecting re
 
 - [Getting Started](docs/getting-started.md)
 - [User Guide](docs/user-guide.md)
+- [Product Video Guides](docs/product-video-guides.md)
 - [Hackathon Pitch](docs/pinch-pitch.md)
 - [Competitor Landscape](docs/competitor-landscape.md)
 - [API Reference](docs/api-reference.md)
