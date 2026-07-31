@@ -9,7 +9,8 @@ This page collects public Symbio Hub product videos and related demo media links
 - Symbio Hub SME Overview: https://youtu.be/OnVBG-wfJCs
 - Symbio Hub Expert Overview: https://youtu.be/J6VykSZowXc
 - Symbio Hub Admin Overview: https://youtu.be/UBPuuv4AUus
-- Pinch Payments Final Pitch Channel: https://www.youtube.com/@dev-rb-hub
+- Pinch Payments Final Pitch: https://youtu.be/zsiUkYbzO40
+- dev-rb-hub Youtube Channel: https://www.youtube.com/@dev-rb-hub
 
 ## Product Screenshots
 
