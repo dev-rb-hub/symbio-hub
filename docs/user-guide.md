@@ -73,5 +73,6 @@ This guide gives a practical walkthrough of the main Symbio Hub demo flows for e
 ## Related Documentation
 
 - [Getting Started](getting-started.md)
+- [Product Video Guides](product-video-guides.md)
 - [API Reference](api-reference.md)
 - [Competitor Landscape](competitor-landscape.md)
