@@ -117,8 +117,8 @@ export const AdminControlPage: React.FC = () => {
   const [isSettingsLoading, setIsSettingsLoading] = useState(false);
   const [isSavingSetting, setIsSavingSetting] = useState(false);
   const [resolvingReviewId, setResolvingReviewId] = useState<number | null>(null);
-  const [pinchDiagnosticsStatus, setPinchDiagnosticsStatus] = useState<'idle' | 'loading' | 'success' | 'warning' | 'error'>('idle');
-  const [pinchDiagnosticsSummary, setPinchDiagnosticsSummary] = useState('Pinch diagnostics have not run yet.');
+  const [, setPinchDiagnosticsStatus] = useState<'idle' | 'loading' | 'success' | 'warning' | 'error'>('idle');
+  const [, setPinchDiagnosticsSummary] = useState('Pinch diagnostics have not run yet.');
   const [pinchDiagnosticsOutput, setPinchDiagnosticsOutput] = useState<string[]>([]);
 
   const activeSection = useMemo<AdminSection>(() => {
