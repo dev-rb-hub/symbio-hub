@@ -117,8 +117,6 @@ export const AdminControlPage: React.FC = () => {
   const [isSettingsLoading, setIsSettingsLoading] = useState(false);
   const [isSavingSetting, setIsSavingSetting] = useState(false);
   const [resolvingReviewId, setResolvingReviewId] = useState<number | null>(null);
-  const [, setPinchDiagnosticsStatus] = useState<'idle' | 'loading' | 'success' | 'warning' | 'error'>('idle');
-  const [, setPinchDiagnosticsSummary] = useState('Pinch diagnostics have not run yet.');
   const [pinchDiagnosticsOutput, setPinchDiagnosticsOutput] = useState<string[]>([]);
 
   const activeSection = useMemo<AdminSection>(() => {
@@ -200,8 +198,6 @@ export const AdminControlPage: React.FC = () => {
     }
 
     const timestamp = new Date().toLocaleTimeString();
-    setPinchDiagnosticsStatus('loading');
-    setPinchDiagnosticsSummary('Running Pinch diagnostics...');
     setPinchDiagnosticsOutput([
       `[${timestamp}] Starting Pinch runtime and sandbox checks`,
       `[${timestamp}] Requesting runtime mode from /api/payments/runtime-mode`,
@@ -233,12 +229,8 @@ export const AdminControlPage: React.FC = () => {
       ];
 
       setPinchDiagnosticsOutput([...pinchDiagnosticsOutput, ...nextOutput]);
-      setPinchDiagnosticsSummary(statusLine);
-      setPinchDiagnosticsStatus(isConfigured && !runtimeMode.usesMockResponses && isConnected ? 'success' : runtimeMode.usesMockResponses || !isConfigured ? 'warning' : 'error');
     } catch {
       setPinchDiagnosticsOutput(prev => [...prev, `[${new Date().toLocaleTimeString()}] ERROR: Pinch diagnostics could not be completed.`]);
-      setPinchDiagnosticsSummary('Pinch diagnostics failed. Verify the admin token and API availability.');
-      setPinchDiagnosticsStatus('error');
     }
   };
 
