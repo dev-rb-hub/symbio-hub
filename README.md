@@ -154,13 +154,15 @@ For roadmap-level details and live issue status, use:
 
 Symbio Hub is an open-source platform dedicated to bridging the digital divide for regional Australian SMEs. By sponsoring this project, you directly offset our baseline cloud infrastructure costs (Azure Container Apps, Cosmos DB, and telemetry logs) and help keep our regional talent ecosystem active.
 
+*Important Note:* Sponsorships are voluntary donations to support open-source development. They do not constitute a commercial transaction, do not create an act of "trade or commerce" under the Australian Consumer Law, and grant no commercial software warranties, service level agreements (SLAs), or priority development entitlements.
+
 ### Choose Your Sponsorship Tier 🚀
 
-| Tier | Monthly Impact | Perks |
+| Tier | Monthly Support | Recognition Details |
 | :--- | :--- | :--- |
-| **🌱 Supporter**<br>`$5 AUD/mo` | Offsets baseline domain costs and DNS telemetry routing. | • Sponsor badge on your GitHub profile.<br>• Listed in our `CONTRIBUTORS.md` file. |
-| **🚀 Ecosystem Builder**<br>`$15 AUD/mo` | Funds active staging databases for public community testing. | • Everything above.<br>• Your name linked in the repository README. |
-| **🏗️ Production Partner**<br>`$45 AUD/mo` | **Fully covers active production hosting** & SignalR log streams. | • Everything above.<br>• **Your logo or name prominently featured below.**<br>• Priority review on your feature requests. |
+| **🌱 Project Supporter** | \$5 AUD/mo | • Sponsor badge displayed on your GitHub profile.<br>• Listed in our open-source `CONTRIBUTORS.md` file. |
+| **🚀 Ecosystem Builder** | \$15 AUD/mo | • All benefits listed above.<br>• Your name or profile linked in the repository README. |
+| **🏗 Infrastructure Partner** | \$45 AUD/mo | • All benefits listed above.<br>• Your logo or name featured prominently in the partners section below. |
 
 <p align="center">
   <a href="https://github.com/sponsors/dev-rb-hub">
