@@ -123,6 +123,12 @@ Review our [Contribution Guidelines](CONTRIBUTING.md) to understand branching co
 
 This project is licensed under the **Apache License 2.0**. See the [LICENSE](LICENSE) file for comprehensive details.
 
+## ⚖️ Australian Consumer Law & Platform Disclaimer
+Symbio Hub is an open-source software repository provided under the Apache License 2.0. 
+
+1. Source Code: The provision of this source code is free of charge and does not constitute an act of trade or commerce under the Australian Consumer Law (ACL). No statutory consumer guarantees apply to the unhosted source code files.
+2. Hosted Environments & Payments: If you are accessing a live, hosted instance of Symbio Hub or utilizing its integrated Pinch Payments features, those services are governed by separate, explicit commercial Terms of Service. The open-source maintainers accept zero liability for transactional failures, escrow disputes, or data loss occurring on downstream deployments.
+
 ---
 
 ## 🗺️ Product Roadmap Snapshot
