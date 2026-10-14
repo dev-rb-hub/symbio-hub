@@ -6,8 +6,8 @@
   </a>
 </p>
 
-[![License](https://shields.io)](LICENSE)
-[![GitHub Workflow Status](https://shields.io)](https://github.com/dev-rb-hub/symbio-hub/actions/workflows/ci.yml)
+[![License](https://img.shields.io/github/license/dev-rb-hub/symbio-hub)](LICENSE)
+[![CI](https://img.shields.io/github/actions/workflow/status/dev-rb-hub/symbio-hub/ci.yml?branch=main)](https://github.com/dev-rb-hub/symbio-hub/actions/workflows/ci.yml)
 
 Regional businesses deserve trusted local digital expertise—not anonymous global marketplaces. 
 Symbio Hub provides a secure marketplace where verified local professionals collaborate with confidence through protected payments and AI-enabled modernization
@@ -43,7 +43,7 @@ Product Pitch - see the [archived hackathon pitch](docs/archive/hackathon-2026/p
 For competitor context and market positioning, see [Competitor Landscape](docs/competitor-landscape.md).
 
 <p align="center">
-  <a href="https://github.com/dev-rb-hub/symbio-hub-flyer">
+  <a href="https://github.com/dev-rb-hub/symbio-hub/blob/main/frontend/Symbio.Frontend/src/assets/images/Symbio-hub%20flyer.png">
     <img src="https://github.com/dev-rb-hub/symbio-hub/blob/main/frontend/Symbio.Frontend/src/assets/images/Symbio-hub%20flyer.png" alt="Symbio Hub Flyer" width="650" />
   </a>
 </p>
