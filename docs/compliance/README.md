@@ -12,7 +12,9 @@ Obligations such as APRA CPS 234 apply to the regulated entity and its whole ope
 | Webhook signature validation | Implemented |
 | Containerised build and local Dev Container | Implemented |
 | Minimal, non-root, multi-stage container image | Planned |
-| Dependency, secret and image scanning, SBOM, signed artefacts | Planned |
+| Dependency updates and alerts, secret scanning with push protection, CodeQL code scanning | Implemented (controls enabled; findings are tracked, not zero) |
+| SBOM | Implemented (exported from the GitHub dependency graph; not yet generated per release) |
+| Container image scanning, signed artefacts and build provenance | Planned |
 | Append-only audit trail and signed completion evidence | Planned |
 | Australian-region pinning and policy-as-code for hosted editions | Planned |
 | Private networking, managed identity and secret management | Planned |
@@ -22,6 +24,8 @@ Obligations such as APRA CPS 234 apply to the regulated entity and its whole ope
 | SOC 2 Type II, ISO 27001, IRAP assessment | Not held |
 
 Labels follow the [roadmap](../ROADMAP.md).
+
+Evidence for the repository controls: [dependabot.yml](../../.github/dependabot.yml), [ci.yml](../../.github/workflows/ci.yml) and the repository's GitHub security settings (code scanning default setup, secret scanning, push protection, private vulnerability reporting). "Implemented" here means the control is enabled, not that no findings are open.
 
 ## Supporting a buyer's CPS 234 assessment
 
@@ -58,4 +62,4 @@ Automated scoping and vetting are advisory. A human signs off milestones, automa
 
 ## Reporting a security issue
 
-Please report suspected vulnerabilities privately to the maintainer rather than through public issues.
+Please report suspected vulnerabilities privately rather than through public issues. See [SECURITY.md](../../SECURITY.md).
