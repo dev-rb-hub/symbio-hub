@@ -1,6 +1,6 @@
 # Symbio Hub Roadmap
 
-This roadmap describes direction, not commitments. Delivery status and live work items are tracked in the [Symbio Hub Roadmap Project](https://github.com/users/dev-rb-hub/projects/1) and the [repository issues](https://github.com/dev-rb-hub/symbio-hub/issues).
+This roadmap describes direction, not commitments. Delivery status and live work items are tracked in the [Symbio Hub - Community Roadmap](https://github.com/users/dev-rb-hub/projects/1) and the [repository issues](https://github.com/dev-rb-hub/symbio-hub/issues).
 
 Maturity labels used across the docs:
 
