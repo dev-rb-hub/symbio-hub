@@ -6,8 +6,8 @@
   </a>
 </p>
 
-[![License](https://shields.io)](LICENSE)
-[![GitHub Workflow Status](https://shields.io)](https://github.com/dev-rb-hub/symbio-hub/actions/workflows/ci.yml)
+[![License](https://img.shields.io/github/license/dev-rb-hub/symbio-hub)](LICENSE)
+[![CI](https://img.shields.io/github/actions/workflow/status/dev-rb-hub/symbio-hub/ci.yml?branch=main)](https://github.com/dev-rb-hub/symbio-hub/actions/workflows/ci.yml)
 
 Regional businesses deserve trusted local digital expertise—not anonymous global marketplaces. 
 Symbio Hub provides a secure marketplace where verified local professionals collaborate with confidence through protected payments and AI-enabled modernization
@@ -21,9 +21,12 @@ Symbio Hub is a cross-platform, containerised open-source platform connecting re
 - [Getting Started](docs/getting-started.md)
 - [User Guide](docs/user-guide.md)
 - [Product Video Guides](docs/product-video-guides.md)
-- [Hackathon Pitch](docs/pinch-pitch.md)
+- [Hackathon Pitch (archived)](docs/archive/hackathon-2026/README.md)
 - [Competitor Landscape](docs/competitor-landscape.md)
 - [API Reference](docs/api-reference.md)
+- [Roadmap](docs/ROADMAP.md)
+- [Architecture Overview](docs/architecture/overview.md)
+- [Security and Compliance Posture](docs/compliance/README.md)
 - [Contributing](CONTRIBUTING.md)
 
 ---
@@ -36,11 +39,11 @@ Symbio Hub is a cross-platform, containerised open-source platform connecting re
     * **Risk-Free Escrow:** Milestone-based payments powered by [Pinch Payments](https://getpinch.com.au).
     * **AI Modernization:** Tailored deployment tracks for local AI and automation workflows.
 
-Product Pitch - see [Hackathon Pitch](docs/pinch-pitch.md).
+Product Pitch - see the [archived hackathon pitch](docs/archive/hackathon-2026/pinch-pitch.md) for the original submission context.
 For competitor context and market positioning, see [Competitor Landscape](docs/competitor-landscape.md).
 
 <p align="center">
-  <a href="https://github.com/dev-rb-hub/symbio-hub-flyer">
+  <a href="https://github.com/dev-rb-hub/symbio-hub/blob/main/frontend/Symbio.Frontend/src/assets/images/Symbio-hub%20flyer.png">
     <img src="https://github.com/dev-rb-hub/symbio-hub/blob/main/frontend/Symbio.Frontend/src/assets/images/Symbio-hub%20flyer.png" alt="Symbio Hub Flyer" width="650" />
   </a>
 </p>
@@ -51,8 +54,17 @@ For competitor context and market positioning, see [Competitor Landscape](docs/c
 
 To eliminate "it works on my machine" bottlenecks and support open-source developers on any operating system, Symbio Hub enforces containerisation at every stage:
 
-* **Production Containerisation:** The .NET backend is containerised via a multi-stage Linux Alpine Dockerfile, allowing deployment to cloud environments like Azure Container Apps (ACA), AWS ECS, or native Kubernetes.
+* **Containerisation:** The .NET backend is containerised with Docker for local development and cloud deployment. A minimal, multi-stage, non-root production image is on the [roadmap](docs/ROADMAP.md).
 * **Standardised Development (Dev Containers):** Developers can launch a fully isolated workspace using VS Code Dev Containers. This automatically bundles the .NET SDK, Node.js runtime, and all required extensions inside an isolated sandbox.
+
+---
+
+## 🧩 Editions
+
+* **Community (this repository):** open-source under Apache-2.0, self-hostable, with a sandbox-capable payment provider and onboarding verification.
+* **Hosted regulated-enterprise editions:** built on the same core through replaceable adapters. They add enterprise payment gateways, partner-routed identity verification, stronger audit and AI governance, and Australian-region hosting. See the [roadmap](docs/ROADMAP.md) and [architecture overview](docs/architecture/overview.md).
+
+Security and compliance statements in this repository describe design intent and current status, not certification. See the [compliance posture](docs/compliance/README.md).
 
 ---
 
@@ -142,7 +154,7 @@ Current roadmap outcomes are implemented across the completed Epic 01 to Epic 11
 - Completion evidence capture and settlement readiness checks.
 - Admin compliance, operational controls, and Pinch diagnostics from role settings.
 
-For roadmap-level details and live issue status, use:
+For future direction see the [Roadmap](docs/ROADMAP.md). For roadmap-level details and live issue status, use:
 
 - [Symbio Hub Roadmap Project](https://github.com/users/dev-rb-hub/projects/1)
 - [Repository Issues](https://github.com/dev-rb-hub/symbio-hub/issues)
