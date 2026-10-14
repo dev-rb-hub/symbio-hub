@@ -16,6 +16,14 @@ This is the entry point for AI coding agents working in Symbio Hub. Start here, 
 - Preserve the existing architecture and prefer small, localized changes.
 - Link to existing docs instead of duplicating product or API details.
 
+## Architecture direction (north-star digest)
+- Keep `Symbio.Core` provider-neutral: no payment-provider, identity-provider, cloud-vendor, or agent-transport types.
+- Put external dependencies behind ports in Core with adapters in Infrastructure, selected by configuration.
+- Keep application logic separate from agent messaging (`a2a-control-plane`); meet only through a versioned contract behind a Core port.
+- Editions differ by adapters, policy, and configuration, not by diverging domain code.
+- Do not make security, compliance, or certification claims without linked evidence; use the maturity labels in [docs/ROADMAP.md](docs/ROADMAP.md).
+- Details: [docs/architecture/overview.md](docs/architecture/overview.md) and the ADRs in `docs/architecture/adr/`.
+
 ## Repo-specific workflow
 - Prefer repository-native or containerized commands over ad hoc scripts.
 - Local orchestration: `docker compose up --build -d`, `docker compose logs -f`, `docker compose down`.
