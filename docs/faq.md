@@ -58,6 +58,12 @@ The public [roadmap](ROADMAP.md) and [community board](https://github.com/users/
 **How is Symbio Hub different from Upwork, Fiverr or Airtasker?**
 See the [competitor landscape](competitor-landscape.md). In short: regional focus, trust-first onboarding, and settlement tied to recorded delivery evidence.
 
+**Will a bank or other third party see my projects or data?**
+No. Nothing is shared with a financial institution or any other third party unless you explicitly ask for an introduction. Opt-in introductions to finance or other partners are a possible future feature, not an automatic data feed.
+
+**Can a bank or council sponsor local projects or grants?**
+It is a hypothesis we want to test with a design partner. The intended model is that the sponsor pays through a regulated partner and Symbio Hub records the allocation. It is **Partner-dependent**; there is no sponsor today.
+
 ## Open questions we want to solve
 
 These are problems, not promises. Feedback and issues are welcome.
@@ -71,5 +77,8 @@ These are problems, not promises. Feedback and issues are welcome.
 7. **Impact measurement.** How do we measure local jobs retained, skills built and spend kept in region without collecting more personal data than needed?
 8. **Sustainable funding.** How do we fund the open-source core while keeping the Community edition free?
 9. **Responsible AI.** What evaluation and change control should apply before any AI feature influences a decision?
+10. **Credential evidence.** Which licences, insurance and certifications matter most to regional SMEs, and who can verify them?
+11. **Contract templates.** Which statement-of-work templates would small businesses actually use, and how are they kept lawyer-reviewed and current?
+12. **Regional matching data.** What open regional boundary data is best for postcode and radius search, and how do we avoid shrinking the talent pool too far?
 
 See also the [Regional Ecosystem Vision](regional-ecosystem-vision.md).
