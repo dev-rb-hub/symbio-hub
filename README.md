@@ -9,10 +9,13 @@
 [![License](https://img.shields.io/github/license/dev-rb-hub/symbio-hub)](LICENSE)
 [![CI](https://img.shields.io/github/actions/workflow/status/dev-rb-hub/symbio-hub/ci.yml?branch=main)](https://github.com/dev-rb-hub/symbio-hub/actions/workflows/ci.yml)
 
-Regional businesses deserve trusted local digital expertise—not anonymous global marketplaces. 
-Symbio Hub provides a secure marketplace where verified local professionals collaborate with confidence through protected payments and AI-enabled modernization
+**Symbio Hub is an open-source technical marketplace built to bridge the digital divide for regional Australian small-to-medium enterprises (SMEs).** It connects regional businesses with vetted local technology professionals, innovation-hub cohorts and emerging university graduates, so digital transformation can be delivered safely and the digital capital stays in the region.
 
-Symbio Hub is a cross-platform, containerised open-source platform connecting regional SMEs with vetted technical talent. Powered by a decoupled .NET Core backend and a React frontend, the entire ecosystem runs seamlessly across Linux, macOS, and Windows via Docker virtualization.
+Regional businesses deserve trusted local digital expertise, not anonymous global marketplaces. Symbio Hub combines identity verification, milestone-based escrow and recorded delivery evidence so business owners can engage experts with less delivery anxiety, and local experts can be confident they will be paid for verified work.
+
+> **Status: working MVP, early stage.** No live customers and no live transactions yet; payments run against a sandbox. Every capability in these docs carries a maturity label (**Implemented**, **Designed**, **Planned**, **Partner-dependent**) defined in the [roadmap](docs/ROADMAP.md).
+
+Powered by a decoupled .NET backend and a React frontend, the whole platform runs on Linux, macOS and Windows through Docker.
 
 ---
 
@@ -21,23 +24,40 @@ Symbio Hub is a cross-platform, containerised open-source platform connecting re
 - [Getting Started](docs/getting-started.md)
 - [User Guide](docs/user-guide.md)
 - [Product Video Guides](docs/product-video-guides.md)
-- [Hackathon Pitch (archived)](docs/archive/hackathon-2026/README.md)
+- [FAQ and Open Questions](docs/faq.md)
+- [Regional Ecosystem Vision](docs/regional-ecosystem-vision.md)
 - [Competitor Landscape](docs/competitor-landscape.md)
 - [API Reference](docs/api-reference.md)
 - [Roadmap](docs/ROADMAP.md)
 - [Architecture Overview](docs/architecture/overview.md)
 - [Security and Compliance Posture](docs/compliance/README.md)
+- [Hackathon Pitch (archived)](docs/archive/hackathon-2026/README.md)
 - [Contributing](CONTRIBUTING.md)
 
 ---
 
 ## 🎯 Problem & Market Solution
 
-* **The Challenge:** Regional SMEs lack access to trusted local digital expertise, leaving them dependent on expensive metropolitan agencies or high-risk offshore outsourcing.
-* **The Solution:** A secure, localized marketplace featuring:
-    * **Verified Trust Profiles:** KYC-enabled expert registration profiles.
-    * **Risk-Free Escrow:** Milestone-based payments powered by [Pinch Payments](https://getpinch.com.au).
-    * **AI Modernization:** Tailored deployment tracks for local AI and automation workflows.
+* **The Challenge:** Regional SMEs lack access to trusted local digital expertise, leaving them dependent on expensive metropolitan agencies or high-risk offshore outsourcing. When delivery fails or work is sent offshore, regional economies lose both money and skills.
+* **The Solution:** A secure, localised marketplace built around a three-stage, risk-mitigating approach to software delivery:
+
+| Stage | What happens | Status |
+| :--- | :--- | :--- |
+| **1. Verify** | Experts and businesses register with trust profiles. Identity checks are performed by accredited partners; the platform stores verification status and evidence references only ([ADR 0003](docs/architecture/adr/0003-identity-assertion-ingestion.md)). | Implemented (sandbox onboarding); partner identity routing **Designed / Partner-dependent** |
+| **2. Agree** | Scoped agreements with defined milestones and delivery expectations. | Implemented |
+| **3. Deliver and settle** | Funds are secured per milestone, the expert records completion evidence, the client signs off, and only then is settlement requested. | Implemented (sandbox payments with [Pinch Payments](https://getpinch.com.au)) |
+
+* **AI-enabled modernisation:** guided scoping and artefact vetting that inform, but never replace, human sign-off. **Planned**; today AI is used to help build the product, not as a customer-facing feature.
+
+### For enterprise and public-sector stakeholders
+
+Symbio Hub is designed so that a regulated organisation can substitute its own approved components (payment gateway, identity provider, hosting) behind defined interfaces, and so that its security team can inspect the code. It is built to **support** a buyer's third-party risk assessment, including APRA CPS 234 style expectations. It does not make Symbio Hub "CPS 234 compliant": those obligations sit with the regulated entity. See the [compliance posture](docs/compliance/README.md) for what is and is not in place.
+
+Hosted editions are designed for Australian-region hosting and for isolating sensitive data and PII from public AI training, using the open zero-trust [a2a-control-plane](https://github.com/dev-rb-hub/a2a-control-plane) specification we authored. Integration with Symbio Hub is **Designed** ([ADR 0002](docs/architecture/adr/0002-agent-control-plane-boundary.md)); it is not yet enforced in the running product.
+
+### Why it matters beyond one project
+
+A regional project delivered by a local expert keeps wages, skills and IP in the community. Over time the model aims to turn technological displacement into a regional economic asset: a pipeline from learning, to certification, to paid local work. See the [Regional Ecosystem Vision](docs/regional-ecosystem-vision.md) and [FAQ](docs/faq.md) for the ideas and open questions, none of which are commitments.
 
 Product Pitch - see the [archived hackathon pitch](docs/archive/hackathon-2026/pinch-pitch.md) for the original submission context.
 For competitor context and market positioning, see [Competitor Landscape](docs/competitor-landscape.md).
@@ -61,8 +81,15 @@ To eliminate "it works on my machine" bottlenecks and support open-source develo
 
 ## 🧩 Editions
 
-* **Community (this repository):** open-source under Apache-2.0, self-hostable, with a sandbox-capable payment provider and onboarding verification.
-* **Hosted regulated-enterprise editions:** built on the same core through replaceable adapters. They add enterprise payment gateways, partner-routed identity verification, stronger audit and AI governance, and Australian-region hosting. See the [roadmap](docs/ROADMAP.md) and [architecture overview](docs/architecture/overview.md).
+| Edition | Audience | What it adds | Status |
+| :--- | :--- | :--- | :--- |
+| **Community** (this repository) | Regional SMEs, experts, students, contributors | Open-source under Apache-2.0, self-hostable, sandbox-capable payments, onboarding verification, learning and pilot use | **Implemented** |
+| **Pro** (hosted) | Innovation hubs, councils, universities, larger SME cohorts | Managed hosting and support, cohort and programme tooling, regional impact reporting | **Planned**; pricing not defined |
+| **Enterprise** | Financial services and other regulated organisations | Enterprise payment gateway adapters, partner-routed identity, append-only audit and signed evidence, AI governance, Australian-region hosting, supplier-assessment documentation | **Planned** / **Partner-dependent** |
+
+All editions are built on the same core through replaceable adapters; they differ by adapters, policy and configuration, not by diverging domain code. The Community edition stays fully usable without Pro or Enterprise. See the [roadmap](docs/ROADMAP.md) and [architecture overview](docs/architecture/overview.md).
+
+Maintainers also keep a private north-star planning board for Pro and Enterprise initiatives, stage gates and claims-versus-evidence tracking: [Product & Platform Roadmap (private)](https://github.com/users/dev-rb-hub/projects/3). It is not publicly accessible; access for prospective design partners is on request by opening a [repository issue](https://github.com/dev-rb-hub/symbio-hub/issues) (do not include sensitive details). The public view of direction is the [roadmap](docs/ROADMAP.md).
 
 Security and compliance statements in this repository describe design intent and current status, not certification. See the [compliance posture](docs/compliance/README.md).
 
@@ -153,6 +180,8 @@ Current roadmap outcomes are implemented across the completed Epic 01 to Epic 11
 - Pinch payment runtime visibility, milestone lifecycle, settlement closeout, and recurring billing.
 - Completion evidence capture and settlement readiness checks.
 - Admin compliance, operational controls, and Pinch diagnostics from role settings.
+
+Everything above runs against a **sandbox** payment provider. A regional pilot, gateway abstraction, hardened container image and per-release SBOM are the next steps.
 
 For future direction see the [Roadmap](docs/ROADMAP.md). For roadmap-level details and live issue status, use:
 
