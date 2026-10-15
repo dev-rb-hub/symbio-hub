@@ -18,6 +18,10 @@ Obligations such as APRA CPS 234 apply to the regulated entity and its whole ope
 | Append-only audit trail and signed completion evidence | Planned |
 | Australian-region pinning and policy-as-code for hosted editions | Planned |
 | Private networking, managed identity and secret management | Planned |
+| Salted password hashing using the framework hasher, with configurable cost and legacy-hash upgrade | Implemented (see [ADR 0004](../architecture/adr/0004-cryptography-key-management-and-authentication.md)) |
+| Key vault or HSM-backed key management, asymmetric token signing, optional password pepper | Designed (ADR 0004) |
+| OIDC sign-in with MFA and passkeys through an external identity provider | Designed (ADR 0004) |
+| FIPS-validated cryptographic modules and PCI DSS scope | Not claimed; depends on an assessed deployment |
 | Identity assertions from accredited partners | Designed |
 | Zero-trust agent messaging via the control-plane specification | Designed (separate repository) |
 | Independent penetration test | Planned |

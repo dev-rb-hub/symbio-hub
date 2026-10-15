@@ -28,6 +28,8 @@ High-level view of how Symbio Hub is structured and where it is intended to grow
 | Agent orchestration | Submit AI tasks, receive results, no transport types in Core | Designed ([ADR 0002](adr/0002-agent-control-plane-boundary.md)) |
 | Artefact vetting | Automated checks on milestone artefacts, returns an explainable verdict | Planned |
 | Audit log | Append-only record of milestone and escrow transitions | Planned |
+| Key management and signing | Sign, verify, HMAC and wrap keys with secrets held in a vault or HSM | Designed ([ADR 0004](adr/0004-cryptography-key-management-and-authentication.md)) |
+| User authentication | OIDC sign-in with MFA and passkeys from an external identity provider; local passwords for the community edition | Designed ([ADR 0004](adr/0004-cryptography-key-management-and-authentication.md)) |
 
 ## Milestone lifecycle (provider-neutral)
 

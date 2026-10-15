@@ -48,7 +48,7 @@ Open-source marketplace connecting regional SMEs with vetted local technical tal
 
 Hosted editions for organisations with stricter security, identity and payments requirements. The community edition remains fully usable without these.
 
-- **Designed:** identity assertion ingestion from accredited partners ([ADR 0003](architecture/adr/0003-identity-assertion-ingestion.md)); agent orchestration port with an open zero-trust control-plane boundary ([ADR 0002](architecture/adr/0002-agent-control-plane-boundary.md)).
+- **Designed:** identity assertion ingestion from accredited partners ([ADR 0003](architecture/adr/0003-identity-assertion-ingestion.md)); agent orchestration port with an open zero-trust control-plane boundary ([ADR 0002](architecture/adr/0002-agent-control-plane-boundary.md)); key vault or HSM-backed key management, asymmetric token signing, and OIDC sign-in with MFA and passkeys ([ADR 0004](architecture/adr/0004-cryptography-key-management-and-authentication.md)).
 - **Planned:**
   - Enterprise payment gateway adapters behind the payment port.
   - Append-only audit trail and signed completion evidence.
