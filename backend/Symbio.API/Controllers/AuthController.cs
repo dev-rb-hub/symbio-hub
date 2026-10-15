@@ -49,7 +49,7 @@ namespace Symbio.API.Controllers
 
             if (user != null)
             {
-                if (!_passwords.Verify(request.Password, user.PasswordHash, out var needsRehash))
+                if (!user.IsActive || !_passwords.Verify(request.Password, user.PasswordHash, out var needsRehash))
                 {
                     return Unauthorized();
                 }

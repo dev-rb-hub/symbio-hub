@@ -25,7 +25,7 @@ public class ApiTestFactory : WebApplicationFactory<Program>
         {
             var testSettings = new Dictionary<string, string?>
             {
-                ["Jwt:Key"] = "test-jwt-signing-key-1234567890",
+                ["Jwt:Key"] = "test-jwt-signing-key-1234567890-abcdefghij",
                 ["Pinch:MerchantId"] = string.Empty,
                 ["Pinch:ApplicationId"] = string.Empty,
                 ["Pinch:SecretKey"] = string.Empty,
