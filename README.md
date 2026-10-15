@@ -170,36 +170,16 @@ Symbio Hub is an open-source software repository provided under the Apache Licen
 
 ---
 
-## 🗺️ Product Roadmap Snapshot
+## 🗺️ Status and Roadmap
 
-Current roadmap outcomes are implemented across the completed Epic 01 to Epic 11 delivery stream, including:
+**Working MVP at demo grade, with sandbox payments and no live customers or transactions.** Direction is in three horizons: the open-source **Community** platform (now), **Pro and Enterprise** hosted editions, and **sovereign and public-sector** deployments. Each item is labelled Implemented, Designed, Planned or Partner-dependent.
 
-- Public guest and auth role routing flows.
-- SME project posting, talent discovery, and agreement handoff flows.
-- Expert delivery workbench, escrow onboarding, and live progress updates.
-- Pinch payment runtime visibility, milestone lifecycle, settlement closeout, and recurring billing.
-- Completion evidence capture and settlement readiness checks.
-- Admin compliance, operational controls, and Pinch diagnostics from role settings.
-
-Everything above runs against a **sandbox** payment provider. A regional pilot, gateway abstraction, hardened container image and per-release SBOM are the next steps.
-
-### Known limitations (demo-grade areas)
-
-The 11 delivery epics were completed at **demo grade**: enough to show the end-to-end flow, not yet production-ready. Known gaps, all under review for the roadmap:
-
-- Payments and escrow onboarding use sandbox or mock integrations; no real funds move.
-- Business identity checks are format-level only, with no registry lookup or accredited KYC partner yet.
-- Authentication and credential handling are demo-grade and must be hardened before any production use.
-- Local environments are seeded with sample data at startup.
-- Data storage mixes a local relational store with Cosmos DB repositories and has not been consolidated or load-tested.
-- Automated test coverage is limited to API and integration tests; there is no independent penetration test.
-
-Do not use the Community edition as-is with real customer data or funds. See the [compliance posture](docs/compliance/README.md) and [roadmap](docs/ROADMAP.md) for planned hardening.
-
-For future direction see the [Roadmap](docs/ROADMAP.md). For roadmap-level details and live issue status, use:
-
-- [Symbio Hub Roadmap Project](https://github.com/users/dev-rb-hub/projects/1)
+- [Roadmap](docs/ROADMAP.md): horizons, MVP delivery status and known limitations
+- [FAQ and Open Questions](docs/faq.md)
+- [Symbio Hub Community Roadmap board](https://github.com/users/dev-rb-hub/projects/1)
 - [Repository Issues](https://github.com/dev-rb-hub/symbio-hub/issues)
+
+Do not use the Community edition as-is with real customer data or funds.
 
 *Contributor note: include `Closes #<Issue-Number>` in PR descriptions to auto-close roadmap stories.*
 
