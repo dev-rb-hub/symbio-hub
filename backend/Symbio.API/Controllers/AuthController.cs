@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Symbio.API.Data;
 using Symbio.API.Models;
+using Symbio.API.Services;
 
 namespace Symbio.API.Controllers
 {
@@ -46,9 +47,15 @@ namespace Symbio.API.Controllers
 
             if (user != null)
             {
-                if (user.PasswordHash != SeedData.HashPassword(request.Password))
+                if (!PasswordHasher.Verify(request.Password, user.PasswordHash, out var needsRehash))
                 {
                     return Unauthorized();
+                }
+
+                if (needsRehash)
+                {
+                    user.PasswordHash = PasswordHasher.Hash(request.Password);
+                    await _dbContext.SaveChangesAsync();
                 }
 
                 if (!string.Equals(user.Role, request.Role, StringComparison.OrdinalIgnoreCase))
@@ -66,7 +73,7 @@ namespace Symbio.API.Controllers
             var newUser = new User
             {
                 Email = normalizedEmail,
-                PasswordHash = SeedData.HashPassword(request.Password),
+                PasswordHash = PasswordHasher.Hash(request.Password),
                 Role = request.Role,
                 CreatedAt = DateTime.UtcNow,
                 IsActive = true,
@@ -90,9 +97,15 @@ namespace Symbio.API.Controllers
 
             var normalizedEmail = request.Email.Trim().ToLowerInvariant();
             var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == normalizedEmail && u.IsActive);
-            if (user == null || user.PasswordHash != SeedData.HashPassword(request.Password))
+            if (user == null || !PasswordHasher.Verify(request.Password, user.PasswordHash, out var needsRehash))
             {
                 return Unauthorized();
+            }
+
+            if (needsRehash)
+            {
+                user.PasswordHash = PasswordHasher.Hash(request.Password);
+                await _dbContext.SaveChangesAsync();
             }
 
             return Ok(new { token = GenerateJwtToken(user), role = user.Role });
