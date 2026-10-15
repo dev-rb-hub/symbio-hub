@@ -15,7 +15,8 @@ Open-source marketplace connecting regional SMEs with vetted local technical tal
 
 - **Implemented:** role-based flows, project posting, talent discovery, agreements, expert workbench, completion evidence, milestone escrow using a sandbox-capable payment provider, admin operations.
 - **Designed:** provider-neutral payment gateway port so the community payment provider is replaceable ([ADR 0001](architecture/adr/0001-provider-neutral-core-and-payment-gateway.md)).
-- **Planned:** documentation baseline, hardened container image, secure delivery pipeline (dependency, secret and image scanning, SBOM), regional pilot with local innovation hubs and universities.
+- **Implemented:** repository security controls: Dependabot updates and alerts, secret scanning with push protection, CodeQL code scanning, private vulnerability reporting. Findings are tracked and triaged, not zero.
+- **Planned:** documentation baseline, hardened container image, image scanning, per-release SBOM and signed artefacts, regional pilot with local innovation hubs and universities.
 
 ## Horizon 2: Regulated-enterprise editions
 
