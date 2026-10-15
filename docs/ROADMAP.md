@@ -74,6 +74,26 @@ Hosted editions for organisations with stricter security, identity and payments 
 - **Planned:** deployment onto protected or government-hosted environments, federated identity, regional impact reporting, and optional allocation tracking for sponsored compute.
 - **Partner-dependent:** sponsor-funded grant allocation tracking, where a sponsor pays through a regulated partner and the platform only records allocations. The platform does not hold stored-value credits.
 
+## Initiative index
+
+High-level themes behind the horizons above. Maintainers track them as initiatives INI-00 to INI-12 on the private planning board linked at the top of this page; the IDs let prospective design partners refer to a theme when requesting access. Nothing here is a commitment, and no dates are implied.
+
+| ID | Theme | Horizon | Status | Reference |
+| :--- | :--- | :--- | :--- | :--- |
+| INI-00 | Readiness matrix and documentation baseline | 1 | **Planned** | [Compliance posture](compliance/README.md) |
+| INI-01 | Provider-neutral payment gateway port | 1 to 2 | **Designed** | [ADR 0001](architecture/adr/0001-provider-neutral-core-and-payment-gateway.md) |
+| INI-02 | Bank or treasury-held escrow adapter | 2 | **Partner-dependent** | [Architecture overview](architecture/overview.md) |
+| INI-03 | Agent orchestration port and control-plane adapter | 2 | **Designed** | [ADR 0002](architecture/adr/0002-agent-control-plane-boundary.md) |
+| INI-04 | Identity assertion ingestion (screening done by accredited partners) | 2 | **Designed** / **Partner-dependent** | [ADR 0003](architecture/adr/0003-identity-assertion-ingestion.md) |
+| INI-05 | Compliance control mapping and supplier-assessment pack | 2 | **Planned** | [Compliance posture](compliance/README.md) |
+| INI-06 | Sovereign hosting and hardened runtime | 2 to 3 | **Planned** | [Horizon 2](#horizon-2-regulated-enterprise-editions) |
+| INI-07 | Audit trail and signed evidence | 2 | **Planned** | [Architecture overview](architecture/overview.md) |
+| INI-08 | Secure delivery pipeline: SBOM, image scanning, signed artefacts | 1 to 2 | **Planned** | [Horizon 1](#horizon-1-community-platform-current) |
+| INI-09 | AI-assisted project scoping with human sign-off | 2 | **Planned** | [FAQ](faq.md) |
+| INI-10 | Pro artefact vetting with explainable verdicts | 2 | **Planned** | [FAQ](faq.md) |
+| INI-11 | Sponsored allocation tracking and regional impact reporting | 3 | **Planned** | [Horizon 3](#horizon-3-sovereign-and-public-sector-deployments) |
+| INI-12 | Community pilot enablement | 1 | **Planned** | [Regional Ecosystem Vision](regional-ecosystem-vision.md) |
+
 ## Product guardrails for new ideas
 
 - No sharing of an SME's project postings or activity with a financial institution or other third party without that SME's explicit, opt-in request (for example "introduce me to a finance partner").
