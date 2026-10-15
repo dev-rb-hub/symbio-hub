@@ -115,4 +115,69 @@ public class AgreementEndpointsTests : IClassFixture<ApiTestFactory>
         Assert.Contains("project-expert-visible-001", expertProjects);
         Assert.DoesNotContain("project-sme-visible-001", expertProjects);
     }
+
+    [Fact]
+    public async Task Upsert_Agreement_Rejects_Takeover_By_Unrelated_User()
+    {
+        using var owner = CreateClient("sme@example.com", "SME");
+        var created = await owner.PostAsJsonAsync("/api/agreements/upsert", new
+        {
+            projectId = "project-takeover-001",
+            projectTitle = "Owner Project",
+            amount = 5000,
+            currency = "AUD"
+        });
+        Assert.Equal(HttpStatusCode.OK, created.StatusCode);
+
+        using var otherSme = CreateClient("sme-two@example.com", "SME");
+        var takeover = await otherSme.PostAsJsonAsync("/api/agreements/upsert", new
+        {
+            projectId = "project-takeover-001",
+            projectTitle = "Hijacked",
+            amount = 1,
+            currency = "AUD"
+        });
+        Assert.Equal(HttpStatusCode.Forbidden, takeover.StatusCode);
+
+        var list = await owner.GetAsync("/api/agreements?includePending=true&includeClosed=true&search=project-takeover-001");
+        using var doc = JsonDocument.Parse(await list.Content.ReadAsStringAsync());
+        var only = doc.RootElement.GetProperty("agreements").EnumerateArray().Single();
+        Assert.Equal("Owner Project", only.GetProperty("projectTitle").GetString());
+        Assert.Equal(5000m, only.GetProperty("amount").GetDecimal());
+    }
+
+    [Fact]
+    public async Task Upsert_Agreement_Only_Admin_Can_Set_Status()
+    {
+        using var owner = CreateClient("sme@example.com", "SME");
+        var rejected = await owner.PostAsJsonAsync("/api/agreements/upsert", new
+        {
+            projectId = "project-status-001",
+            projectTitle = "Status Project",
+            amount = 2000,
+            currency = "AUD",
+            status = "Closed"
+        });
+        Assert.Equal(HttpStatusCode.Forbidden, rejected.StatusCode);
+
+        using var admin = CreateClient("admin@example.com", "Admin");
+        var allowed = await admin.PostAsJsonAsync("/api/agreements/upsert", new
+        {
+            projectId = "project-status-001",
+            projectTitle = "Status Project",
+            smeUserId = 1,
+            amount = 2000,
+            currency = "AUD",
+            status = "Closed"
+        });
+        Assert.NotEqual(HttpStatusCode.Forbidden, allowed.StatusCode);
+    }
+
+    private HttpClient CreateClient(string email, string role)
+    {
+        var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Add("X-Test-Email", email);
+        client.DefaultRequestHeaders.Add("X-Test-Role", role);
+        return client;
+    }
 }
