@@ -167,6 +167,7 @@ Symbio Hub is an open-source software repository provided under the Apache Licen
 
 1. Source Code: The provision of this source code is free of charge and does not constitute an act of trade or commerce under the Australian Consumer Law (ACL). No statutory consumer guarantees apply to the unhosted source code files.
 2. Hosted Environments & Payments: If you are accessing a live, hosted instance of Symbio Hub or utilizing its integrated Pinch Payments features, those services are governed by separate, explicit commercial Terms of Service. The open-source maintainers accept zero liability for transactional failures, escrow disputes, or data loss occurring on downstream deployments.
+3. Third-party names: Symbio Hub is an independent project. Third-party names, including Pinch Payments, are used only to identify integrations and do not imply affiliation, sponsorship or endorsement. Pitch videos and archived hackathon material describe a concept in development, not a hosted release.
 
 ---
 
