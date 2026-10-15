@@ -142,3 +142,28 @@ cd frontend/Symbio.Frontend
 npm run lint
 npm run build
 ```
+
+## Repository layout
+
+Symbio Hub keeps the backend, frontend and infrastructure isolated. Containers and Dev Containers remove "it works on my machine" differences across Linux, macOS and Windows. A minimal, multi-stage, non-root production image is on the [roadmap](ROADMAP.md).
+
+```text
+dev-rb-hub/symbio-hub/
+├── .devcontainer/                  # Optional local containerised dev environment
+├── .github/                        # Workflow automation and Copilot repo guidance
+├── backend/                        # .NET backend workspace
+│   ├── Symbio.API/                 # Web API host and HTTP endpoints
+│   ├── Symbio.API.Tests/           # Integration and endpoint tests
+│   ├── Symbio.Core/                # Domain contracts, models, and services
+│   ├── Symbio.Infrastructure/      # External integrations and repositories
+│   └── Dockerfile                  # Backend dev container image
+├── frontend/                       # React frontend workspace
+│   └── Symbio.Frontend/            # Vite + TypeScript application
+├── docs/                           # Product guides, setup notes, and API docs
+├── infrastructure/                 # IaC assets including Bicep deployment files
+├── docker-compose.yml              # Local multi-service orchestration
+├── AGENTS.md                       # Agent instructions entry point
+├── CONTRIBUTING.md                 # Engineering and contribution guidelines
+├── LICENSE                         # Apache License 2.0
+└── README.md                       # Repository landing page
+```

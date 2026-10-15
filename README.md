@@ -21,18 +21,9 @@ Powered by a decoupled .NET backend and a React frontend, the whole platform run
 
 ## 🔗 Quick Links
 
-- [Getting Started](docs/getting-started.md)
-- [User Guide](docs/user-guide.md)
-- [Product Video Guides](docs/product-video-guides.md)
-- [FAQ and Open Questions](docs/faq.md)
-- [Regional Ecosystem Vision](docs/regional-ecosystem-vision.md)
-- [Competitor Landscape](docs/competitor-landscape.md)
-- [API Reference](docs/api-reference.md)
-- [Roadmap](docs/ROADMAP.md)
-- [Architecture Overview](docs/architecture/overview.md)
-- [Security and Compliance Posture](docs/compliance/README.md)
-- [Hackathon Pitch (archived)](docs/archive/hackathon-2026/README.md)
-- [Contributing](CONTRIBUTING.md)
+- **Use it:** [Getting Started](docs/getting-started.md) · [User Guide](docs/user-guide.md) · [API Reference](docs/api-reference.md) · [Product Video Guides](docs/product-video-guides.md)
+- **Understand it:** [Roadmap](docs/ROADMAP.md) · [Architecture Overview](docs/architecture/overview.md) · [Security and Compliance Posture](docs/compliance/README.md) · [FAQ and Open Questions](docs/faq.md) · [Regional Ecosystem Vision](docs/regional-ecosystem-vision.md) · [Competitor Landscape](docs/competitor-landscape.md)
+- **Contribute:** [Contributing](CONTRIBUTING.md) · [Repository Issues](https://github.com/dev-rb-hub/symbio-hub/issues)
 
 ---
 
@@ -59,23 +50,41 @@ Hosted editions are designed for Australian-region hosting and for isolating sen
 
 A regional project delivered by a local expert keeps wages, skills and IP in the community. Over time the model aims to turn technological displacement into a regional economic asset: a pipeline from learning, to certification, to paid local work. See the [Regional Ecosystem Vision](docs/regional-ecosystem-vision.md) and [FAQ](docs/faq.md) for the ideas and open questions, none of which are commitments.
 
-Product Pitch - see the [archived hackathon pitch](docs/archive/hackathon-2026/pinch-pitch.md) for the original submission context.
-For competitor context and market positioning, see [Competitor Landscape](docs/competitor-landscape.md).
-
 <p align="center">
-  <a href="https://github.com/dev-rb-hub/symbio-hub/blob/main/frontend/Symbio.Frontend/src/assets/images/Symbio-hub%20flyer.png">
-    <img src="https://github.com/dev-rb-hub/symbio-hub/blob/main/frontend/Symbio.Frontend/src/assets/images/Symbio-hub%20flyer.png" alt="Symbio Hub Flyer" width="650" />
+  <a href="frontend/Symbio.Frontend/src/assets/images/Symbio-hub%20flyer.png">
+    <img src="frontend/Symbio.Frontend/src/assets/images/Symbio-hub%20flyer.png" alt="Symbio Hub Flyer" width="650" />
   </a>
 </p>
 
 ---
 
-## 🏗️ Cross-Platform Architecture & Virtualization
+## 🚀 Getting Started
 
-To eliminate "it works on my machine" bottlenecks and support open-source developers on any operating system, Symbio Hub enforces containerisation at every stage:
+### ⭐ 5-Minute Demo Start
 
-* **Containerisation:** The .NET backend is containerised with Docker for local development and cloud deployment. A minimal, multi-stage, non-root production image is on the [roadmap](docs/ROADMAP.md).
-* **Standardised Development (Dev Containers):** Developers can launch a fully isolated workspace using VS Code Dev Containers. This automatically bundles the .NET SDK, Node.js runtime, and all required extensions inside an isolated sandbox.
+From the repository root, run:
+
+```powershell
+docker compose up --build -d
+```
+
+Open:
+
+- Frontend SPA: `http://localhost:5173`
+- Backend Swagger: `http://localhost:5001/swagger`
+
+The local demo runs in Development mode with seeded sample accounts and sandbox payments. For setup options (Docker, Dev Containers, Codespaces, bare metal), environment configuration, role-by-role walkthroughs and the repository layout, see [Getting Started](docs/getting-started.md), the [User Guide](docs/user-guide.md) and the [API Reference](docs/api-reference.md).
+
+---
+
+## 🗺️ Status and Roadmap
+
+**Working MVP at demo grade, with sandbox payments and no live customers or transactions.** Direction is in three horizons: the open-source **Community** platform (now), **Pro and Enterprise** hosted editions, and **sovereign and public-sector** deployments. Each item is labelled Implemented, Designed, Planned or Partner-dependent.
+
+- [Roadmap](docs/ROADMAP.md): horizons, MVP delivery status and known limitations
+- [Symbio Hub Community Roadmap board](https://github.com/users/dev-rb-hub/projects/1)
+
+Do not use the Community edition as-is with real customer data or funds.
 
 ---
 
@@ -97,64 +106,18 @@ Security and compliance statements in this repository describe design intent and
 
 ## 🛠️ Technology Stack
 
-* **Backend API:** .NET 8.0 / 9.0 Web API, Docker (Linux Alpine Runtime)
-* **Database Layer:** Azure Cosmos DB (NoSQL API)
-* **Frontend SPA:** React 18+ (TypeScript), Vite
-* **DevOps & Hosting:** GitHub Actions, Dev Containers, Azure Container Apps / Static Web Apps
+* **Backend API:** .NET 8 Web API, containerised with Docker
+* **Data:** Azure Cosmos DB (NoSQL API) repositories alongside SQLite for local relational data
+* **Frontend SPA:** React 19 (TypeScript), Vite
+* **DevOps:** GitHub Actions CI, CodeQL, Dependabot, Dev Containers; Bicep templates for future Azure deployment (not deployed)
 
----
-
-## 📁 Repository Structure
-
-```text
-dev-rb-hub/symbio-hub/
-├── .devcontainer/                  # Optional local containerised dev environment
-├── .github/                        # Workflow automation and Copilot repo guidance
-├── backend/                        # .NET backend workspace
-│   ├── Symbio.API/                 # Web API host and HTTP endpoints
-│   ├── Symbio.API.Tests/           # Integration and endpoint tests
-│   ├── Symbio.Core/                # Domain contracts, models, and services
-│   ├── Symbio.Infrastructure/      # External integrations and repositories
-│   └── Dockerfile                  # Backend dev container image
-├── frontend/                       # React frontend workspace
-│   └── Symbio.Frontend/            # Vite + TypeScript application
-├── docs/                           # Product guides, setup notes, and API docs
-├── infrastructure/                 # IaC assets including Bicep deployment files
-├── docker-compose.yml              # Local multi-service orchestration
-├── AGENTS.md                       # Agent instructions entry point
-├── CONTRIBUTING.md                 # Engineering and contribution guidelines
-├── LICENSE                         # Apache License 2.0
-└── README.md                       # Repository landing page
-```
-
----
-
-## 🚀 Getting Started
-
-### ⭐ 5-Minute Demo Start
-
-From the repository root, run:
-
-```powershell
-docker compose up --build -d
-```
-
-Open:
-
-- Frontend SPA: `http://localhost:5173`
-- Backend Swagger: `http://localhost:5001/swagger`
-
-For detailed setup, environment configuration, and role-by-role demo walkthroughs, use:
-
-- [Getting Started](docs/getting-started.md)
-- [User Guide](docs/user-guide.md)
-- [API Reference](docs/api-reference.md)
+See the [repository layout](docs/getting-started.md#repository-layout) and [architecture overview](docs/architecture/overview.md).
 
 ---
 
 ## 🤝 Contributing
 
-Review our [Contribution Guidelines](CONTRIBUTING.md) to understand branching conventions, pull request validations, and mock data parameters.
+Review our [Contribution Guidelines](CONTRIBUTING.md) to understand branching conventions, pull request validations, and mock data parameters. Include `Closes #<Issue-Number>` in PR descriptions to auto-close roadmap stories.
 
 ---
 
@@ -171,20 +134,6 @@ Symbio Hub is an open-source software repository provided under the Apache Licen
 
 ---
 
-## 🗺️ Status and Roadmap
-
-**Working MVP at demo grade, with sandbox payments and no live customers or transactions.** Direction is in three horizons: the open-source **Community** platform (now), **Pro and Enterprise** hosted editions, and **sovereign and public-sector** deployments. Each item is labelled Implemented, Designed, Planned or Partner-dependent.
-
-- [Roadmap](docs/ROADMAP.md): horizons, MVP delivery status and known limitations
-- [FAQ and Open Questions](docs/faq.md)
-- [Symbio Hub Community Roadmap board](https://github.com/users/dev-rb-hub/projects/1)
-- [Repository Issues](https://github.com/dev-rb-hub/symbio-hub/issues)
-
-Do not use the Community edition as-is with real customer data or funds.
-
-*Contributor note: include `Closes #<Issue-Number>` in PR descriptions to auto-close roadmap stories.*
-
-
 ## 💖 Sponsor This Project
 
 Symbio Hub is an open-source platform dedicated to bridging the digital divide for regional Australian SMEs. By sponsoring this project, you help fund future pilot hosting and tooling (for example Azure Container Apps, Cosmos DB and telemetry) and help keep our regional talent ecosystem active. The project is currently pre-revenue and run by a sole founder; sponsorship funds are not yet tied to any committed infrastructure budget.
@@ -197,7 +146,7 @@ Symbio Hub is an open-source platform dedicated to bridging the digital divide f
 | :--- | :--- | :--- |
 | **🌱 Project Supporter** | \$5 AUD/mo | • Sponsor badge displayed on your GitHub profile.<br>• Listed in our open-source `CONTRIBUTORS.md` file. |
 | **🚀 Ecosystem Builder** | \$15 AUD/mo | • All benefits listed above.<br>• Your name or profile linked in the repository README. |
-| **🏗 Infrastructure Partner** | \$45 AUD/mo | • All benefits listed above.<br>• Your logo or name featured prominently in the partners section below. |
+| **🏗 Infrastructure Supporter** | \$45 AUD/mo | • All benefits listed above.<br>• Your logo or name featured in the sponsors section below. |
 
 <p align="center">
   <a href="https://github.com/sponsors/dev-rb-hub">
@@ -207,9 +156,9 @@ Symbio Hub is an open-source platform dedicated to bridging the digital divide f
 
 Primary sponsorship profile: **https://github.com/sponsors/dev-rb-hub**
 
-### 👑 Current Production Partners
+### 👑 Sponsors
 
-*A huge thank you to the organisations keeping our regional innovation engine running:*
+*Thank you to everyone who supports the project:*
 
 <!-- SPONSOR_LOGO_START -->
 <p align="center">
