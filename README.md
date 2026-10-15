@@ -183,6 +183,19 @@ Current roadmap outcomes are implemented across the completed Epic 01 to Epic 11
 
 Everything above runs against a **sandbox** payment provider. A regional pilot, gateway abstraction, hardened container image and per-release SBOM are the next steps.
 
+### Known limitations (demo-grade areas)
+
+The 11 delivery epics were completed at **demo grade**: enough to show the end-to-end flow, not yet production-ready. Known gaps, all under review for the roadmap:
+
+- Payments and escrow onboarding use sandbox or mock integrations; no real funds move.
+- Business identity checks are format-level only, with no registry lookup or accredited KYC partner yet.
+- Authentication and credential handling are demo-grade and must be hardened before any production use.
+- Local environments are seeded with sample data at startup.
+- Data storage mixes a local relational store with Cosmos DB repositories and has not been consolidated or load-tested.
+- Automated test coverage is limited to API and integration tests; there is no independent penetration test.
+
+Do not use the Community edition as-is with real customer data or funds. See the [compliance posture](docs/compliance/README.md) and [roadmap](docs/ROADMAP.md) for planned hardening.
+
 For future direction see the [Roadmap](docs/ROADMAP.md). For roadmap-level details and live issue status, use:
 
 - [Symbio Hub Roadmap Project](https://github.com/users/dev-rb-hub/projects/1)
@@ -193,7 +206,7 @@ For future direction see the [Roadmap](docs/ROADMAP.md). For roadmap-level detai
 
 ## 💖 Sponsor This Project
 
-Symbio Hub is an open-source platform dedicated to bridging the digital divide for regional Australian SMEs. By sponsoring this project, you directly offset our baseline cloud infrastructure costs (Azure Container Apps, Cosmos DB, and telemetry logs) and help keep our regional talent ecosystem active.
+Symbio Hub is an open-source platform dedicated to bridging the digital divide for regional Australian SMEs. By sponsoring this project, you help fund future pilot hosting and tooling (for example Azure Container Apps, Cosmos DB and telemetry) and help keep our regional talent ecosystem active. The project is currently pre-revenue and run by a sole founder; sponsorship funds are not yet tied to any committed infrastructure budget.
 
 *Important Note:* Sponsorships are voluntary donations to support open-source development. They do not constitute a commercial transaction, do not create an act of "trade or commerce" under the Australian Consumer Law, and grant no commercial software warranties, service level agreements (SLAs), or priority development entitlements.
 
