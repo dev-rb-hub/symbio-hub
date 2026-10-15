@@ -134,8 +134,15 @@ public class AgreementsController : ControllerBase
         }
 
         var projectId = request.ProjectId.Trim();
+        var isAdmin = string.Equals(currentUser.Role, "Admin", StringComparison.OrdinalIgnoreCase);
         var agreement = await _dbContext.Agreements
             .FirstOrDefaultAsync(item => item.ProjectId == projectId);
+        var isNewAgreement = agreement == null;
+
+        if (!isAdmin && !string.IsNullOrWhiteSpace(request.Status))
+        {
+            return Forbid();
+        }
 
         if (agreement == null)
         {
@@ -145,6 +152,10 @@ public class AgreementsController : ControllerBase
                 Status = AgreementStatuses.PendingApproval,
             };
             _dbContext.Agreements.Add(agreement);
+        }
+        else if (!isAdmin && !CanModifyExistingAgreement(agreement, currentUser))
+        {
+            return Forbid();
         }
 
         agreement.ProjectTitle = string.IsNullOrWhiteSpace(request.ProjectTitle)
@@ -163,7 +174,7 @@ public class AgreementsController : ControllerBase
             agreement.SmeUserId = currentUser.Id;
             agreement.SmeEmail = currentUser.Email;
         }
-        else if (request.SmeUserId.HasValue)
+        else if (request.SmeUserId.HasValue && (isNewAgreement || isAdmin))
         {
             var sme = await _dbContext.Users
                 .FirstOrDefaultAsync(item => item.Id == request.SmeUserId.Value && item.IsActive);
@@ -345,6 +356,20 @@ public class AgreementsController : ControllerBase
         await _dbContext.SaveChangesAsync();
 
         return Ok(ToAgreementResponse(agreement));
+    }
+
+    private static bool CanModifyExistingAgreement(AgreementRecord agreement, User currentUser)
+    {
+        if (agreement.SmeUserId == currentUser.Id || agreement.ExpertUserId == currentUser.Id)
+        {
+            return true;
+        }
+
+        // An Expert may join an agreement whose expert slot is unassigned or invited to their email.
+        return string.Equals(currentUser.Role, "Expert", StringComparison.OrdinalIgnoreCase)
+            && (agreement.ExpertUserId == null || agreement.ExpertUserId <= 0)
+            && (string.IsNullOrWhiteSpace(agreement.ExpertEmail)
+                || string.Equals(agreement.ExpertEmail, currentUser.Email, StringComparison.OrdinalIgnoreCase));
     }
 
     private async Task<User?> GetCurrentUserAsync()
