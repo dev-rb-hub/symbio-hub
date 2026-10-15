@@ -11,6 +11,30 @@ Maturity labels used across the docs:
 - **Planned** – on the roadmap, not started.
 - **Partner-dependent** – requires an accredited or regulated third party.
 
+## MVP delivery status and known limitations
+
+Epics 01 to 11 of the delivery stream were completed at **demo grade**: enough to show the end-to-end flow, not yet production-ready. Everything below runs against a **sandbox** payment provider and no real funds move.
+
+Delivered at demo grade:
+
+- Public guest and auth role routing flows.
+- SME project posting, talent discovery and agreement handoff flows.
+- Expert delivery workbench, escrow onboarding and live progress updates.
+- Pinch payment runtime visibility, milestone lifecycle, settlement closeout and recurring billing.
+- Completion evidence capture and settlement readiness checks.
+- Admin compliance, operational controls and Pinch diagnostics from role settings.
+
+Known limitations, all under review for this roadmap:
+
+- Payments and escrow onboarding use sandbox or mock integrations; no real funds move.
+- Business identity checks are format-level only, with no registry lookup or accredited KYC partner yet.
+- Authentication and credential handling are demo-grade and must be hardened before any production use.
+- Local environments are seeded with sample data at startup.
+- Data storage mixes a local relational store with Cosmos DB repositories and has not been consolidated or load-tested.
+- Automated test coverage is limited to API and integration tests; there is no independent penetration test.
+
+See the [compliance posture](compliance/README.md) for current security status.
+
 ## Horizon 1: Community platform (current)
 
 Open-source marketplace connecting regional SMEs with vetted local technical talent.
@@ -18,7 +42,7 @@ Open-source marketplace connecting regional SMEs with vetted local technical tal
 - **Implemented:** role-based flows, project posting, talent discovery, agreements, expert workbench, completion evidence, milestone escrow using a sandbox-capable payment provider, admin operations.
 - **Designed:** provider-neutral payment gateway port so the community payment provider is replaceable ([ADR 0001](architecture/adr/0001-provider-neutral-core-and-payment-gateway.md)).
 - **Implemented:** repository security controls: Dependabot updates and alerts, secret scanning with push protection, CodeQL code scanning, private vulnerability reporting. Findings are tracked and triaged, not zero.
-- **Planned:** documentation baseline, hardened container image, image scanning, per-release SBOM and signed artefacts, regional pilot with local innovation hubs and universities, and supervised student and graduate cohorts using the Community edition as a learning platform (see the [Regional Ecosystem Vision](regional-ecosystem-vision.md)).
+- **Planned:** review of the demo-grade areas listed under [known limitations](#mvp-delivery-status-and-known-limitations) above, then documentation baseline, hardened container image, image scanning, per-release SBOM and signed artefacts, regional pilot with local innovation hubs and universities, and supervised student and graduate cohorts using the Community edition as a learning platform (see the [Regional Ecosystem Vision](regional-ecosystem-vision.md)).
 
 ## Horizon 2: Regulated-enterprise editions
 

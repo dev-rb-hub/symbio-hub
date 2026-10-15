@@ -170,30 +170,23 @@ Symbio Hub is an open-source software repository provided under the Apache Licen
 
 ---
 
-## 🗺️ Product Roadmap Snapshot
+## 🗺️ Status and Roadmap
 
-Current roadmap outcomes are implemented across the completed Epic 01 to Epic 11 delivery stream, including:
+**Working MVP at demo grade, with sandbox payments and no live customers or transactions.** Direction is in three horizons: the open-source **Community** platform (now), **Pro and Enterprise** hosted editions, and **sovereign and public-sector** deployments. Each item is labelled Implemented, Designed, Planned or Partner-dependent.
 
-- Public guest and auth role routing flows.
-- SME project posting, talent discovery, and agreement handoff flows.
-- Expert delivery workbench, escrow onboarding, and live progress updates.
-- Pinch payment runtime visibility, milestone lifecycle, settlement closeout, and recurring billing.
-- Completion evidence capture and settlement readiness checks.
-- Admin compliance, operational controls, and Pinch diagnostics from role settings.
-
-Everything above runs against a **sandbox** payment provider. A regional pilot, gateway abstraction, hardened container image and per-release SBOM are the next steps.
-
-For future direction see the [Roadmap](docs/ROADMAP.md). For roadmap-level details and live issue status, use:
-
-- [Symbio Hub Roadmap Project](https://github.com/users/dev-rb-hub/projects/1)
+- [Roadmap](docs/ROADMAP.md): horizons, MVP delivery status and known limitations
+- [FAQ and Open Questions](docs/faq.md)
+- [Symbio Hub Community Roadmap board](https://github.com/users/dev-rb-hub/projects/1)
 - [Repository Issues](https://github.com/dev-rb-hub/symbio-hub/issues)
+
+Do not use the Community edition as-is with real customer data or funds.
 
 *Contributor note: include `Closes #<Issue-Number>` in PR descriptions to auto-close roadmap stories.*
 
 
 ## 💖 Sponsor This Project
 
-Symbio Hub is an open-source platform dedicated to bridging the digital divide for regional Australian SMEs. By sponsoring this project, you directly offset our baseline cloud infrastructure costs (Azure Container Apps, Cosmos DB, and telemetry logs) and help keep our regional talent ecosystem active.
+Symbio Hub is an open-source platform dedicated to bridging the digital divide for regional Australian SMEs. By sponsoring this project, you help fund future pilot hosting and tooling (for example Azure Container Apps, Cosmos DB and telemetry) and help keep our regional talent ecosystem active. The project is currently pre-revenue and run by a sole founder; sponsorship funds are not yet tied to any committed infrastructure budget.
 
 *Important Note:* Sponsorships are voluntary donations to support open-source development. They do not constitute a commercial transaction, do not create an act of "trade or commerce" under the Australian Consumer Law, and grant no commercial software warranties, service level agreements (SLAs), or priority development entitlements.
 
