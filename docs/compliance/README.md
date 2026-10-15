@@ -12,7 +12,7 @@ Obligations such as APRA CPS 234 apply to the regulated entity and its whole ope
 | Webhook signature validation | Implemented |
 | Containerised build and local Dev Container | Implemented |
 | Minimal, non-root, multi-stage container image | Planned |
-| Dependency updates and alerts, secret scanning with push protection, CodeQL code scanning | Implemented (controls enabled; findings are tracked, not zero) |
+| Dependency updates and alerts, secret scanning with push protection, CodeQL code scanning | Implemented (controls enabled; findings are tracked and triaged) |
 | SBOM | Implemented (exported from the GitHub dependency graph; not yet generated per release) |
 | Container image scanning, signed artefacts and build provenance | Planned |
 | Append-only audit trail and signed completion evidence | Planned |
