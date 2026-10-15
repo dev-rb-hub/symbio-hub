@@ -38,6 +38,31 @@ public class PaymentsFlowTests : IClassFixture<ApiTestFactory>
         Assert.Equal("Approved", body.RootElement.GetProperty("status").GetString());
     }
 
+    [Theory]
+    [InlineData("pre-approvals", "project-001\r\nINJECTED", "Kickoff")]
+    [InlineData("pre-approvals", "project-001", "Kick\noff")]
+    [InlineData("milestones/sign-off", "project-001\nINJECTED", "Kickoff")]
+    [InlineData("milestones/sign-off", "project-001", "Kick\roff")]
+    public async Task Payment_Endpoints_Reject_Control_Characters_In_Identifiers(string route, string projectId, string milestoneId)
+    {
+        using var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Add("X-Test-Email", "sme@example.com");
+        client.DefaultRequestHeaders.Add("X-Test-Role", "SME");
+
+        var response = await client.PostAsJsonAsync($"/api/payments/{route}", new
+        {
+            projectId,
+            milestoneId,
+            accountName = "Coastal SME Services",
+            bsb = "123-456",
+            accountNumber = "123456789",
+            amount = 9500m,
+            currency = "AUD"
+        });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
     [Fact]
     public async Task SignOff_Queues_Direct_Debit_When_PreApproval_Approved()
     {

@@ -158,6 +158,11 @@ public class PaymentsController : ControllerBase
             return BadRequest(new { message = "ProjectId, MilestoneId, AccountName, and Amount (>= 5000) are required." });
         }
 
+        if (HasControlCharacters(request.ProjectId) || HasControlCharacters(request.MilestoneId))
+        {
+            return BadRequest(new { message = "ProjectId and MilestoneId must not contain control characters." });
+        }
+
         var hasSourceToken = !string.IsNullOrWhiteSpace(request.SourceToken);
         var normalizedBsb = NormalizeBsb(request.Bsb);
         var normalizedAccount = request.AccountNumber?.Replace(" ", string.Empty, StringComparison.Ordinal) ?? string.Empty;
@@ -264,6 +269,11 @@ public class PaymentsController : ControllerBase
             return BadRequest(new { message = "ProjectId and MilestoneId are required." });
         }
 
+        if (HasControlCharacters(request.ProjectId) || HasControlCharacters(request.MilestoneId))
+        {
+            return BadRequest(new { message = "ProjectId and MilestoneId must not contain control characters." });
+        }
+
         var preApproval = await _dbContext.PaymentPreApprovals
             .Where(item => item.ProjectId == request.ProjectId && item.MilestoneId == request.MilestoneId)
             .OrderByDescending(item => item.CreatedAtUtc)
@@ -339,6 +349,11 @@ public class PaymentsController : ControllerBase
             queued.Status,
             state = state.State
         });
+    }
+
+    private static bool HasControlCharacters(string value)
+    {
+        return value.Any(char.IsControl);
     }
 
     private static string NormalizeBsb(string bsb)

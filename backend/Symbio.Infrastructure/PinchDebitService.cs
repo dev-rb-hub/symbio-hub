@@ -28,10 +28,13 @@ public sealed class PinchDebitService : IPinchDebitService
 
     public async Task<PinchPreApprovalResult> CreatePreApprovalAsync(PinchPreApprovalRequest request, CancellationToken cancellationToken = default)
     {
+        var logProjectId = LogSafe(request.ProjectId);
+        var logMilestoneId = LogSafe(request.MilestoneId);
+
         _logger.LogInformation(
             "Pinch pre-approval requested for ProjectId={ProjectId}, MilestoneId={MilestoneId}, Mode={ModeLabel}, IsLive={IsLive}, BaseUri={BaseUri}",
-            request.ProjectId,
-            request.MilestoneId,
+            logProjectId,
+            logMilestoneId,
             GetRuntimeMode().ModeLabel,
             _settings.IsLive,
             _settings.BaseUri);
@@ -68,8 +71,8 @@ public sealed class PinchDebitService : IPinchDebitService
             {
                 _logger.LogWarning(
                     "Pinch pre-approval payer save failed for ProjectId={ProjectId}, MilestoneId={MilestoneId}, Success={Success}, ErrorCount={ErrorCount}",
-                    request.ProjectId,
-                    request.MilestoneId,
+                    logProjectId,
+                    logMilestoneId,
                     payerResponse.Success,
                     payerResponse.Errors?.Count ?? 0);
                 return MockPreApproval(request);
@@ -85,8 +88,8 @@ public sealed class PinchDebitService : IPinchDebitService
             {
                 _logger.LogWarning(
                     "Pinch pre-approval agreement creation failed for ProjectId={ProjectId}, MilestoneId={MilestoneId}, Success={Success}, ErrorCount={ErrorCount}",
-                    request.ProjectId,
-                    request.MilestoneId,
+                    logProjectId,
+                    logMilestoneId,
                     agreementResponse.Success,
                     agreementResponse.Errors?.Count ?? 0);
                 return MockPreApproval(request);
@@ -95,8 +98,8 @@ public sealed class PinchDebitService : IPinchDebitService
             var isApproved = agreement.ConfirmedDateUtc.HasValue;
             _logger.LogInformation(
                 "Pinch pre-approval completed for ProjectId={ProjectId}, MilestoneId={MilestoneId}, PreApprovalId={PreApprovalId}, Status={Status}",
-                request.ProjectId,
-                request.MilestoneId,
+                logProjectId,
+                logMilestoneId,
                 agreement.Id,
                 isApproved ? "Approved" : "Pending");
             return new PinchPreApprovalResult
@@ -111,18 +114,21 @@ public sealed class PinchDebitService : IPinchDebitService
             _logger.LogError(
                 ex,
                 "Pinch pre-approval failed with exception for ProjectId={ProjectId}, MilestoneId={MilestoneId}. Falling back to mock.",
-                request.ProjectId,
-                request.MilestoneId);
+                logProjectId,
+                logMilestoneId);
             return MockPreApproval(request);
         }
     }
 
     public async Task<PinchDirectDebitResult> ExecuteDirectDebitAsync(PinchDirectDebitRequest request, CancellationToken cancellationToken = default)
     {
+        var logProjectId = LogSafe(request.ProjectId);
+        var logMilestoneId = LogSafe(request.MilestoneId);
+
         _logger.LogInformation(
             "Pinch direct debit requested for ProjectId={ProjectId}, MilestoneId={MilestoneId}, Amount={Amount}, Mode={ModeLabel}, IsLive={IsLive}",
-            request.ProjectId,
-            request.MilestoneId,
+            logProjectId,
+            logMilestoneId,
             request.Amount,
             GetRuntimeMode().ModeLabel,
             _settings.IsLive);
@@ -172,8 +178,8 @@ public sealed class PinchDebitService : IPinchDebitService
             {
                 _logger.LogWarning(
                     "Pinch direct debit payment save failed for ProjectId={ProjectId}, MilestoneId={MilestoneId}, Success={Success}, ErrorCount={ErrorCount}",
-                    request.ProjectId,
-                    request.MilestoneId,
+                    logProjectId,
+                    logMilestoneId,
                     paymentResponse.Success,
                     paymentResponse.Errors?.Count ?? 0);
                 return MockDebit(request);
@@ -187,8 +193,8 @@ public sealed class PinchDebitService : IPinchDebitService
 
             _logger.LogInformation(
                 "Pinch direct debit completed for ProjectId={ProjectId}, MilestoneId={MilestoneId}, DebitId={DebitId}, Status={Status}, Succeeded={Succeeded}",
-                request.ProjectId,
-                request.MilestoneId,
+                logProjectId,
+                logMilestoneId,
                 string.IsNullOrWhiteSpace(payment.Id) ? "generated-fallback" : payment.Id,
                 status,
                 succeeded);
@@ -208,8 +214,8 @@ public sealed class PinchDebitService : IPinchDebitService
             _logger.LogError(
                 ex,
                 "Pinch direct debit failed with exception for ProjectId={ProjectId}, MilestoneId={MilestoneId}. Falling back to mock.",
-                request.ProjectId,
-                request.MilestoneId);
+                logProjectId,
+                logMilestoneId);
             return MockDebit(request);
         }
     }
@@ -373,6 +379,13 @@ public sealed class PinchDebitService : IPinchDebitService
     private bool HasCredentials()
     {
         return !string.IsNullOrWhiteSpace(_settings.MerchantId) && !string.IsNullOrWhiteSpace(_settings.SecretKey);
+    }
+
+    private static string LogSafe(string? value)
+    {
+        return (value ?? string.Empty)
+            .Replace("\r", "_", StringComparison.Ordinal)
+            .Replace("\n", "_", StringComparison.Ordinal);
     }
 
     private static string RedactIdentifier(string? value)
