@@ -43,6 +43,12 @@ Open-source marketplace connecting regional SMEs with vetted local technical tal
 - **Designed:** provider-neutral payment gateway port so the community payment provider is replaceable ([ADR 0001](architecture/adr/0001-provider-neutral-core-and-payment-gateway.md)).
 - **Implemented:** repository security controls: Dependabot updates and alerts, secret scanning with push protection, CodeQL code scanning, private vulnerability reporting. Findings are tracked and triaged, not zero.
 - **Planned:** review of the demo-grade areas listed under [known limitations](#mvp-delivery-status-and-known-limitations) above, then documentation baseline, hardened container image, image scanning, per-release SBOM and signed artefacts, regional pilot with local innovation hubs and universities, and supervised student and graduate cohorts using the Community edition as a learning platform (see the [Regional Ecosystem Vision](regional-ecosystem-vision.md)).
+- **Planned (pilot candidates, hypotheses to test):**
+  - Structured regional matching: postcode or region plus a radius filter, replacing free-text location.
+  - Structured availability with an expiry so stale profiles drop off.
+  - Lawyer-reviewed statement-of-work templates, including IP assignment and contractor terms (templates, not legal advice).
+  - Credential evidence locker: experts attach insurance, licence or certification evidence with who verified it and when; the platform records status and references, not its own verification.
+  - Tax invoice generation from milestone payments, without storing bank account details.
 
 ## Horizon 2: Regulated-enterprise editions
 
@@ -57,11 +63,22 @@ Hosted editions for organisations with stricter security, identity and payments 
   - AI learning modules and certification pathways for the Community edition and targeted enterprise programs.
   - Sovereign Australian hosting, policy-as-code and tenant isolation.
   - Supplier-assessment documentation (see [compliance](compliance/README.md)).
-- **Partner-dependent:** KYC/AML screening, digital identity assertions, bank or treasury integrations.
+  - Signal-only payment adapter: emits "evidence verified, ready for release" to a buyer's own payment or invoicing system without the platform holding funds.
+  - Skill mapping that translates corporate job titles into small-business micro-skills, with AI assistance and human review.
+  - Pro: aggregate regional statistics widgets for hubs, councils and sponsors, published only from real pilot data.
+- **Partner-dependent:** KYC/AML screening, digital identity assertions, bank or treasury integrations, and a verified business-account badge issued as an identity assertion by a financial institution (no financial data shared).
 
 ## Horizon 3: Sovereign and public-sector deployments
 
 - **Planned:** deployment onto protected or government-hosted environments, federated identity, regional impact reporting, and optional allocation tracking for sponsored compute.
+- **Partner-dependent:** sponsor-funded grant allocation tracking, where a sponsor pays through a regulated partner and the platform only records allocations. The platform does not hold stored-value credits.
+
+## Product guardrails for new ideas
+
+- No sharing of an SME's project postings or activity with a financial institution or other third party without that SME's explicit, opt-in request (for example "introduce me to a finance partner").
+- No claims of bank, government or enterprise partnership without a written, linked source.
+- No storage of bank account details or card data where a tokenised alternative exists.
+- Ideas are hypotheses to validate in a pilot; they are not commitments.
 
 ## Cross-cutting principles
 
