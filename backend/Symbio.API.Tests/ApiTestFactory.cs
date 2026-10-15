@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Symbio.API.Data;
 using Symbio.API.Models;
+using Symbio.API.Services;
 using Symbio.Core.Models;
 
 namespace Symbio.API.Tests;
@@ -24,7 +25,7 @@ public class ApiTestFactory : WebApplicationFactory<Program>
         {
             var testSettings = new Dictionary<string, string?>
             {
-                ["Jwt:Key"] = "test-jwt-signing-key-1234567890",
+                ["Jwt:Key"] = "test-jwt-signing-key-1234567890-abcdefghij",
                 ["Pinch:MerchantId"] = string.Empty,
                 ["Pinch:ApplicationId"] = string.Empty,
                 ["Pinch:SecretKey"] = string.Empty,
@@ -60,11 +61,13 @@ public class ApiTestFactory : WebApplicationFactory<Program>
 
             if (!db.Users.Any())
             {
+                var passwords = scope.ServiceProvider.GetRequiredService<IPasswordService>();
+                var testPasswordHash = passwords.Hash("password123");
                 db.Users.AddRange(
                     new User
                     {
                         Email = "sme@example.com",
-                        PasswordHash = SeedData.HashPassword("password123"),
+                        PasswordHash = testPasswordHash,
                         Role = "SME",
                         IsActive = true,
                         CreatedAt = DateTime.UtcNow,
@@ -74,7 +77,7 @@ public class ApiTestFactory : WebApplicationFactory<Program>
                     new User
                     {
                         Email = "sme-two@example.com",
-                        PasswordHash = SeedData.HashPassword("password123"),
+                        PasswordHash = testPasswordHash,
                         Role = "SME",
                         IsActive = true,
                         CreatedAt = DateTime.UtcNow,
@@ -84,7 +87,7 @@ public class ApiTestFactory : WebApplicationFactory<Program>
                     new User
                     {
                         Email = "expert@example.com",
-                        PasswordHash = SeedData.HashPassword("password123"),
+                        PasswordHash = testPasswordHash,
                         Role = "Expert",
                         IsActive = true,
                         CreatedAt = DateTime.UtcNow,
@@ -94,7 +97,7 @@ public class ApiTestFactory : WebApplicationFactory<Program>
                     new User
                     {
                         Email = "admin@example.com",
-                        PasswordHash = SeedData.HashPassword("password123"),
+                        PasswordHash = testPasswordHash,
                         Role = "Admin",
                         IsActive = true,
                         CreatedAt = DateTime.UtcNow,

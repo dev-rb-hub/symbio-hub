@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Symbio.API.Models;
+using Symbio.API.Services;
 using Symbio.Core.Models;
 using Symbio.Core.Repositories;
 
@@ -13,14 +14,28 @@ namespace Symbio.API.Data
             var db = scope.ServiceProvider.GetRequiredService<SymbioDbContext>();
             db.Database.EnsureCreated();
 
-            if (!db.Users.Any())
+            var passwords = scope.ServiceProvider.GetRequiredService<IPasswordService>();
+            var seedDemoUsers = app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("Seed:DemoUsers:Enabled");
+            var demoPassword = app.Configuration["Seed:DemoUsers:Password"];
+            if (string.IsNullOrWhiteSpace(demoPassword))
+            {
+                // Development-only convenience for the local demo login; any other environment must supply its own.
+                demoPassword = app.Environment.IsDevelopment() ? "password123" : null;
+            }
+
+            if (seedDemoUsers && string.IsNullOrWhiteSpace(demoPassword))
+            {
+                throw new InvalidOperationException("Seed:DemoUsers:Password must be set when demo users are enabled outside Development.");
+            }
+
+            if (seedDemoUsers && !db.Users.Any())
             {
                 var users = new[]
                 {
                     new User
                     {
                         Email = "sme@example.com",
-                        PasswordHash = SeedData.HashPassword("password123"),
+                        PasswordHash = passwords.Hash(demoPassword!),
                         Role = "SME",
                         CreatedAt = DateTime.UtcNow,
                         IsActive = true,
@@ -33,7 +48,7 @@ namespace Symbio.API.Data
                     new User
                     {
                         Email = "expert@example.com",
-                        PasswordHash = SeedData.HashPassword("password123"),
+                        PasswordHash = passwords.Hash(demoPassword!),
                         Role = "Expert",
                         CreatedAt = DateTime.UtcNow,
                         IsActive = true,
@@ -46,7 +61,7 @@ namespace Symbio.API.Data
                     new User
                     {
                         Email = "admin@example.com",
-                        PasswordHash = SeedData.HashPassword("password123"),
+                        PasswordHash = passwords.Hash(demoPassword!),
                         Role = "Admin",
                         CreatedAt = DateTime.UtcNow,
                         IsActive = true,
@@ -609,7 +624,5 @@ WHERE NOT EXISTS (SELECT 1 FROM Agreements WHERE ProjectId = 'demo-project-epic7
                 db.SaveChanges();
             }
         }
-
-        public static string HashPassword(string password) => Symbio.API.Services.PasswordHasher.Hash(password);
     }
 }

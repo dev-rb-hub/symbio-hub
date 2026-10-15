@@ -18,11 +18,13 @@ namespace Symbio.API.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly SymbioDbContext _dbContext;
+        private readonly IPasswordService _passwords;
 
-        public AuthController(IConfiguration configuration, SymbioDbContext dbContext)
+        public AuthController(IConfiguration configuration, SymbioDbContext dbContext, IPasswordService passwords)
         {
             _configuration = configuration;
             _dbContext = dbContext;
+            _passwords = passwords;
         }
 
         public record RegisterRequest(string Email, string Password, string Role);
@@ -47,14 +49,14 @@ namespace Symbio.API.Controllers
 
             if (user != null)
             {
-                if (!PasswordHasher.Verify(request.Password, user.PasswordHash, out var needsRehash))
+                if (!user.IsActive || !_passwords.Verify(request.Password, user.PasswordHash, out var needsRehash))
                 {
                     return Unauthorized();
                 }
 
                 if (needsRehash)
                 {
-                    user.PasswordHash = PasswordHasher.Hash(request.Password);
+                    user.PasswordHash = _passwords.Hash(request.Password);
                     await _dbContext.SaveChangesAsync();
                 }
 
@@ -73,7 +75,7 @@ namespace Symbio.API.Controllers
             var newUser = new User
             {
                 Email = normalizedEmail,
-                PasswordHash = PasswordHasher.Hash(request.Password),
+                PasswordHash = _passwords.Hash(request.Password),
                 Role = request.Role,
                 CreatedAt = DateTime.UtcNow,
                 IsActive = true,
@@ -97,14 +99,14 @@ namespace Symbio.API.Controllers
 
             var normalizedEmail = request.Email.Trim().ToLowerInvariant();
             var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == normalizedEmail && u.IsActive);
-            if (user == null || !PasswordHasher.Verify(request.Password, user.PasswordHash, out var needsRehash))
+            if (user == null || !_passwords.Verify(request.Password, user.PasswordHash, out var needsRehash))
             {
                 return Unauthorized();
             }
 
             if (needsRehash)
             {
-                user.PasswordHash = PasswordHasher.Hash(request.Password);
+                user.PasswordHash = _passwords.Hash(request.Password);
                 await _dbContext.SaveChangesAsync();
             }
 

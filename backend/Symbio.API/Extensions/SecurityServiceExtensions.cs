@@ -1,8 +1,10 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Symbio.API.Services;
 
 namespace Symbio.API.Extensions
 {
@@ -53,7 +55,17 @@ namespace Symbio.API.Extensions
                     policy.RequireRole("Admin").RequireClaim("symbio_admin_master", "true"));
             });
 
+            // OWASP guidance for PBKDF2-HMAC-SHA512 is 210,000 iterations; the floor stops a misconfiguration weakening it.
+            var iterations = Math.Max(
+                MinimumPasswordIterations,
+                configuration.GetValue("Security:PasswordHashing:IterationCount", DefaultPasswordIterations));
+            services.Configure<PasswordHasherOptions>(options => options.IterationCount = iterations);
+            services.AddSingleton<IPasswordService, PasswordService>();
+
             return services;
         }
+
+        private const int DefaultPasswordIterations = 210_000;
+        private const int MinimumPasswordIterations = 100_000;
     }
 }
