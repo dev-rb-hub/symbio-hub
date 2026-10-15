@@ -12,6 +12,11 @@ updates:
         update-types:
           - "version-update:semver-major"
     open-pull-requests-limit: 0
+    groups:
+      npm-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
     labels:
       - "dependencies"
       - "frontend"
@@ -26,11 +31,16 @@ updates:
         update-types:
           - "version-update:semver-major"
     open-pull-requests-limit: 0
+    groups:
+      nuget-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
     labels:
       - "dependencies"
       - "backend"
 
-  # 3. Scan GitHub Actions Workflow Versions
+  # 3. GitHub Actions versions (deferred, see above).
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -39,6 +49,7 @@ updates:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
+    open-pull-requests-limit: 0
     labels:
       - "dependencies"
       - "ci-cd"
