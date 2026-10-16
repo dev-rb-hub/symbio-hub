@@ -22,6 +22,7 @@ This is the entry point for AI coding agents working in Symbio Hub. Start here, 
 - Keep application logic separate from agent messaging (`a2a-control-plane`); meet only through a versioned contract behind a Core port.
 - Editions differ by adapters, policy, and configuration, not by diverging domain code.
 - Do not make security, compliance, or certification claims without linked evidence; use the maturity labels in [docs/ROADMAP.md](docs/ROADMAP.md).
+- No custom cryptography or hand-rolled formats for cryptographic values; follow [ADR 0004](docs/architecture/adr/0004-cryptography-key-management-and-authentication.md).
 - Details: [docs/architecture/overview.md](docs/architecture/overview.md) and the ADRs in `docs/architecture/adr/`.
 
 ## Repo-specific workflow
