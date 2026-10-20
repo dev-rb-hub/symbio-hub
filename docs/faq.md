@@ -64,6 +64,14 @@ No. Nothing is shared with a financial institution or any other third party unle
 **Can a bank or council sponsor local projects or grants?**
 It is a hypothesis we want to test with a design partner. The intended model is that the sponsor pays through a regulated partner and Symbio Hub records the allocation. It is **Partner-dependent**; there is no sponsor today.
 
+**Can Symbio Hub help keep technology work in Australia?**
+That is the problem we are exploring, not something we can guarantee today. Symbio Hub is designed to make it easier for regional SMEs to find and contract local technology professionals, with milestone-based payment tied to recorded delivery evidence. Today, "local" is a text match on a location field, and the platform does not independently verify where a person or their work is based. Structured regional matching and sovereign hosting options are **Planned**. We have not measured any impact, and we will only publish figures from real pilot data.
+
+**Does Symbio Hub offer AI training or certification?**
+Learning modules in the Community edition and targeted programs for institutional cohorts are **Planned**; none exists yet. Any formal qualification would need to be issued by a registered training organisation or other appropriate partner (**Partner-dependent**). Symbio Hub would record verified delivery evidence; it would not issue accredited qualifications itself.
+
+**Do you work with universities, councils or government programs?**
+A regional pilot with innovation hubs and universities is **Planned** and depends on a partner agreeing to take part; no partner is confirmed. Pro is aimed at hubs, councils and universities and is also **Planned**. Nothing here implies procurement approval, funding eligibility or endorsement by any organisation.
 ## Open questions we want to solve
 
 These are problems, not promises. Feedback and issues are welcome.
@@ -80,5 +88,6 @@ These are problems, not promises. Feedback and issues are welcome.
 10. **Credential evidence.** Which licences, insurance and certifications matter most to regional SMEs, and who can verify them?
 11. **Contract templates.** Which statement-of-work templates would small businesses actually use, and how are they kept lawyer-reviewed and current?
 12. **Regional matching data.** What open regional boundary data is best for postcode and radius search, and how do we avoid shrinking the talent pool too far?
+13. **Partnership structures.** What structures let councils, universities and institutions co-deliver regional skills pathways without Symbio Hub being treated as an accredited provider or approved supplier?
 
 See also the [Regional Ecosystem Vision](regional-ecosystem-vision.md).
