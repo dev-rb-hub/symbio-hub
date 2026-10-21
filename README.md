@@ -22,7 +22,7 @@ Powered by a decoupled .NET backend and a React frontend, the whole platform run
 ## 🔗 Quick Links
 
 - **Use it:** [Getting Started](docs/getting-started.md) · [User Guide](docs/user-guide.md) · [API Reference](docs/api-reference.md) · [Product Video Guides](docs/product-video-guides.md)
-- **Understand it:** [Roadmap](docs/ROADMAP.md) · [Architecture Overview](docs/architecture/overview.md) · [Security and Compliance Posture](docs/compliance/README.md) · [FAQ and Open Questions](docs/faq.md) · [Regional Ecosystem Vision](docs/regional-ecosystem-vision.md) · [Competitor Landscape](docs/competitor-landscape.md)
+- **Understand it:** [Roadmap](docs/ROADMAP.md) · [Architecture Overview](docs/architecture/overview.md) · [Security and Compliance Posture](docs/compliance/README.md) · [FAQ and Open Questions](docs/faq.md) · [Regional Ecosystem Vision](docs/regional-ecosystem-vision.md) · [Global Vision](docs/global-vision.md) · [Competitor Landscape](docs/competitor-landscape.md)
 - **Contribute:** [Contributing](CONTRIBUTING.md) · [Repository Issues](https://github.com/dev-rb-hub/symbio-hub/issues)
 
 ---
@@ -79,7 +79,7 @@ The local demo runs in Development mode with seeded sample accounts and sandbox 
 
 ## 🗺️ Status and Roadmap
 
-**Working MVP at demo grade, with sandbox payments and no live customers or transactions.** Direction is in three horizons: the open-source **Community** platform (now), **Pro and Enterprise** hosted editions, and **sovereign and public-sector** deployments. Each item is labelled Implemented, Designed, Planned or Partner-dependent.
+**Working MVP at demo grade, with sandbox payments and no live customers or transactions.** Direction is in three horizons: the open-source **Community** platform (now), **Pro and Enterprise** hosted editions, and **sovereign and public-sector** deployments, with an exploratory fourth horizon for [global replication](docs/global-vision.md). Each item is labelled Implemented, Designed, Planned or Partner-dependent.
 
 - [Roadmap](docs/ROADMAP.md): horizons, MVP delivery status and known limitations
 - [Symbio Hub Community Roadmap board](https://github.com/users/dev-rb-hub/projects/1)
@@ -101,6 +101,19 @@ All editions are built on the same core through replaceable adapters; they diffe
 Maintainers also keep a private north-star planning board for Pro and Enterprise initiatives, stage gates and claims-versus-evidence tracking: [Product & Platform Roadmap (private)](https://github.com/users/dev-rb-hub/projects/3). It is not publicly accessible; access for prospective design partners is on request by opening a [repository issue](https://github.com/dev-rb-hub/symbio-hub/issues) (do not include sensitive details). The public view of direction is the [roadmap](docs/ROADMAP.md).
 
 Security and compliance statements in this repository describe design intent and current status, not certification. See the [compliance posture](docs/compliance/README.md).
+
+### 🌏 Australia first, built to be replicated
+
+Symbio Hub's bet is **many sovereign regional marketplaces, not one anonymous global one.** Australia is the first region and the proof point. Because the core is provider-neutral, the same codebase is designed to run as an independent, jurisdiction-specific **cell** that is self-hosted, operated by Symbio Hub, owned by an enterprise in its own tenancy, or run by a regional partner. Each cell keeps its data, keys and support access in its own jurisdiction.
+
+| Deployment model | Status |
+| :--- | :--- |
+| Self-hosted Community edition | **Implemented** |
+| Symbio-operated Australian regional cell (Pro) | **Planned** |
+| Customer-owned (own-hosted) tenancy for enterprises | **Planned** |
+| Partner-operated or sovereign environments in other jurisdictions | **Planned** / **Partner-dependent**, exploratory |
+
+No deployment outside Australia exists, and no cloud marketplace, regulator, bank or technology vendor has listed, assessed or endorsed Symbio Hub. Each new jurisdiction would need licensed partners, local legal review and published evidence first. Details, legal considerations and stage gates: [Global Vision](docs/global-vision.md), [ADR 0005](docs/architecture/adr/0005-jurisdiction-cells-and-region-packs.md).
 
 ---
 

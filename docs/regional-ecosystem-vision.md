@@ -31,6 +31,7 @@ Symbio Hub explores a simple loop: **learn, certify, deliver locally, reinvest l
 ### 5. A pattern others can copy (**Planned**)
 - The core is provider-neutral and open source. Another region or country could swap payment, identity and hosting adapters and run the same model under local rules ([architecture overview](architecture/overview.md)).
 - Documentation, ADRs and the Community edition are the reusable assets.
+- Hosting, ownership, legal considerations and stage gates for doing this safely are in the [Global Vision](global-vision.md).
 
 ## What we are careful not to claim
 
