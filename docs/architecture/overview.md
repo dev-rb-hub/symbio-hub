@@ -30,6 +30,11 @@ High-level view of how Symbio Hub is structured and where it is intended to grow
 | Audit log | Append-only record of milestone and escrow transitions | Planned |
 | Key management and signing | Sign, verify, HMAC and wrap keys with secrets held in a vault or HSM | Designed ([ADR 0004](adr/0004-cryptography-key-management-and-authentication.md)) |
 | User authentication | OIDC sign-in with MFA and passkeys from an external identity provider; local passwords for the community edition | Designed ([ADR 0004](adr/0004-cryptography-key-management-and-authentication.md)) |
+| Jurisdiction policy and region pack | Residency, retention, tax, currency, locale and legal-template settings per deployment cell | Designed ([ADR 0005](adr/0005-jurisdiction-cells-and-region-packs.md)) |
+
+## Deployment cells
+
+Each deployment is intended to be an independent **jurisdiction cell**: its own data, keys, logs and model endpoints in one jurisdiction, configured by a region pack. The same core can be self-hosted, operated by Symbio Hub, owned by a customer in its own tenancy, or run by a partner. See [ADR 0005](adr/0005-jurisdiction-cells-and-region-packs.md) and the [Global Vision](../global-vision.md).
 
 ## Milestone lifecycle (provider-neutral)
 

@@ -49,6 +49,18 @@ Verification is designed to be performed by accredited partners; the platform st
 
 ## Editions and roadmap
 
+**Could Symbio Hub be hosted and owned outside Australia, or by an enterprise itself?**
+That is the design intent, not a current offering. The core is provider-neutral, so a deployment can be self-hosted, operated by Symbio Hub, owned by an enterprise in its own cloud account or data centre, or run by a regional partner, as an independent jurisdiction cell with its own data, keys and rules ([ADR 0005](architecture/adr/0005-jurisdiction-cells-and-region-packs.md)). Australia is first. Every new jurisdiction needs licensed payment and identity partners, local legal review and published evidence before it is offered. All **Planned**; see the [Global Vision](global-vision.md).
+
+**Will this become a global marketplace like Upwork?**
+No, by design. The aim is many sovereign regional marketplaces built from the same open core, where data and spend stay in each region. Optional cross-region federation is **Planned** and exploratory, opt-in, and shares minimal metadata only.
+
+**Will it be available on cloud marketplaces or government panels?**
+Candidate channels, none live. Listings and panels have security, supplier and assessment prerequisites that Symbio Hub does not yet meet, so they follow evidence rather than precede it ([Global Vision](global-vision.md#global-distribution-channels-candidates-none-live)).
+
+**What legal issues apply when going global?**
+Privacy and data-transfer law, financial-sector outsourcing rules for regulated buyers, payments and AML licensing (handled by licensed partners), tax, contractor and platform-work rules, AI regulation, sanctions and export controls, plus our own trademark policy and contributor sign-off, which are not yet in place. The checklist is in the [Global Vision](global-vision.md#legal-considerations-by-jurisdiction); it is not legal advice.
+
 **What are Pro and Enterprise?**
 Hosted editions built on the same core. Pro targets hubs, councils and universities; Enterprise targets regulated organisations. Both are **Planned** and the Community edition remains fully usable without them. See [Editions](../README.md#-editions).
 
@@ -89,5 +101,7 @@ These are problems, not promises. Feedback and issues are welcome.
 11. **Contract templates.** Which statement-of-work templates would small businesses actually use, and how are they kept lawyer-reviewed and current?
 12. **Regional matching data.** What open regional boundary data is best for postcode and radius search, and how do we avoid shrinking the talent pool too far?
 13. **Partnership structures.** What structures let councils, universities and institutions co-deliver regional skills pathways without Symbio Hub being treated as an accredited provider or approved supplier?
+14. **Replication model.** Which operating model (Symbio-operated, customer-owned, partner-operated) suits each new jurisdiction, and how do we keep support and security quality consistent without a central dependency?
+15. **Licence and brand protection.** How do we keep the Community edition open under Apache-2.0 while preventing third parties from implying endorsement or certification, and what contributor sign-off should we adopt?
 
-See also the [Regional Ecosystem Vision](regional-ecosystem-vision.md).
+See also the [Regional Ecosystem Vision](regional-ecosystem-vision.md) and the [Global Vision](global-vision.md).

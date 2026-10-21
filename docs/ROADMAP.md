@@ -2,7 +2,7 @@
 
 This roadmap describes direction, not commitments. Delivery status and live work items are tracked in the [Symbio Hub - Community Roadmap](https://github.com/users/dev-rb-hub/projects/1) and the [repository issues](https://github.com/dev-rb-hub/symbio-hub/issues).
 
-Maintainers also keep a private north-star board for Pro and Enterprise planning, stage gates and claims-versus-evidence tracking: [Product & Platform Roadmap (private)](https://github.com/users/dev-rb-hub/projects/3). It is not publicly accessible; request access by opening a repository issue. Questions we are working through are in the [FAQ](faq.md), and longer-term ideas are in the [Regional Ecosystem Vision](regional-ecosystem-vision.md).
+Maintainers also keep a private north-star board for Pro and Enterprise planning, stage gates and claims-versus-evidence tracking: [Product & Platform Roadmap (private)](https://github.com/users/dev-rb-hub/projects/3). It is not publicly accessible; request access by opening a repository issue. Questions we are working through are in the [FAQ](faq.md), and longer-term ideas are in the [Regional Ecosystem Vision](regional-ecosystem-vision.md) and the [Global Vision](global-vision.md).
 
 Maturity labels used across the docs:
 
@@ -74,9 +74,21 @@ Hosted editions for organisations with stricter security, identity and payments 
 - **Planned:** deployment onto protected or government-hosted environments, federated identity, regional impact reporting, and optional allocation tracking for sponsored compute.
 - **Partner-dependent:** sponsor-funded grant allocation tracking, where a sponsor pays through a regulated partner and the platform only records allocations. The platform does not hold stored-value credits.
 
+## Horizon 4: Global replication (exploratory)
+
+Australia remains the first and primary region. This horizon explores letting other regions and enterprises host, own and support the same open core under their own laws, as independent sovereign cells rather than one global marketplace. Detail, legal considerations and stage gates are in the [Global Vision](global-vision.md).
+
+- **Designed:** jurisdiction cells and region packs, so a new jurisdiction is added through adapters, policy and templates, not code forks ([ADR 0005](architecture/adr/0005-jurisdiction-cells-and-region-packs.md), Proposed).
+- **Planned:**
+  - Customer-owned (own-hosted) deployment kit: signed images, per-cloud infrastructure-as-code and a hardened runtime.
+  - Trademark and naming policy and contributor sign-off (DCO or CLA) before third parties host or resell.
+  - Optional, opt-in federation between regional cells using minimal metadata.
+  - Distribution through cloud marketplaces and public-sector procurement panels, pursued only after the evidence they require exists.
+- **Partner-dependent:** a licensed payments partner, an accredited identity partner and local counsel in every jurisdiction; regional host operators.
+
 ## Initiative index
 
-High-level themes behind the horizons above. Maintainers track them as initiatives INI-00 to INI-12 on the private planning board linked at the top of this page; the IDs let prospective design partners refer to a theme when requesting access. Nothing here is a commitment, and no dates are implied.
+High-level themes behind the horizons above. Maintainers track them as initiatives INI-00 to INI-15 on the private planning board linked at the top of this page; the IDs let prospective design partners refer to a theme when requesting access. Nothing here is a commitment, and no dates are implied.
 
 | ID | Theme | Horizon | Status | Reference |
 | :--- | :--- | :--- | :--- | :--- |
@@ -93,12 +105,16 @@ High-level themes behind the horizons above. Maintainers track them as initiativ
 | INI-10 | Pro artefact vetting with explainable verdicts | 2 | **Planned** | [FAQ](faq.md) |
 | INI-11 | Sponsored allocation tracking and regional impact reporting | 3 | **Planned** | [Horizon 3](#horizon-3-sovereign-and-public-sector-deployments) |
 | INI-12 | Community pilot enablement | 1 | **Planned** | [Regional Ecosystem Vision](regional-ecosystem-vision.md) |
+| INI-13 | Jurisdiction cells and region packs | 3 to 4 | **Designed** | [ADR 0005](architecture/adr/0005-jurisdiction-cells-and-region-packs.md) |
+| INI-14 | Own-hosted deployment kit and marketplace distribution readiness | 2 to 4 | **Planned** | [Global Vision](global-vision.md) |
+| INI-15 | Legal and IP readiness: trademark policy, contributor sign-off, jurisdiction legal checklist | 1 to 4 | **Planned** | [Global Vision](global-vision.md#legal-considerations-by-jurisdiction) |
 
 ## Product guardrails for new ideas
 
 - No sharing of an SME's project postings or activity with a financial institution or other third party without that SME's explicit, opt-in request (for example "introduce me to a finance partner").
 - No claims of bank, government or enterprise partnership without a written, linked source.
 - No storage of bank account details or card data where a tokenised alternative exists.
+- No claim that Symbio Hub is available, certified or listed in any marketplace, panel or jurisdiction outside Australia without a written, linked source.
 - Ideas are hypotheses to validate in a pilot; they are not commitments.
 
 ## Cross-cutting principles

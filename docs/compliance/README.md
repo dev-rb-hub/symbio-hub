@@ -55,6 +55,8 @@ Hosted editions target the following strategies, with a published self-assessmen
 
 For hosted editions the design intent is that data, backups, logs and model endpoints remain in Australian regions, enforced with policy-as-code. The community edition is self-hosted and leaves residency decisions to the operator.
 
+Australia is the first and only target jurisdiction for hosted editions. The design allows other jurisdictions later as separate cells, each with its own residency rules and legal review; none is offered or assessed today. See the [Global Vision](../global-vision.md).
+
 ## Payments and identity
 
 - Card data is out of scope: the platform does not store card numbers and relies on provider or bank tokenisation.
