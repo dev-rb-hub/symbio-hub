@@ -30,7 +30,7 @@ Known limitations, all under review for this roadmap:
 - Business identity checks are format-level only, with no registry lookup or accredited KYC partner yet.
 - Authentication and credential handling are demo-grade and must be hardened before any production use.
 - Local environments are seeded with sample data at startup.
-- Regional matching is a case-insensitive text match on a free-text location field. There is no spatial, postcode or radius search yet (planned under Horizon 1).
+- Regional matching now supports a demo-grade postcode plus radius filter over a small built-in Australian location set, alongside the existing free-text location match. It is not yet backed by a licensed boundary dataset (for example ABS) and has no region-based polygon search.
 - Data storage mixes a local relational store with Cosmos DB repositories and has not been consolidated or load-tested.
 - Automated test coverage is limited to API and integration tests; there is no independent penetration test.
 
@@ -45,8 +45,9 @@ Open-source marketplace connecting regional SMEs with vetted local technical tal
 - **Implemented:** repository security controls: Dependabot updates and alerts, secret scanning with push protection, CodeQL code scanning, private vulnerability reporting. Findings are tracked and triaged.
 - **Planned:** review of the demo-grade areas listed under [known limitations](#mvp-delivery-status-and-known-limitations) above, then documentation baseline, hardened container image, image scanning, per-release SBOM and signed artefacts, regional pilot with local innovation hubs and universities, and supervised student and graduate cohorts using the Community edition as a learning platform (see the [Regional Ecosystem Vision](regional-ecosystem-vision.md)).
 - **Implemented:** structured expert availability (hours per week with an "available until" expiry); talent discovery can filter by minimum hours per week, and expired or unset availability is treated as unknown rather than current.
+- **Implemented (demo-grade):** structured regional matching for talent discovery: filter by postcode plus radius over a small built-in Australian location set, with free-text location search preserved. A licensed boundary dataset and region-polygon search remain planned.
 - **Planned (pilot candidates, hypotheses to test):**
-  - Structured regional matching: postcode or region plus a radius filter, replacing free-text location.
+  - Structured regional matching backed by a licensed boundary dataset (for example ABS), region-polygon search, and structured location on project scopes.
   - Lawyer-reviewed statement-of-work templates, including IP assignment and contractor terms (templates, not legal advice).
   - Credential evidence locker: experts attach insurance, licence or certification evidence with who verified it and when; the platform records status and references, not its own verification.
   - Tax invoice generation from milestone payments, without storing bank account details.

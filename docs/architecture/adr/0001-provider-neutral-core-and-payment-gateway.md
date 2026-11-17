@@ -24,6 +24,16 @@ Introduce a provider-neutral `IEscrowPaymentGateway` port in `Symbio.Core`, with
 - Some provider-specific endpoints and models will be renamed or moved.
 - Provider-specific behaviours that do not fit the port must be exposed as declared capabilities, not leaked into Core.
 
+## Provider taxonomy (for scoping adapters)
+
+Candidate providers fall into three classes. Only the first two are payment-gateway adapters; the third is a different concern and must not be filed under this port.
+
+- **Escrow-native** (for example Pinch, Zai/Assembly): support hold, milestone release, refund and marketplace split directly. These map cleanly onto the port and are the near-term Australian targets.
+- **Acquiring/checkout-only** (for example Amazon Payment Services, Apple Pay, Google Pay): collect card/wallet payments but have no native escrow or sub-merchant split. They are allowed only with a capability descriptor declaring `SupportsNativeEscrow = false`, paired with a complementary hold mechanism. Availability is often region-bound (for example Amazon Payment Services is MENA-only), so they are selected per region pack ([ADR 0005](0005-jurisdiction-cells-and-region-packs.md)), not globally.
+- **Not a payment gateway** (AWS, Azure and other cloud vendors): provide hosting, key management and AI runtimes, not escrow or payouts. These belong to key management ([ADR 0004](0004-cryptography-key-management-and-authentication.md)), the agent/AI runtime boundary ([ADR 0002](0002-agent-control-plane-boundary.md)) and deployment automation in `infrastructure/`, never behind this port.
+
+Concrete external adapters (escrow-native or acquiring-only) are partner-dependent and gated on merchant onboarding, KYC and settlement testing; crypto-settlement providers additionally carry AML, custody and regulatory burden and are out of near-term scope.
+
 ## Out of scope
 
 Concrete bank or treasury integrations. These are separate, partner-dependent adapters.

@@ -11,6 +11,9 @@ namespace Symbio.Core.Models
         public string Email { get; set; } = string.Empty;
         public string Role { get; set; } = "Expert";
         public string Location { get; set; } = string.Empty;
+        public string Postcode { get; set; } = string.Empty;
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
         public string ProfileSummary { get; set; } = string.Empty;
         public List<string> Skills { get; set; } = new();
         public List<string> Services { get; set; } = new();
@@ -36,6 +39,17 @@ namespace Symbio.Core.Models
             }
 
             return "available";
+        }
+
+        public bool TryGetCoordinates(out Symbio.Core.Services.GeoPoint point)
+        {
+            if (Latitude.HasValue && Longitude.HasValue)
+            {
+                point = new Symbio.Core.Services.GeoPoint(Latitude.Value, Longitude.Value);
+                return true;
+            }
+
+            return Symbio.Core.Services.RegionalMatching.TryResolvePostcode(Postcode, out point);
         }
     }
 }

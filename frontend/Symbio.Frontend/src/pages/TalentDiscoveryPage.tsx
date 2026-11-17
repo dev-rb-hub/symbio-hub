@@ -7,6 +7,8 @@ interface TalentProfile {
   name: string;
   companyName: string;
   location: string;
+  postcode: string;
+  distanceKm: number | null;
   profileSummary: string;
   skills: string[];
   services: string[];
@@ -20,6 +22,17 @@ interface TalentProfile {
   lastActiveAt: string;
 }
 
+interface TalentFilters {
+  query: string;
+  skill: string;
+  location: string;
+  minHours: string;
+  postcode: string;
+  radiusKm: string;
+}
+
+const emptyFilters: TalentFilters = { query: '', skill: '', location: '', minHours: '', postcode: '', radiusKm: '' };
+
 const availabilityBadge: Record<TalentProfile['availabilityStatus'], { label: string; background: string; color: string }> = {
   available: { label: 'Available', background: '#e8f8ee', color: '#146c41' },
   expired: { label: 'Availability expired', background: '#fff2e8', color: '#925200' },
@@ -32,11 +45,13 @@ export const TalentDiscoveryPage: React.FC = () => {
   const [skill, setSkill] = useState('');
   const [location, setLocation] = useState('');
   const [minHours, setMinHours] = useState('');
+  const [postcode, setPostcode] = useState('');
+  const [radiusKm, setRadiusKm] = useState('');
   const [profiles, setProfiles] = useState<TalentProfile[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const loadProfiles = async (currentQuery: string, currentSkill: string, currentLocation: string, currentMinHours: string) => {
+  const loadProfiles = async (filters: TalentFilters) => {
     if (!session) {
       return;
     }
@@ -45,10 +60,12 @@ export const TalentDiscoveryPage: React.FC = () => {
     setError(null);
 
     const search = new URLSearchParams();
-    if (currentQuery.trim()) search.set('query', currentQuery.trim());
-    if (currentSkill.trim()) search.set('skill', currentSkill.trim());
-    if (currentLocation.trim()) search.set('location', currentLocation.trim());
-    if (currentMinHours.trim()) search.set('minHoursPerWeek', currentMinHours.trim());
+    if (filters.query.trim()) search.set('query', filters.query.trim());
+    if (filters.skill.trim()) search.set('skill', filters.skill.trim());
+    if (filters.location.trim()) search.set('location', filters.location.trim());
+    if (filters.minHours.trim()) search.set('minHoursPerWeek', filters.minHours.trim());
+    if (filters.postcode.trim()) search.set('postcode', filters.postcode.trim());
+    if (filters.radiusKm.trim()) search.set('radiusKm', filters.radiusKm.trim());
 
     try
     {
@@ -69,12 +86,12 @@ export const TalentDiscoveryPage: React.FC = () => {
   };
 
   useEffect(() => {
-    void loadProfiles('', '', '', '');
+    void loadProfiles(emptyFilters);
   }, [session]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    await loadProfiles(query, skill, location, minHours);
+    await loadProfiles({ query, skill, location, minHours, postcode, radiusKm });
   };
 
   if (!session) {
@@ -87,7 +104,7 @@ export const TalentDiscoveryPage: React.FC = () => {
         <p className="symbio-role-hero-kicker">SME workspace</p>
         <h1 className="symbio-page-title symbio-page-title--dark">Talent Discovery</h1>
         <p className="symbio-role-hero-subtitle">
-          Search verified expert profiles by keyword, skill, or location to shortlist the right delivery partner for regional work.
+          Search verified expert profiles by keyword, skill, or location, or filter by postcode and radius to find experts near a region, to shortlist the right delivery partner for regional work.
         </p>
       </header>
 
@@ -109,6 +126,14 @@ export const TalentDiscoveryPage: React.FC = () => {
             Min hours / week
             <input type="number" min={0} value={minHours} onChange={event => setMinHours(event.target.value)} placeholder="20" style={{ width: '100%', marginTop: '0.5rem', padding: '0.85rem' }} />
           </label>
+          <label>
+            Postcode
+            <input value={postcode} onChange={event => setPostcode(event.target.value)} placeholder="2000" style={{ width: '100%', marginTop: '0.5rem', padding: '0.85rem' }} />
+          </label>
+          <label>
+            Radius (km)
+            <input type="number" min={0} value={radiusKm} onChange={event => setRadiusKm(event.target.value)} placeholder="100" style={{ width: '100%', marginTop: '0.5rem', padding: '0.85rem' }} />
+          </label>
         </div>
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
           <button type="submit" style={{ padding: '0.85rem 1.2rem', background: '#0f9d58', color: '#fff', border: 'none', borderRadius: 10, cursor: 'pointer' }}>
@@ -121,7 +146,9 @@ export const TalentDiscoveryPage: React.FC = () => {
               setSkill('');
               setLocation('');
               setMinHours('');
-              void loadProfiles('', '', '', '');
+              setPostcode('');
+              setRadiusKm('');
+              void loadProfiles(emptyFilters);
             }}
             style={{ padding: '0.85rem 1.2rem', background: '#f1f3f6', color: '#111', border: '1px solid #d6d9dd', borderRadius: 10, cursor: 'pointer' }}
           >
@@ -146,7 +173,10 @@ export const TalentDiscoveryPage: React.FC = () => {
                   <p style={{ margin: 0, color: '#555' }}>{profile.companyName}</p>
                 </div>
                 <div style={{ textAlign: 'right', color: '#555' }}>
-                  <div>{profile.location}</div>
+                  <div>{profile.location}{profile.postcode ? ` ${profile.postcode}` : ''}</div>
+                  {profile.distanceKm != null && (
+                    <div style={{ color: '#10436b' }}>{profile.distanceKm} km away</div>
+                  )}
                   <div style={{ fontWeight: 700 }}>${profile.hourlyRate.toFixed(0)} / hr</div>
                 </div>
               </div>
