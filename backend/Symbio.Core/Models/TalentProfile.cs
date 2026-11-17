@@ -16,9 +16,26 @@ namespace Symbio.Core.Models
         public List<string> Services { get; set; } = new();
         public decimal HourlyRate { get; set; }
         public string Availability { get; set; } = string.Empty;
+        public int? HoursPerWeek { get; set; }
+        public DateTime? AvailableUntil { get; set; }
         public bool IsVerified { get; set; } = true;
         public bool IsDiscoverable { get; set; } = true;
         public int FeaturedRank { get; set; }
         public DateTime LastActiveAt { get; set; } = DateTime.UtcNow;
+
+        public string ResolveAvailabilityStatus(DateTime utcNow)
+        {
+            if (!HoursPerWeek.HasValue)
+            {
+                return "unknown";
+            }
+
+            if (AvailableUntil.HasValue && AvailableUntil.Value.Date < utcNow.Date)
+            {
+                return "expired";
+            }
+
+            return "available";
+        }
     }
 }

@@ -21,37 +21,46 @@ namespace Symbio.API.Controllers
             [FromQuery] string? query = null,
             [FromQuery] string? skill = null,
             [FromQuery] string? location = null,
+            [FromQuery] int? minHoursPerWeek = null,
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 12)
         {
             page = Math.Max(1, page);
             pageSize = Math.Clamp(pageSize, 1, 50);
 
-            var profiles = (await _talentDiscoveryRepository.SearchTalentProfilesAsync(query, skill, location, 200)).ToList();
+            var profiles = (await _talentDiscoveryRepository.SearchTalentProfilesAsync(query, skill, location, minHoursPerWeek, 200)).ToList();
             var paged = profiles
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
 
+            var now = DateTime.UtcNow;
             return Ok(new
             {
                 page,
                 pageSize,
                 total = profiles.Count,
-                results = paged.Select(profile => new
+                results = paged.Select(profile =>
                 {
-                    profile.Id,
-                    profile.Name,
-                    profile.CompanyName,
-                    profile.Location,
-                    profile.ProfileSummary,
-                    profile.Skills,
-                    profile.Services,
-                    profile.HourlyRate,
-                    profile.Availability,
-                    profile.IsVerified,
-                    profile.FeaturedRank,
-                    profile.LastActiveAt
+                    var availabilityStatus = profile.ResolveAvailabilityStatus(now);
+                    return new
+                    {
+                        profile.Id,
+                        profile.Name,
+                        profile.CompanyName,
+                        profile.Location,
+                        profile.ProfileSummary,
+                        profile.Skills,
+                        profile.Services,
+                        profile.HourlyRate,
+                        profile.Availability,
+                        HoursPerWeek = availabilityStatus == "available" ? profile.HoursPerWeek : null,
+                        AvailableUntil = profile.AvailableUntil,
+                        AvailabilityStatus = availabilityStatus,
+                        profile.IsVerified,
+                        profile.FeaturedRank,
+                        profile.LastActiveAt
+                    };
                 })
             });
         }

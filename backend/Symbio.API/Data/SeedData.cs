@@ -93,6 +93,8 @@ namespace Symbio.API.Data
                     Services = profile.Services.ToList(),
                     HourlyRate = profile.HourlyRate,
                     Availability = profile.Availability,
+                    HoursPerWeek = profile.HoursPerWeek,
+                    AvailableUntil = profile.AvailableUntil,
                     IsVerified = profile.IsVerified,
                     IsDiscoverable = profile.IsDiscoverable,
                     FeaturedRank = profile.FeaturedRank,

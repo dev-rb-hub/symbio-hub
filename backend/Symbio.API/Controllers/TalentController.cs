@@ -17,24 +17,32 @@ namespace Symbio.API.Controllers
 
         [HttpGet]
         [Authorize(Roles = "SME")]
-        public async Task<IActionResult> Search([FromQuery] string? query = null, [FromQuery] string? skill = null, [FromQuery] string? location = null)
+        public async Task<IActionResult> Search([FromQuery] string? query = null, [FromQuery] string? skill = null, [FromQuery] string? location = null, [FromQuery] int? minHoursPerWeek = null)
         {
-            var profiles = await _talentDiscoveryRepository.SearchTalentProfilesAsync(query, skill, location);
+            var profiles = await _talentDiscoveryRepository.SearchTalentProfilesAsync(query, skill, location, minHoursPerWeek);
 
-            var response = profiles.Select(profile => new
+            var now = DateTime.UtcNow;
+            var response = profiles.Select(profile =>
             {
-                profile.Id,
-                profile.Name,
-                profile.CompanyName,
-                profile.Location,
-                profile.ProfileSummary,
-                profile.Skills,
-                profile.Services,
-                profile.HourlyRate,
-                profile.Availability,
-                profile.IsVerified,
-                profile.FeaturedRank,
-                profile.LastActiveAt
+                var availabilityStatus = profile.ResolveAvailabilityStatus(now);
+                return new
+                {
+                    profile.Id,
+                    profile.Name,
+                    profile.CompanyName,
+                    profile.Location,
+                    profile.ProfileSummary,
+                    profile.Skills,
+                    profile.Services,
+                    profile.HourlyRate,
+                    profile.Availability,
+                    HoursPerWeek = availabilityStatus == "available" ? profile.HoursPerWeek : null,
+                    AvailableUntil = profile.AvailableUntil,
+                    AvailabilityStatus = availabilityStatus,
+                    profile.IsVerified,
+                    profile.FeaturedRank,
+                    profile.LastActiveAt
+                };
             });
 
             return Ok(response);

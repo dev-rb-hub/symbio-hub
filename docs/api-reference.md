@@ -23,6 +23,7 @@ This quick guide lists key API and real-time endpoints used by the frontend and 
 	- `GET /api/Jobs/{id}`
 	- `GET /api/experts/search`
 	- `GET /api/Talent`
+		- Both accept `query`, `skill`, `location`, and `minHoursPerWeek` filters; `minHoursPerWeek` returns only experts whose structured availability is current (non-expired) and meets the minimum.
 	- `POST /api/Project`
 	- `GET /api/Project`
 	- `GET /api/Project/{id}`

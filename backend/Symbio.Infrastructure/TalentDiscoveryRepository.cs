@@ -24,7 +24,7 @@ namespace Symbio.Infrastructure
             }
         }
 
-        public async Task<IEnumerable<TalentProfile>> SearchTalentProfilesAsync(string? query = null, string? skill = null, string? location = null, int limit = 12)
+        public async Task<IEnumerable<TalentProfile>> SearchTalentProfilesAsync(string? query = null, string? skill = null, string? location = null, int? minHoursPerWeek = null, int limit = 12)
         {
             var profiles = await LoadProfilesAsync();
 
@@ -35,6 +35,7 @@ namespace Symbio.Infrastructure
                 .Where(profile => MatchesText(profile, query))
                 .Where(profile => MatchesSkill(profile, skill))
                 .Where(profile => MatchesLocation(profile, location))
+                .Where(profile => MatchesMinHours(profile, minHoursPerWeek))
                 .OrderByDescending(profile => profile.FeaturedRank)
                 .ThenByDescending(profile => profile.LastActiveAt)
                 .Take(limit)
@@ -93,6 +94,8 @@ namespace Symbio.Infrastructure
                 Services = profile.Services.ToList(),
                 HourlyRate = profile.HourlyRate,
                 Availability = profile.Availability,
+                HoursPerWeek = profile.HoursPerWeek,
+                AvailableUntil = profile.AvailableUntil,
                 IsVerified = profile.IsVerified,
                 IsDiscoverable = profile.IsDiscoverable,
                 FeaturedRank = profile.FeaturedRank,
@@ -133,6 +136,21 @@ namespace Symbio.Infrastructure
             }
 
             return ContainsIgnoreCase(profile.Location, location);
+        }
+
+        private static bool MatchesMinHours(TalentProfile profile, int? minHoursPerWeek)
+        {
+            if (!minHoursPerWeek.HasValue || minHoursPerWeek.Value <= 0)
+            {
+                return true;
+            }
+
+            if (!string.Equals(profile.ResolveAvailabilityStatus(DateTime.UtcNow), "available", StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            return profile.HoursPerWeek.GetValueOrDefault() >= minHoursPerWeek.Value;
         }
 
         private static bool ContainsIgnoreCase(string? source, string? value)

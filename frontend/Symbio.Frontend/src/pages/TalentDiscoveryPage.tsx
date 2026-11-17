@@ -12,21 +12,31 @@ interface TalentProfile {
   services: string[];
   hourlyRate: number;
   availability: string;
+  hoursPerWeek: number | null;
+  availableUntil: string | null;
+  availabilityStatus: 'available' | 'expired' | 'unknown';
   isVerified: boolean;
   featuredRank: number;
   lastActiveAt: string;
 }
+
+const availabilityBadge: Record<TalentProfile['availabilityStatus'], { label: string; background: string; color: string }> = {
+  available: { label: 'Available', background: '#e8f8ee', color: '#146c41' },
+  expired: { label: 'Availability expired', background: '#fff2e8', color: '#925200' },
+  unknown: { label: 'Availability unknown', background: '#f1f3f6', color: '#555' },
+};
 
 export const TalentDiscoveryPage: React.FC = () => {
   const { session } = useAuth();
   const [query, setQuery] = useState('');
   const [skill, setSkill] = useState('');
   const [location, setLocation] = useState('');
+  const [minHours, setMinHours] = useState('');
   const [profiles, setProfiles] = useState<TalentProfile[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const loadProfiles = async (currentQuery: string, currentSkill: string, currentLocation: string) => {
+  const loadProfiles = async (currentQuery: string, currentSkill: string, currentLocation: string, currentMinHours: string) => {
     if (!session) {
       return;
     }
@@ -38,6 +48,7 @@ export const TalentDiscoveryPage: React.FC = () => {
     if (currentQuery.trim()) search.set('query', currentQuery.trim());
     if (currentSkill.trim()) search.set('skill', currentSkill.trim());
     if (currentLocation.trim()) search.set('location', currentLocation.trim());
+    if (currentMinHours.trim()) search.set('minHoursPerWeek', currentMinHours.trim());
 
     try
     {
@@ -58,12 +69,12 @@ export const TalentDiscoveryPage: React.FC = () => {
   };
 
   useEffect(() => {
-    void loadProfiles('', '', '');
+    void loadProfiles('', '', '', '');
   }, [session]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    await loadProfiles(query, skill, location);
+    await loadProfiles(query, skill, location, minHours);
   };
 
   if (!session) {
@@ -94,6 +105,10 @@ export const TalentDiscoveryPage: React.FC = () => {
             Location
             <input value={location} onChange={event => setLocation(event.target.value)} placeholder="NSW" style={{ width: '100%', marginTop: '0.5rem', padding: '0.85rem' }} />
           </label>
+          <label>
+            Min hours / week
+            <input type="number" min={0} value={minHours} onChange={event => setMinHours(event.target.value)} placeholder="20" style={{ width: '100%', marginTop: '0.5rem', padding: '0.85rem' }} />
+          </label>
         </div>
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
           <button type="submit" style={{ padding: '0.85rem 1.2rem', background: '#0f9d58', color: '#fff', border: 'none', borderRadius: 10, cursor: 'pointer' }}>
@@ -105,7 +120,8 @@ export const TalentDiscoveryPage: React.FC = () => {
               setQuery('');
               setSkill('');
               setLocation('');
-              void loadProfiles('', '', '');
+              setMinHours('');
+              void loadProfiles('', '', '', '');
             }}
             style={{ padding: '0.85rem 1.2rem', background: '#f1f3f6', color: '#111', border: '1px solid #d6d9dd', borderRadius: 10, cursor: 'pointer' }}
           >
@@ -145,9 +161,18 @@ export const TalentDiscoveryPage: React.FC = () => {
                 ))}
               </div>
 
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                <span style={{ padding: '0.35rem 0.7rem', background: availabilityBadge[profile.availabilityStatus].background, color: availabilityBadge[profile.availabilityStatus].color, borderRadius: 999, fontSize: '0.9rem', fontWeight: 700 }}>
+                  {availabilityBadge[profile.availabilityStatus].label}
+                </span>
+                {profile.availabilityStatus === 'available' && profile.hoursPerWeek != null && (
+                  <span style={{ color: '#444' }}>{profile.hoursPerWeek} hrs/week{profile.availableUntil ? ` · until ${new Date(profile.availableUntil).toLocaleDateString()}` : ''}</span>
+                )}
+              </div>
+
               <div style={{ display: 'grid', gap: '0.5rem', color: '#444' }}>
                 <div><strong>Services:</strong> {profile.services.join(', ')}</div>
-                <div><strong>Availability:</strong> {profile.availability}</div>
+                <div><strong>Availability:</strong> {profile.availability || 'Not specified'}</div>
                 <div><strong>Verified:</strong> {profile.isVerified ? 'Yes' : 'No'}</div>
                 <div><strong>Last active:</strong> {new Date(profile.lastActiveAt).toLocaleDateString()}</div>
               </div>

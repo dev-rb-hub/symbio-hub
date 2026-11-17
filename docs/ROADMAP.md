@@ -44,9 +44,9 @@ Open-source marketplace connecting regional SMEs with vetted local technical tal
 - **Designed:** provider-neutral payment gateway port so the community payment provider is replaceable ([ADR 0001](architecture/adr/0001-provider-neutral-core-and-payment-gateway.md)).
 - **Implemented:** repository security controls: Dependabot updates and alerts, secret scanning with push protection, CodeQL code scanning, private vulnerability reporting. Findings are tracked and triaged.
 - **Planned:** review of the demo-grade areas listed under [known limitations](#mvp-delivery-status-and-known-limitations) above, then documentation baseline, hardened container image, image scanning, per-release SBOM and signed artefacts, regional pilot with local innovation hubs and universities, and supervised student and graduate cohorts using the Community edition as a learning platform (see the [Regional Ecosystem Vision](regional-ecosystem-vision.md)).
+- **Implemented:** structured expert availability (hours per week with an "available until" expiry); talent discovery can filter by minimum hours per week, and expired or unset availability is treated as unknown rather than current.
 - **Planned (pilot candidates, hypotheses to test):**
   - Structured regional matching: postcode or region plus a radius filter, replacing free-text location.
-  - Structured availability with an expiry so stale profiles drop off.
   - Lawyer-reviewed statement-of-work templates, including IP assignment and contractor terms (templates, not legal advice).
   - Credential evidence locker: experts attach insurance, licence or certification evidence with who verified it and when; the platform records status and references, not its own verification.
   - Tax invoice generation from milestone payments, without storing bank account details.
