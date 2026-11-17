@@ -23,7 +23,7 @@ This guide gives a practical walkthrough of the main Symbio Hub demo flows for e
 3. Create a project and publish the scope.
 4. Review agreement, payment lifecycle, and settlement handoff screens as the project advances.
 5. Use the billing and dashboard views to confirm Pinch runtime mode and payment state.
-6. Open talent discovery to inspect available experts. Filter by keyword, skill, location, or minimum hours per week; experts whose structured availability has expired or is unset are flagged rather than shown as currently available.
+6. Open talent discovery to inspect available experts. Filter by keyword, skill, location, or minimum hours per week; experts whose structured availability has expired or is unset are flagged rather than shown as currently available. You can also filter by postcode plus a radius (km) to find experts near a region, with the distance shown on each matching result.
 7. Use settings or profile to verify role and account details.
 
 ## Expert Flow

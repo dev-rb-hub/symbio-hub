@@ -13,6 +13,8 @@ Treat each deployment as an independent **jurisdiction cell**, configured by a v
 
 - A cell owns its data stores, keys, logs, backups and model endpoints, all inside one jurisdiction. Cells share no personal or project data by default.
 - A region pack is configuration, policy and adapters selected through the existing ports ([ADR 0001](0001-provider-neutral-core-and-payment-gateway.md), [ADR 0003](0003-identity-assertion-ingestion.md), [ADR 0004](0004-cryptography-key-management-and-authentication.md)): payment adapter, identity adapter, residency and retention policy-as-code, tax and currency settings, locale, and legal template set.
+- Payment adapters are region-gated: a gateway available only in certain countries (for example an acquiring-only provider such as Amazon Payment Services, available in MENA, not Australia) is selected by the region pack and must never be assumed globally available. See the provider taxonomy in [ADR 0001](0001-provider-neutral-core-and-payment-gateway.md).
+- Regional matching (for example postcode or radius search) operates within a single cell's jurisdiction; it never queries another cell. Cross-cell matching is deliberately out of scope here.
 - Core gains neutral abstractions only (for example a jurisdiction policy and tax/invoice port). It must not reference a country, regulator, cloud vendor or payment provider.
 - A cell must start and operate without contacting the maintainers. No mandatory licence check or telemetry.
 - Cross-cell interaction (federation) is a separate, opt-in, minimal-metadata contract and is out of scope here.

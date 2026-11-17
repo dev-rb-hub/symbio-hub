@@ -23,7 +23,7 @@ This quick guide lists key API and real-time endpoints used by the frontend and 
 	- `GET /api/Jobs/{id}`
 	- `GET /api/experts/search`
 	- `GET /api/Talent`
-		- Both accept `query`, `skill`, `location`, and `minHoursPerWeek` filters; `minHoursPerWeek` returns only experts whose structured availability is current (non-expired) and meets the minimum.
+		- Both accept `query`, `skill`, `location`, `minHoursPerWeek`, `postcode`, and `radiusKm` filters. `minHoursPerWeek` returns only experts whose structured availability is current (non-expired) and meets the minimum. `postcode` + `radiusKm` returns experts within that distance of a known Australian postcode (demo-grade built-in location set); profiles without a resolvable location are excluded and an unknown postcode returns no matches.
 	- `POST /api/Project`
 	- `GET /api/Project`
 	- `GET /api/Project/{id}`

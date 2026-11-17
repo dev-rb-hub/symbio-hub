@@ -2,6 +2,7 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Symbio.Core.Models;
 using Symbio.Core.Repositories;
+using Symbio.Core.Services;
 
 namespace Symbio.Infrastructure
 {
@@ -24,9 +25,16 @@ namespace Symbio.Infrastructure
             }
         }
 
-        public async Task<IEnumerable<TalentProfile>> SearchTalentProfilesAsync(string? query = null, string? skill = null, string? location = null, int? minHoursPerWeek = null, int limit = 12)
+        public async Task<IEnumerable<TalentProfile>> SearchTalentProfilesAsync(string? query = null, string? skill = null, string? location = null, int? minHoursPerWeek = null, string? postcode = null, int? radiusKm = null, int limit = 12)
         {
             var profiles = await LoadProfilesAsync();
+
+            var radiusActive = !string.IsNullOrWhiteSpace(postcode) && radiusKm.HasValue && radiusKm.Value > 0;
+            GeoPoint? origin = null;
+            if (radiusActive && RegionalMatching.TryResolvePostcode(postcode, out var resolved))
+            {
+                origin = resolved;
+            }
 
             var filtered = profiles
                 .Where(profile => profile.IsDiscoverable)
@@ -36,6 +44,7 @@ namespace Symbio.Infrastructure
                 .Where(profile => MatchesSkill(profile, skill))
                 .Where(profile => MatchesLocation(profile, location))
                 .Where(profile => MatchesMinHours(profile, minHoursPerWeek))
+                .Where(profile => MatchesRadius(profile, radiusActive, origin, radiusKm))
                 .OrderByDescending(profile => profile.FeaturedRank)
                 .ThenByDescending(profile => profile.LastActiveAt)
                 .Take(limit)
@@ -89,6 +98,9 @@ namespace Symbio.Infrastructure
                 Email = profile.Email,
                 Role = profile.Role,
                 Location = profile.Location,
+                Postcode = profile.Postcode,
+                Latitude = profile.Latitude,
+                Longitude = profile.Longitude,
                 ProfileSummary = profile.ProfileSummary,
                 Skills = profile.Skills.ToList(),
                 Services = profile.Services.ToList(),
@@ -151,6 +163,26 @@ namespace Symbio.Infrastructure
             }
 
             return profile.HoursPerWeek.GetValueOrDefault() >= minHoursPerWeek.Value;
+        }
+
+        private static bool MatchesRadius(TalentProfile profile, bool radiusActive, GeoPoint? origin, int? radiusKm)
+        {
+            if (!radiusActive)
+            {
+                return true;
+            }
+
+            if (origin == null || !radiusKm.HasValue)
+            {
+                return false;
+            }
+
+            if (!profile.TryGetCoordinates(out var profilePoint))
+            {
+                return false;
+            }
+
+            return RegionalMatching.DistanceKm(origin.Value, profilePoint) <= radiusKm.Value;
         }
 
         private static bool ContainsIgnoreCase(string? source, string? value)
